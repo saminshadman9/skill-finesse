@@ -1,0 +1,34 @@
+{
+  "signIn": {
+    "email": {
+      "enabled": true,
+      "passwordRequired": true
+    },
+    "anonymous": {
+      "enabled": false
+    }
+  },
+  "mfa": {
+    "state": "DISABLED"
+  },
+  "providers": {
+    "emailPassword": {
+      "enabled": true,
+      "passwordPolicy": {
+        "enforcementState": "ENFORCE",
+        "constraints": {
+          "requireUppercase": false,
+          "requireLowercase": false,
+          "requireNumeric": false,
+          "requireNonAlphanumeric": false,
+          "minLength": 6,
+          "maxLength": 4096
+        }
+      }
+    }
+  },
+  "blockingFunctions": {},
+  "multiTenant": {
+    "allowTenants": false
+  }
+}

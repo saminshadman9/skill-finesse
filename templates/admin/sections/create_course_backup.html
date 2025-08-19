@@ -1,0 +1,2284 @@
+<!-- Create Course Section -->
+<div id="create-course-section" class="content-section" style="display: none;">
+    <!-- EMERGENCY INLINE COURSES DISPLAY -->
+    <script>
+    // FORCE LOAD COURSES ON SECTION VISIBILITY
+    (function() {
+        let coursesLoaded = false;
+        
+        function emergencyLoadCourses() {
+            if (coursesLoaded) return;
+            
+            console.log('🚨 EMERGENCY LOAD TRIGGERED');
+            
+            const section = document.getElementById('create-course-section');
+            if (!section || section.style.display === 'none') return;
+            
+            const coursesList = document.getElementById('coursesList');
+            if (!coursesList) {
+                console.error('coursesList not found!');
+                return;
+            }
+            
+            // Show loading state
+            coursesList.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-3 text-muted">Loading courses...</p></div>';
+            
+            // Make the API call with credentials
+            fetch('/admin/courses/list', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Data received:', data);
+                
+                if (data.success) {
+                    coursesLoaded = true; // Mark as loaded regardless of course count
+                    
+                    if (data.courses && data.courses.length > 0) {
+                        // Preserve original classes
+                        const originalClasses = coursesList.className;
+                        
+                        let html = '';
+                        data.courses.forEach((course, i) => {
+                        html += `
+                            <div class="card course-card ${course.is_published ? 'published' : 'draft'} mb-2" data-course-id="${course.id}">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-start">
+                                        <img src="${getCourseImageUrl(course, true)}" 
+                                             alt="${course.title}" class="course-thumbnail me-3" 
+                                             style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px;"
+                                             onerror="this.src='/static/images/placeholder.svg'; this.onerror=null;">
+                                        
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1" style="font-size: 0.9rem;">${course.title}</h6>
+                                            
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="price-badge" style="background: linear-gradient(45deg, #198754, #20c997); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.75rem;">৳${parseFloat(course.price).toLocaleString('en-BD')}</span>
+                                                <span class="status-badge status-${course.is_published ? 'published' : 'draft'}" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 8px; background-color: ${course.is_published ? 'rgba(25, 135, 84, 0.1)' : 'rgba(255, 193, 7, 0.1)'}; color: ${course.is_published ? '#198754' : '#ffc107'};">
+                                                    ${course.is_published ? 'Published' : 'Draft'}
+                                                </span>
+                                            </div>
+                                            
+                                            <p class="text-muted small mb-1" style="font-size: 0.75rem;">${course.category || 'Uncategorized'}</p>
+                                            
+                                            ${course.instructor_name ? `
+                                                <div class="instructor-info d-flex align-items-center gap-1 mb-2" style="font-size: 0.7rem; color: #6c757d;">
+                                                    ${course.instructor_image ? 
+                                                        `<img src="/static/uploads/${course.instructor_image}?v=${new Date().getTime()}" alt="${course.instructor_name}" style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover;">` : 
+                                                        '<i class="fas fa-user-circle"></i>'
+                                                    }
+                                                    <span>By ${course.instructor_name}</span>
+                                                </div>
+                                            ` : ''}
+                                            
+                                            <div class="course-actions">
+                                                <button class="btn btn-sm btn-outline-info" onclick="viewCourse(${course.id})" title="View Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary" onclick="editCourse(${course.id})" title="Edit Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-${course.is_published ? 'warning' : 'success'}" 
+                                                        onclick="togglePublishCourse(${course.id}, ${course.is_published})" 
+                                                        title="${course.is_published ? 'Unpublish' : 'Publish'} Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                    <i class="fas fa-${course.is_published ? 'eye-slash' : 'eye'}"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteCourse(${course.id})" title="Delete Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    coursesList.innerHTML = html;
+                    coursesList.className = originalClasses;
+                    coursesLoaded = true;
+                    
+                    // Force layout recalculation
+                    coursesList.offsetHeight;
+                    
+                    // Update count
+                    const countElement = document.getElementById('courseCount');
+                    if (countElement) {
+                        countElement.textContent = `(${data.courses.length} total)`;
+                    }
+                    
+                        console.log('✅ Courses loaded successfully!');
+                    } else {
+                        // No courses found
+                        const originalClasses = coursesList.className;
+                        coursesList.innerHTML = '<div class="text-center p-4"><i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i><h6 class="text-muted">No Courses Found</h6><p class="text-muted small">Create your first course using the form above.</p></div>';
+                        coursesList.className = originalClasses;
+                        coursesList.offsetHeight;
+                        
+                        // Update count for no courses
+                        const countElement = document.getElementById('courseCount');
+                        if (countElement) {
+                            countElement.textContent = '(0 total)';
+                        }
+                        console.log('ℹ️ No courses found');
+                    }
+                } else {
+                    console.error('API request unsuccessful:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading courses:', error);
+                const originalClasses = coursesList.className;
+                coursesList.innerHTML = `<div class="text-center p-4"><i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i><h6 class="text-danger">Error Loading Courses</h6><p class="text-muted small">${error.message}</p><button class="btn btn-sm btn-primary" onclick="emergencyLoadCourses()"><i class="fas fa-redo me-1"></i>Try Again</button></div>`;
+                coursesList.className = originalClasses;
+                coursesList.offsetHeight;
+            });
+        }
+        
+        // Make it globally available
+        window.emergencyLoadCourses = emergencyLoadCourses;
+        
+        // Watch for section visibility changes
+        const checkVisibility = setInterval(() => {
+            const section = document.getElementById('create-course-section');
+            if (section && section.style.display !== 'none' && !coursesLoaded) {
+                emergencyLoadCourses();
+            }
+        }, 500);
+        
+        // Stop checking after 30 seconds
+        setTimeout(() => clearInterval(checkVisibility), 30000);
+    })();
+    </script>
+    <div class="page-header">
+        <h1>Create Course</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create Course</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <!-- Create Course Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Course</h3>
+                </div>
+                <div class="card-body">
+                    <form id="createCourseForm" method="POST" action="/admin/courses/create" enctype="multipart/form-data" novalidate onsubmit="return false;">
+                        <div class="row">
+                            <!-- Course Title -->
+                            <div class="col-md-12 mb-3">
+                                <label for="courseTitle" class="form-label fw-bold">Course Title *</label>
+                                <input type="text" class="form-control form-control-lg" id="courseTitle" name="title" required>
+                                <div class="form-text">Enter a compelling course title that describes what students will learn.</div>
+                            </div>
+                            
+                            <!-- Course Category -->
+                            <div class="col-md-6 mb-3">
+                                <label for="courseCategory" class="form-label fw-bold">Course Category *</label>
+                                <select class="form-select" id="courseCategory" name="category" required onchange="toggleCustomCategory()">
+                                    <option value="">Select Category</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Mobile Development">Mobile Development</option>
+                                    <option value="UI/UX Design">UI/UX Design</option>
+                                    <option value="DevOps">DevOps</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Photography">Photography</option>
+                                    <option value="Graphic Design">Graphic Design</option>
+                                    <option value="Programming">Programming</option>
+                                    <option value="Other">Other (Custom)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Custom Category Input -->
+                            <div class="col-md-6 mb-3" id="customCategoryDiv" style="display: none;">
+                                <label for="customCategory" class="form-label fw-bold">Custom Category</label>
+                                <input type="text" class="form-control" id="customCategory" name="custom_category" placeholder="Enter custom category name">
+                                <div class="form-text">Enter a custom category name when 'Other' is selected.</div>
+                            </div>
+                            
+                            <!-- Course Price in BDT -->
+                            <div class="col-md-6 mb-3">
+                                <label for="coursePrice" class="form-label fw-bold">Course Price (BDT) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">৳</span>
+                                    <input type="number" class="form-control" id="coursePrice" name="price" step="0.01" min="0" required>
+                                </div>
+                                <div class="form-text">Set the price in Bangladeshi Taka (BDT). Use 0 for free courses.</div>
+                            </div>
+                            
+                            <!-- Course Description -->
+                            <div class="col-md-12 mb-3">
+                                <label for="courseDescription" class="form-label fw-bold">Course Description *</label>
+                                <textarea class="form-control" id="courseDescription" name="description" rows="4" required></textarea>
+                                <div class="form-text">Provide a detailed description of what the course covers.</div>
+                            </div>
+                            
+                            <!-- About This Course -->
+                            <div class="col-md-12 mb-3">
+                                <label for="aboutCourse" class="form-label fw-bold">About This Course</label>
+                                <textarea class="form-control" id="aboutCourse" name="about_course" rows="4" placeholder="Detailed information about the course content, structure, and objectives..."></textarea>
+                                <div class="form-text">Comprehensive details about the course that will help students understand what to expect.</div>
+                            </div>
+                            
+                            <!-- What You'll Learn -->
+                            <div class="col-md-12 mb-3">
+                                <label for="whatYoullLearn" class="form-label fw-bold">What You'll Learn</label>
+                                <textarea class="form-control" id="whatYoullLearn" name="what_youll_learn" rows="4" placeholder="• Master key concepts and techniques&#10;• Build real-world projects&#10;• Understand industry best practices&#10;• Gain practical skills..."></textarea>
+                                <div class="form-text">List the key learning outcomes and skills students will gain. Use bullet points for better readability.</div>
+                            </div>
+                            
+                            <!-- Course Requirements -->
+                            <div class="col-md-12 mb-3">
+                                <label for="courseRequirements" class="form-label fw-bold">Course Requirements</label>
+                                <textarea class="form-control" id="courseRequirements" name="course_requirements" rows="3" placeholder="• Basic computer skills&#10;• No prior experience needed&#10;• Internet connection required..."></textarea>
+                                <div class="form-text">Prerequisites and requirements for taking this course.</div>
+                            </div>
+                            
+                            <!-- Instructor Bio -->
+                            <div class="col-md-12 mb-3">
+                                <label for="instructorBio" class="form-label fw-bold">Instructor Biography</label>
+                                <textarea class="form-control" id="instructorBio" name="instructor_bio" rows="3" placeholder="Professional background, experience, and expertise of the instructor..."></textarea>
+                                <div class="form-text">Information about the instructor's background and qualifications.</div>
+                            </div>
+                            
+                            <!-- Instructor Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="instructorName" class="form-label fw-bold">Instructor Name</label>
+                                <input type="text" class="form-control" id="instructorName" name="instructor_name" placeholder="e.g., John Doe">
+                                <div class="form-text">The name of the course instructor.</div>
+                            </div>
+                            
+                            <!-- Public Discount -->
+                            <div class="col-12 mb-4">
+                                <h6 class="fw-bold text-primary mb-3"><i class="fas fa-percentage me-2"></i>Pricing & Discounts</h6>
+                                
+                                <!-- Public Discount Section -->
+                                <div class="card border-info mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="card-title mb-0"><i class="fas fa-eye me-2"></i>Public Discount (Visible to All)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="publicDiscountPercent" class="form-label">Public Discount (%)</label>
+                                                <input type="number" class="form-control" id="publicDiscountPercent" name="public_discount_percent" min="0" max="100" placeholder="e.g., 25">
+                                                <div class="form-text">Discount shown to all users on course listings</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Discounted Price Preview</label>
+                                                <div class="form-control-plaintext fw-bold text-success" id="discountedPricePreview">
+                                                    Set course price and discount to see preview
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Private Coupons Section -->
+                                <div class="card border-warning">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h6 class="card-title mb-0"><i class="fas fa-ticket-alt me-2"></i>Private Coupons (Hidden)</h6>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="addNewCoupon()">
+                                            <i class="fas fa-plus me-1"></i>Add Coupon
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="couponsContainer">
+                                            <div class="text-center text-muted py-3">
+                                                <i class="fas fa-ticket-alt fa-2x mb-2 opacity-50"></i>
+                                                <p class="mb-0">No coupons added yet. Click "Add Coupon" to create one.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Instructor Image -->
+                            <div class="col-md-6 mb-3">
+                                <label for="instructorImage" class="form-label fw-bold">Instructor Image</label>
+                                <div class="upload-container" onclick="triggerFileInput('instructorImage')">
+                                    <div class="upload-area" id="instructorImagePreview">
+                                        <i class="fas fa-user-plus fa-2x text-muted"></i>
+                                        <p class="mt-2 mb-1">Click to upload instructor photo</p>
+                                        <small class="text-muted">JPG, PNG, WEBP (Max: 5MB)</small>
+                                    </div>
+                                    <input type="file" id="instructorImage" name="instructor_image" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- Course Banner -->
+                            <div class="col-md-12 mb-3">
+                                <label for="courseBanner" class="form-label fw-bold">Course Banner Image</label>
+                                <div class="upload-container" onclick="triggerFileInput('courseBanner')">
+                                    <div class="upload-area upload-area-large" id="bannerImagePreview">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                                        <p class="mt-3 mb-1">Click to upload course banner</p>
+                                        <small class="text-muted">Recommended: 1200x600px (JPG, PNG, WEBP, Max: 5MB)</small>
+                                    </div>
+                                    <input type="file" id="courseBanner" name="banner" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary" onclick="resetCourseForm()">
+                                <i class="fas fa-undo me-2"></i>Reset Form
+                            </button>
+                            <button type="button" class="btn btn-warning" onclick="saveDraft()">
+                                <i class="fas fa-file-alt me-2"></i>Save as Draft
+                            </button>
+                            <button type="button" class="btn btn-primary" id="submitBtn" onclick="handleCreatePublish(event)">
+                                <i class="fas fa-save me-2"></i>Create & Publish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Course Management Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary" onclick="quickRefreshCourses(event)" style="font-weight: 600;">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh All Courses
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="loadAllCourses()">
+                            <i class="fas fa-list me-2"></i>View All Courses
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="loadPublishedCourses()">
+                            <i class="fas fa-check-circle me-2"></i>Published Courses
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="loadDraftCourses()">
+                            <i class="fas fa-edit me-2"></i>Draft Courses
+                        </button>
+                        <button type="button" class="btn btn-outline-info" onclick="showCourseStats()">
+                            <i class="fas fa-chart-bar me-2"></i>Course Statistics
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- My Courses List -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>My Courses <span id="courseCount"></span></h5>
+                    <button class="btn btn-sm btn-light" onclick="refreshCourses()" id="refreshBtn" title="Refresh Courses">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Status Message -->
+                    <div id="coursesStatus" class="alert mb-0" style="display: none; border-radius: 0;"></div>
+                    
+                    <!-- Courses List -->
+                    <div id="coursesList" style="max-height: 600px; overflow-y: auto; background-color: #f8f9fa; min-height: 200px;">
+                        <div class="text-center p-4" id="loadingIndicator">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading courses...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Force Load Courses - Emergency Fix -->
+                    <script>
+                    // Define functions FIRST before the emergency loader uses them
+                    function viewCourse(courseId) {
+                        console.log('🔍 viewCourse wrapper called with ID:', courseId);
+                        window.open(`/course/${courseId}`, '_blank');
+                    }
+                    function editCourse(courseId) {
+                        console.log('✏️ editCourse wrapper called with ID:', courseId);
+                        window.location.hash = '#edit-course-' + courseId;
+                        if (typeof window.editCourseMain === 'function') {
+                            window.editCourseMain(courseId);
+                        } else {
+                            console.warn('editCourseMain not available yet');
+                        }
+                    }
+                    function togglePublishCourse(courseId, isPublished) {
+                        console.log('👁️ togglePublishCourse wrapper called with ID:', courseId, 'isPublished:', isPublished);
+                        if (typeof window.togglePublishCourseMain === 'function') {
+                            window.togglePublishCourseMain(courseId, isPublished);
+                        } else {
+                            console.warn('togglePublishCourseMain not available yet');
+                        }
+                    }
+                    function deleteCourse(courseId) {
+                        console.log('🗑️ deleteCourse wrapper called with ID:', courseId);
+                        if (typeof window.deleteCourseMain === 'function') {
+                            window.deleteCourseMain(courseId);
+                        } else {
+                            console.warn('deleteCourseMain not available yet');
+                        }
+                    }
+                    
+                    // Make them globally accessible immediately
+                    window.viewCourse = viewCourse;
+                    window.editCourse = editCourse;
+                    window.togglePublishCourse = togglePublishCourse;
+                    window.deleteCourse = deleteCourse;
+                    
+                    (function() {
+                        console.log('🚀 EMERGENCY COURSE LOADER ACTIVATED');
+                        
+                        function forceLoadCourses() {
+                            console.log('📋 Force loading courses...');
+                            
+                            fetch('/admin/courses/list')
+                            .then(response => {
+                                console.log('✅ API Response received:', response.status);
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('📊 API Data:', data);
+                                
+                                if (data.success && data.courses) {
+                                    console.log(`🎯 Found ${data.courses.length} courses`);
+                                    
+                                    const coursesList = document.getElementById('coursesList');
+                                    if (!coursesList) {
+                                        console.error('❌ coursesList element not found!');
+                                        return;
+                                    }
+                                    
+                                    if (data.courses.length === 0) {
+                                        coursesList.innerHTML = `
+                                            <div class="text-center p-4">
+                                                <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                                                <h6 class="text-muted">No Courses Found</h6>
+                                                <p class="text-muted small">Create your first course using the form above.</p>
+                                            </div>
+                                        `;
+                                        return;
+                                    }
+                                    
+                                    // Build courses HTML
+                                    const coursesHTML = data.courses.map(course => `
+                                        <div class="card course-card ${course.is_published ? 'published' : 'draft'} mb-2" data-course-id="${course.id}">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-start">
+                                                    <img src="${getCourseImageUrl(course, true)}" 
+                                                         alt="${course.title}" class="course-thumbnail me-3" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px;"
+                                                         onerror="this.src='/static/images/placeholder.svg'; this.onerror=null;">
+                                                    
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="card-title mb-1" style="font-size: 0.9rem;">${course.title}</h6>
+                                                        
+                                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                                            <span class="price-badge" style="background: linear-gradient(45deg, #198754, #20c997); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.75rem;">৳${parseFloat(course.price).toLocaleString('en-BD')}</span>
+                                                            <span class="status-badge status-${course.is_published ? 'published' : 'draft'}" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 8px; background-color: ${course.is_published ? 'rgba(25, 135, 84, 0.1)' : 'rgba(255, 193, 7, 0.1)'}; color: ${course.is_published ? '#198754' : '#ffc107'};">
+                                                                ${course.is_published ? 'Published' : 'Draft'}
+                                                            </span>
+                                                        </div>
+                                                        
+                                                        <p class="text-muted small mb-1" style="font-size: 0.75rem;">${course.category || 'Uncategorized'}</p>
+                                                        
+                                                        ${course.instructor_name ? `
+                                                            <div class="instructor-info d-flex align-items-center gap-1 mb-2" style="font-size: 0.7rem; color: #6c757d;">
+                                                                ${course.instructor_image ? 
+                                                                    `<img src="/static/uploads/${course.instructor_image}?v=${new Date().getTime()}" alt="${course.instructor_name}" style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover;">` : 
+                                                                    '<i class="fas fa-user-circle"></i>'
+                                                                }
+                                                                <span>By ${course.instructor_name}</span>
+                                                            </div>
+                                                        ` : ''}
+                                                        
+                                                        <div class="course-actions">
+                                                            <button class="btn btn-sm btn-outline-info" onclick="viewCourse(${course.id})" title="View Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-primary" onclick="editCourse(${course.id})" title="Edit Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-${course.is_published ? 'warning' : 'success'}" 
+                                                                    onclick="togglePublishCourse(${course.id}, ${course.is_published})" 
+                                                                    title="${course.is_published ? 'Unpublish' : 'Publish'} Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                                <i class="fas fa-${course.is_published ? 'eye-slash' : 'eye'}"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCourse(${course.id})" title="Delete Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('');
+                                    
+                                    // Preserve original classes and update the courses list
+                                    const originalClasses = coursesList.className;
+                                    coursesList.innerHTML = coursesHTML;
+                                    coursesList.className = originalClasses;
+                                    
+                                    // Force layout recalculation to prevent style issues
+                                    coursesList.offsetHeight;
+                                    
+                                    // Update course count
+                                    const courseCountElement = document.getElementById('courseCount');
+                                    if (courseCountElement) {
+                                        courseCountElement.textContent = `(${data.courses.length} total)`;
+                                    }
+                                    
+                                    // Show success message
+                                    const statusDiv = document.getElementById('coursesStatus');
+                                    if (statusDiv) {
+                                        statusDiv.className = 'alert alert-success';
+                                        statusDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Courses loaded successfully!';
+                                        statusDiv.style.display = 'block';
+                                        setTimeout(() => statusDiv.style.display = 'none', 3000);
+                                    }
+                                    
+                                    console.log('✅ Courses displayed successfully!');
+                                } else {
+                                    console.error('❌ API returned no courses or error:', data);
+                                    const coursesList = document.getElementById('coursesList');
+                                    if (coursesList) {
+                                        const originalClasses = coursesList.className;
+                                        coursesList.innerHTML = `
+                                            <div class="text-center p-4">
+                                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
+                                                <h6 class="text-warning">No Courses Found</h6>
+                                                <p class="text-muted small">Create your first course using the form above.</p>
+                                                <button class="btn btn-sm btn-primary" onclick="forceLoadCourses()">
+                                                    <i class="fas fa-redo me-1"></i>Try Again
+                                                </button>
+                                            </div>
+                                        `;
+                                        coursesList.className = originalClasses;
+                                        coursesList.offsetHeight;
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('❌ Error loading courses:', error);
+                                const coursesList = document.getElementById('coursesList');
+                                if (coursesList) {
+                                    const originalClasses = coursesList.className;
+                                    coursesList.innerHTML = `
+                                        <div class="text-center p-4">
+                                            <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                                            <h6 class="text-danger">Error Loading Courses</h6>
+                                            <p class="text-muted small">${error.message}</p>
+                                            <button class="btn btn-sm btn-primary" onclick="forceLoadCourses()">
+                                                <i class="fas fa-redo me-1"></i>Try Again
+                                            </button>
+                                        </div>
+                                    `;
+                                    coursesList.className = originalClasses;
+                                    coursesList.offsetHeight;
+                                }
+                            });
+                        }
+                        
+                        // Make function globally available
+                        window.forceLoadCourses = forceLoadCourses;
+                        
+                        // Auto-load when section becomes visible
+                        function checkAndLoad() {
+                            const section = document.getElementById('create-course-section');
+                            if (section && section.style.display !== 'none') {
+                                console.log('🎯 Create course section is visible, loading courses...');
+                                forceLoadCourses();
+                            }
+                        }
+                        
+                        // Try multiple methods to ensure loading
+                        document.addEventListener('DOMContentLoaded', function() {
+                            console.log('🔄 DOM loaded, attempting to load courses...');
+                            setTimeout(checkAndLoad, 500);
+                            setTimeout(checkAndLoad, 1000);
+                            setTimeout(checkAndLoad, 2000);
+                        });
+                        
+                        // Also load when page is fully loaded
+                        window.addEventListener('load', function() {
+                            console.log('🔄 Page fully loaded, attempting to load courses...');
+                            setTimeout(checkAndLoad, 1000);
+                        });
+                        
+                        // Immediate attempt
+                        setTimeout(checkAndLoad, 100);
+                        
+                        // Make forceLoadCourses globally accessible
+                        window.forceLoadCourses = forceLoadCourses;
+                    })();
+                    </script>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom Styles for Better UI */
+.upload-container {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-area-large {
+    min-height: 180px;
+}
+
+.upload-area:hover {
+    border-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.upload-area img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.course-card {
+    border: none;
+    border-left: 4px solid #0d6efd;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.course-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.course-card.published {
+    border-left-color: #198754;
+}
+
+.course-card.draft {
+    border-left-color: #ffc107;
+}
+
+.course-thumbnail {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.course-actions .btn {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    margin: 0 2px;
+}
+
+.instructor-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-published {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #198754;
+}
+
+.status-draft {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.price-badge {
+    background: linear-gradient(45deg, #198754, #20c997);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.instructor-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Smooth deletion animation */
+.course-card.deleting {
+    transition: all 0.5s ease;
+    transform: translateX(-100%);
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.course-card.pending-delete {
+    opacity: 0.5;
+    pointer-events: none;
+    transform: translateX(-10px);
+}
+</style>
+
+<script>
+// Global course management system
+let isEditMode = false;
+let editingCourseId = null;
+
+// Format datetime for HTML datetime-local input
+function formatDateTimeForInput(dateTimeString) {
+    if (!dateTimeString) return '';
+    
+    try {
+        // Handle ISO format strings (with T separator)
+        let cleanDateTime = dateTimeString;
+        
+        // If it's already in the right format, return it
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(cleanDateTime)) {
+            return cleanDateTime;
+        }
+        
+        // Convert ISO format to datetime-local format (YYYY-MM-DDTHH:MM)
+        const date = new Date(cleanDateTime);
+        if (isNaN(date.getTime())) {
+            return '';
+        }
+        
+        // Format to YYYY-MM-DDTHH:MM
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch (error) {
+        console.warn('Error formatting datetime:', dateTimeString, error);
+        return '';
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔥 DOMContentLoaded - initializing create course section');
+    
+    // Set up mutation observer to watch for section visibility
+    const section = document.getElementById('create-course-section');
+    if (section) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    if (section.style.display !== 'none') {
+                        console.log('🔥 Create course section became visible');
+                        setupFormHandlers();
+                        setupImageHandlers();
+                        loadAllCourses();
+                    }
+                }
+            });
+        });
+        
+        observer.observe(section, { attributes: true, attributeFilter: ['style'] });
+        
+        // Also set up immediately if already visible
+        if (section.style.display !== 'none') {
+            setupFormHandlers();
+            setupImageHandlers();
+            loadAllCourses();
+        }
+    }
+});
+
+// Setup form submission
+function setupFormHandlers() {
+    const form = document.getElementById('createCourseForm');
+    console.log('🔥 Setting up form handlers, form element:', form);
+    
+    if (form) {
+        // Remove any existing listeners
+        form.removeEventListener('submit', handleFormSubmit);
+        
+        // Add new listener
+        form.addEventListener('submit', handleFormSubmit);
+        console.log('🔥 Submit event listener added to form');
+    } else {
+        console.error('🔥 Form not found when setting up handlers!');
+    }
+}
+
+function handleFormSubmit(e) {
+    console.log('🔥 Form submit event triggered!');
+    e.preventDefault();
+    e.stopPropagation();
+    submitCourseForm(false); // false means publish, not draft
+    return false;
+}
+
+// Setup image upload handlers
+function setupImageHandlers() {
+    document.getElementById('instructorImage').addEventListener('change', function(e) {
+        handleImagePreview(e, 'instructorImagePreview', true);
+    });
+    
+    document.getElementById('courseBanner').addEventListener('change', function(e) {
+        handleImagePreview(e, 'bannerImagePreview', false);
+    });
+}
+
+// Trigger file input
+function triggerFileInput(inputId) {
+    document.getElementById(inputId).click();
+}
+
+// Handle image preview
+function handleImagePreview(event, previewId, isCircular) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Validate file
+    if (!validateImageFile(file)) {
+        event.target.value = '';
+        return;
+    }
+    
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById(previewId);
+        const imgStyle = isCircular ? 
+            'width: 80px; height: 80px; border-radius: 50%; object-fit: cover;' : 
+            'max-width: 100%; max-height: 150px; object-fit: cover; border-radius: 8px;';
+        
+        preview.innerHTML = `<img src="${e.target.result}" style="${imgStyle}" alt="Preview">`;
+    };
+    reader.readAsDataURL(file);
+}
+
+// Validate image file
+function validateImageFile(file) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    if (!allowedTypes.includes(file.type)) {
+        alert('Please select a valid image file (JPG, PNG, WEBP)');
+        return false;
+    }
+    
+    if (file.size > maxSize) {
+        alert('Image size must be less than 5MB');
+        return false;
+    }
+    
+    return true;
+}
+
+// Submit course form
+function submitCourseForm(isDraft = false) {
+    console.log('🔥 submitCourseForm called with isDraft:', isDraft);
+    
+    const form = document.getElementById('createCourseForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (!form) {
+        console.error('🔥 Form not found!');
+        showMessage('error', 'Form not found. Please refresh the page.');
+        return;
+    }
+    
+    console.log('🔥 Form found:', form);
+    console.log('🔥 Submit button:', submitBtn);
+    
+    // Clear any existing custom validity on datetime inputs
+    const datetimeInputs = form.querySelectorAll('input[type="datetime-local"]');
+    datetimeInputs.forEach(input => {
+        input.setCustomValidity('');
+    });
+    
+    const formData = new FormData(form);
+    
+    // Add draft status to form data
+    formData.append('is_draft', isDraft ? 'true' : 'false');
+    
+    // Update button state
+    const originalText = submitBtn.innerHTML;
+    const buttonText = isDraft ? 'Saving as Draft...' : 'Publishing...';
+    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>${buttonText}`;
+    submitBtn.disabled = true;
+    
+    const url = isEditMode ? `/admin/courses/${editingCourseId}/update` : '/admin/courses/create';
+    
+    console.log('🔥 Form submission details:');
+    console.log('🔥 URL:', url);
+    console.log('🔥 Method: POST');
+    console.log('🔥 FormData entries:');
+    for (let [key, value] of formData.entries()) {
+        console.log(`🔥   ${key}:`, value);
+    }
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('🔥 Response status:', response.status);
+        console.log('🔥 Response headers:', response.headers);
+        console.log('🔥 Response ok:', response.ok);
+        
+        if (!response.ok) {
+            console.error('🔥 HTTP Error:', response.status, response.statusText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('🔥 Response data:', data);
+        if (data.success) {
+            const action = isEditMode ? 'updated' : 'created';
+            const status = isDraft ? 'as draft' : 'and published';
+            
+            showMessage('success', `Course ${action} ${status} successfully!`);
+            resetCourseForm();
+            emergencyLoadCourses();
+            
+            // Force reload the course list after a short delay
+            setTimeout(() => {
+                emergencyLoadCourses();
+                if (typeof loadDraftCourses === 'function') loadDraftCourses();
+                if (typeof loadPublishedCourses === 'function') loadPublishedCourses();
+            }, 1000);
+        } else {
+            console.error('🔥 Server returned error:', data.message);
+            showMessage('error', 'Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('🔥 Full error details:', error);
+        console.error('🔥 Error message:', error.message);
+        console.error('🔥 Error stack:', error.stack);
+        showMessage('error', `Error: ${error.message || 'An error occurred while processing the course.'}`);
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// Save as draft
+function saveDraft() {
+    submitCourseForm(true);
+}
+
+// Handle create and publish button click
+function handleCreatePublish(event) {
+    console.log('🔥 handleCreatePublish called');
+    event.preventDefault();
+    event.stopPropagation();
+    submitCourseForm(false);
+    return false;
+}
+
+// Load all courses
+function loadAllCourses() {
+    console.log('Loading all courses...');
+    showMessage('info', 'Loading courses...');
+    
+    fetch('/admin/courses/list')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('API Response:', data);
+        
+        if (data.success && data.courses && data.courses.length > 0) {
+            displayCourses(data.courses);
+            showMessage('success', `Loaded ${data.courses.length} courses successfully`, 2000);
+            
+            // Update course count in header
+            const courseCountElement = document.getElementById('courseCount');
+            if (courseCountElement) {
+                courseCountElement.textContent = `(${data.courses.length} total)`;
+            }
+        } else {
+            document.getElementById('coursesList').innerHTML = `
+                <div class="text-center p-4">
+                    <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">No Courses Found</h6>
+                    <p class="text-muted small">Create your first course using the form above.</p>
+                </div>
+            `;
+            showMessage('warning', 'No courses found', 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error loading courses:', error);
+        document.getElementById('coursesList').innerHTML = `
+            <div class="text-center p-4">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                <h6 class="text-danger">Error Loading Courses</h6>
+                <p class="text-muted small">${error.message}</p>
+                <button class="btn btn-sm btn-primary" onclick="loadAllCourses()">
+                    <i class="fas fa-redo me-1"></i>Try Again
+                </button>
+            </div>
+        `;
+        showMessage('error', `Error: ${error.message}`);
+    });
+}
+
+// Display courses with proper CSS preservation
+function displayCourses(courses) {
+    console.log('displayCourses called with:', courses ? courses.length : 0, 'courses');
+    const coursesList = document.getElementById('coursesList');
+    
+    if (!coursesList) {
+        console.error('coursesList element not found!');
+        return;
+    }
+    
+    // Preserve the original class structure
+    const originalClasses = coursesList.className;
+    
+    if (!courses || courses.length === 0) {
+        console.log('No courses to display');
+        coursesList.innerHTML = `
+            <div class="text-center p-4">
+                <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                <h6 class="text-muted">No Courses Found</h6>
+                <p class="text-muted small">Create your first course using the form above.</p>
+            </div>
+        `;
+        // Restore original classes
+        coursesList.className = originalClasses;
+        return;
+    }
+    
+    console.log('Displaying', courses.length, 'courses');
+    
+    // Create courses HTML with consistent styling
+    const coursesHTML = courses.map(course => `
+        <div class="card course-card ${course.is_published ? 'published' : 'draft'} mb-2" data-course-id="${course.id}">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-start">
+                    <img src="${getCourseImageUrl(course, true)}" 
+                         alt="${course.title}" class="course-thumbnail me-3" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px;"
+                         onerror="this.src='/static/images/placeholder.svg'; this.onerror=null;">
+                    
+                    <div class="flex-grow-1">
+                        <h6 class="card-title mb-1" style="font-size: 0.9rem;">${course.title}</h6>
+                        
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="price-badge" style="background: linear-gradient(45deg, #198754, #20c997); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.75rem;">৳${parseFloat(course.price).toLocaleString('en-BD')}</span>
+                            <span class="status-badge status-${course.is_published ? 'published' : 'draft'}" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 8px; background-color: ${course.is_published ? 'rgba(25, 135, 84, 0.1)' : 'rgba(255, 193, 7, 0.1)'}; color: ${course.is_published ? '#198754' : '#ffc107'};">
+                                ${course.is_published ? 'Published' : 'Draft'}
+                            </span>
+                        </div>
+                        
+                        <p class="text-muted small mb-1" style="font-size: 0.75rem;">${course.category || 'Uncategorized'}</p>
+                        
+                        ${course.instructor_name ? `
+                            <div class="instructor-info d-flex align-items-center gap-1 mb-2" style="font-size: 0.7rem; color: #6c757d;">
+                                ${course.instructor_image ? 
+                                    `<img src="/static/uploads/${course.instructor_image}?v=${new Date().getTime()}" alt="${course.instructor_name}" style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover;">` : 
+                                    '<i class="fas fa-user-circle"></i>'
+                                }
+                                <span>By ${course.instructor_name}</span>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="course-actions">
+                            <button class="btn btn-sm btn-outline-info" onclick="viewCourse(${course.id})" title="View Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editCourse(${course.id})" title="Edit Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-${course.is_published ? 'warning' : 'success'}" 
+                                    onclick="togglePublishCourse(${course.id}, ${course.is_published})" 
+                                    title="${course.is_published ? 'Unpublish' : 'Publish'} Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-${course.is_published ? 'eye-slash' : 'eye'}"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCourse(${course.id})" title="Delete Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Update content while preserving structure
+    coursesList.innerHTML = coursesHTML;
+    coursesList.className = originalClasses;
+    
+    // Force layout recalculation to prevent style issues
+    coursesList.offsetHeight;
+}
+
+// Edit course
+function editCourseMain(courseId) {
+    fetch(`/admin/courses/${courseId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.course) {
+            populateFormForEdit(data.course);
+        } else {
+            showMessage('error', 'Error loading course: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('error', 'Error loading course: ' + error.message);
+    });
+}
+
+// Populate form for editing
+function populateFormForEdit(course) {
+    isEditMode = true;
+    editingCourseId = course.id;
+    
+    // Fill form fields
+    document.getElementById('courseTitle').value = course.title;
+    document.getElementById('courseCategory').value = course.category || '';
+    document.getElementById('coursePrice').value = course.price;
+    document.getElementById('courseDescription').value = course.description;
+    document.getElementById('aboutCourse').value = course.about_course || '';
+    document.getElementById('whatYoullLearn').value = course.what_youll_learn || '';
+    document.getElementById('courseRequirements').value = course.course_requirements || '';
+    document.getElementById('instructorBio').value = course.instructor_bio || '';
+    document.getElementById('instructorName').value = course.instructor_name || '';
+    
+    // Populate public discount
+    document.getElementById('publicDiscountPercent').value = course.discount_percent || 0;
+    
+    // Clear existing coupons and populate with saved coupons
+    const couponsContainer = document.getElementById('couponsContainer');
+    couponsContainer.innerHTML = `
+        <div class="text-center text-muted py-3">
+            <i class="fas fa-ticket-alt fa-2x mb-2 opacity-50"></i>
+            <p class="mb-0">No coupons added yet. Click "Add Coupon" to create one.</p>
+        </div>
+    `;
+    
+    // Reset coupon counter and array
+    couponCounter = 0;
+    coupons = [];
+    
+    // Populate existing coupons
+    if (course.coupons && course.coupons.length > 0) {
+        // Remove the "no coupons" message
+        couponsContainer.innerHTML = '';
+        
+        course.coupons.forEach(coupon => {
+            couponCounter++;
+            const couponId = 'coupon_' + couponCounter;
+            
+            const couponHtml = `
+                <div class="coupon-item border rounded p-3 mb-3" id="${couponId}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0 text-secondary"><i class="fas fa-ticket-alt me-2"></i>Coupon #${couponCounter}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCoupon('${couponId}')">
+                            <i class="fas fa-trash me-1"></i>Remove
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Coupon Code *</label>
+                            <input type="text" class="form-control coupon-code" name="coupons[${couponCounter}][code]" 
+                                   value="${coupon.code}" placeholder="e.g., SAVE50" required style="text-transform: uppercase;">
+                            <div class="form-text">Enter unique coupon code</div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Discount % *</label>
+                            <input type="number" class="form-control coupon-discount" name="coupons[${couponCounter}][discount_percent]" 
+                                   value="${coupon.discount_percent}" min="1" max="100" placeholder="25" required onchange="updateCouponPreview('${couponId}')">
+                            <div class="form-text">1-100% discount</div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Usage Limit</label>
+                            <input type="number" class="form-control" name="coupons[${couponCounter}][usage_limit]" 
+                                   value="${coupon.usage_limit || ''}" min="1" placeholder="100">
+                            <div class="form-text">Leave empty for unlimited</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Valid From</label>
+                            <input type="datetime-local" class="form-control datetime-input" 
+                                   name="coupons[${couponCounter}][valid_from]" 
+                                   id="course_edit_valid_from_${couponCounter}"
+                                   value="${coupon.valid_from ? formatDateTimeForInput(coupon.valid_from) : ''}">
+                            <div class="form-text">Leave empty for immediate activation</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Valid Until</label>
+                            <input type="datetime-local" class="form-control datetime-input" 
+                                   name="coupons[${couponCounter}][valid_until]" 
+                                   id="course_edit_valid_until_${couponCounter}"
+                                   value="${coupon.valid_until ? formatDateTimeForInput(coupon.valid_until) : ''}">
+                            <div class="form-text">Leave empty for no expiry</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="coupons[${couponCounter}][is_active]" 
+                                       id="active_${couponCounter}" ${coupon.is_active ? 'checked' : ''}>
+                                <label class="form-check-label" for="active_${couponCounter}">
+                                    Active Coupon
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="coupon-preview text-end">
+                                <small class="text-muted">Discount Preview:</small>
+                                <div class="fw-bold text-success" id="preview_${couponId}">৳${(course.price * (100 - coupon.discount_percent) / 100).toFixed(0)} <small class="text-muted">(৳${(course.price * coupon.discount_percent / 100).toFixed(0)} off)</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            couponsContainer.insertAdjacentHTML('beforeend', couponHtml);
+            
+            // Add event listeners for datetime inputs to clear validation messages
+            const validFromInput = document.getElementById(`course_edit_valid_from_${couponCounter}`);
+            const validUntilInput = document.getElementById(`course_edit_valid_until_${couponCounter}`);
+            
+            if (validFromInput) {
+                validFromInput.addEventListener('input', function() {
+                    this.setCustomValidity('');
+                });
+                validFromInput.addEventListener('change', function() {
+                    this.setCustomValidity('');
+                });
+            }
+            
+            if (validUntilInput) {
+                validUntilInput.addEventListener('input', function() {
+                    this.setCustomValidity('');
+                });
+                validUntilInput.addEventListener('change', function() {
+                    this.setCustomValidity('');
+                });
+            }
+            
+            coupons.push({id: couponId, counter: couponCounter});
+        });
+    }
+    
+    // Handle custom category
+    toggleCustomCategory();
+    
+    // Update submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Update Course';
+    
+    // Update draft button too
+    const draftBtn = document.querySelector('button[onclick="saveDraft()"]');
+    if (draftBtn) {
+        draftBtn.innerHTML = '<i class="fas fa-file-alt me-2"></i>Save as Draft';
+    }
+    
+    // Show existing images
+    if (course.image) {
+        const imageUrl = getCourseImageUrl(course, true);
+        document.getElementById('bannerImagePreview').innerHTML = 
+            `<img src="${imageUrl}" style="max-width: 100%; max-height: 150px; object-fit: cover; border-radius: 8px;" alt="Current Banner" onerror="this.src='/static/images/placeholder.svg'; this.onerror=null;">`;
+    }
+    
+    if (course.instructor_image) {
+        const instructorImageUrl = `/static/uploads/${course.instructor_image}?v=${new Date().getTime()}`;
+        document.getElementById('instructorImagePreview').innerHTML = 
+            `<img src="${instructorImageUrl}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;" alt="Current Instructor">`;
+    }
+    
+    // Update price previews
+    updatePublicDiscountPreview();
+    
+    // Scroll to form
+    document.getElementById('createCourseForm').scrollIntoView({ behavior: 'smooth' });
+    
+    showMessage('info', 'Course loaded for editing. Make your changes and click "Update Course".', 3000);
+}
+
+
+// View course details - main implementation
+function viewCourseMain(courseId) {
+    if (!courseId) {
+        showMessage('error', 'Invalid course ID');
+        return;
+    }
+    
+    // Open course details page in new tab
+    window.open(`/course/${courseId}`, '_blank');
+}
+
+
+// Toggle publish status - main implementation  
+function togglePublishCourseMain(courseId, isPublished) {
+    if (!courseId) {
+        showMessage('error', 'Invalid course ID');
+        return;
+    }
+    
+    const action = isPublished ? 'unpublish' : 'publish';
+    
+    if (confirm(`Are you sure you want to ${action} this course?`)) {
+        showMessage('info', `${action.charAt(0).toUpperCase() + action.slice(1)}ing course...`, 2000);
+        
+        fetch(`/admin/courses/${courseId}/${action}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showMessage('success', `Course ${action}ed successfully!`);
+                loadAllCourses();
+            } else {
+                showMessage('error', `Error ${action}ing course: ` + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error(`${action} course error:`, error);
+            showMessage('error', `Failed to ${action} course. Please try again.`);
+        });
+    }
+}
+
+
+// Delete course - main implementation
+function deleteCourseMain(courseId) {
+    if (!courseId) {
+        showMessage('error', 'Invalid course ID');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+        // Find the course card element to remove
+        const courseCard = document.querySelector(`[data-course-id="${courseId}"]`);
+        
+        // Add visual feedback immediately
+        if (courseCard) {
+            courseCard.classList.add('pending-delete');
+        }
+        
+        fetch(`/admin/courses/${courseId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Remove the course card smoothly instead of reloading all courses
+                if (courseCard) {
+                    courseCard.classList.remove('pending-delete');
+                    courseCard.classList.add('deleting');
+                    
+                    // Remove the element after animation completes
+                    setTimeout(() => {
+                        courseCard.remove();
+                        
+                        // Update course count
+                        updateCourseCount();
+                        
+                        // Check if course list is empty and show empty state
+                        const coursesList = document.getElementById('coursesList');
+                        const remainingCourses = coursesList.querySelectorAll('.course-card');
+                        if (remainingCourses.length === 0) {
+                            coursesList.innerHTML = `
+                                <div class="text-center p-4">
+                                    <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">No Courses Found</h6>
+                                    <p class="text-muted small">Create your first course using the form above.</p>
+                                </div>
+                            `;
+                        }
+                    }, 500);
+                }
+                
+                showMessage('success', 'Course deleted successfully!');
+            } else {
+                // Restore the course card appearance on error
+                if (courseCard) {
+                    courseCard.classList.remove('pending-delete');
+                }
+                showMessage('error', 'Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+            // Restore the course card appearance on error
+            if (courseCard) {
+                courseCard.classList.remove('pending-delete');
+            }
+            
+            showMessage('error', 'An error occurred while deleting the course.');
+        });
+    }
+}
+
+
+// Helper function to update course count
+function updateCourseCount() {
+    const coursesList = document.getElementById('coursesList');
+    const courseCountElement = document.getElementById('courseCount');
+    
+    if (coursesList && courseCountElement) {
+        const totalCourses = coursesList.querySelectorAll('.course-card').length;
+        courseCountElement.textContent = `(${totalCourses} total)`;
+    }
+}
+
+// Reset form
+function resetCourseForm() {
+    isEditMode = false;
+    editingCourseId = null;
+    
+    document.getElementById('createCourseForm').reset();
+    
+    // Hide custom category div
+    document.getElementById('customCategoryDiv').style.display = 'none';
+    document.getElementById('customCategory').required = false;
+    
+    // Reset image previews
+    document.getElementById('bannerImagePreview').innerHTML = `
+        <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+        <p class="mt-3 mb-1">Click to upload course banner</p>
+        <small class="text-muted">Recommended: 1200x600px (JPG, PNG, WEBP, Max: 5MB)</small>
+    `;
+    
+    document.getElementById('instructorImagePreview').innerHTML = `
+        <i class="fas fa-user-plus fa-2x text-muted"></i>
+        <p class="mt-2 mb-1">Click to upload instructor photo</p>
+        <small class="text-muted">JPG, PNG, WEBP (Max: 5MB)</small>
+    `;
+    
+    // Reset submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Create & Publish';
+}
+
+// Beautiful popup success alert
+function showMessage(type, message, duration = 5000) {
+    // Remove any existing alerts
+    const existingAlerts = document.querySelectorAll('.beautiful-alert');
+    existingAlerts.forEach(alert => alert.remove());
+    
+    const alertClass = {
+        'success': 'alert-success',
+        'error': 'alert-danger',
+        'warning': 'alert-warning',
+        'info': 'alert-info'
+    }[type] || 'alert-info';
+    
+    const icon = {
+        'success': 'fas fa-check-circle',
+        'error': 'fas fa-exclamation-triangle',
+        'warning': 'fas fa-exclamation-circle',
+        'info': 'fas fa-info-circle'
+    }[type] || 'fas fa-info-circle';
+    
+    const bgColor = {
+        'success': '#d4edda',
+        'error': '#f8d7da',
+        'warning': '#fff3cd',
+        'info': '#d1ecf1'
+    }[type] || '#d1ecf1';
+    
+    const borderColor = {
+        'success': '#c3e6cb',
+        'error': '#f5c6cb',
+        'warning': '#ffeaa7',
+        'info': '#bee5eb'
+    }[type] || '#bee5eb';
+    
+    // Create beautiful popup alert
+    const alertHtml = `
+        <div class="beautiful-alert" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 350px;
+            max-width: 500px;
+            background: ${bgColor};
+            border: 2px solid ${borderColor};
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideInRight 0.5s ease-out;
+            padding: 0;
+            overflow: hidden;
+        ">
+            <div style="padding: 20px; position: relative;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="${icon}" style="font-size: 1.5rem; color: var(--bs-${type === 'error' ? 'danger' : type});"></i>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333; margin-bottom: 4px;">Course Management</div>
+                        <div style="color: #555; font-size: 0.95rem;">${message}</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                        background: none;
+                        border: none;
+                        font-size: 1.2rem;
+                        color: #666;
+                        cursor: pointer;
+                        padding: 0;
+                        margin-left: 10px;
+                    ">×</button>
+                </div>
+                <div style="
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 4px;
+                    background: var(--bs-${type === 'error' ? 'danger' : type});
+                    width: 100%;
+                    animation: progressBar ${duration}ms linear;
+                "></div>
+            </div>
+        </div>
+    `;
+    
+    // Add CSS animation if not already added
+    if (!document.querySelector('#beautiful-alert-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'beautiful-alert-styles';
+        styles.innerHTML = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes progressBar {
+                from { width: 100%; }
+                to { width: 0%; }
+            }
+            .beautiful-alert:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    // Insert alert
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-remove after duration
+    if (duration > 0) {
+        setTimeout(() => {
+            const alert = document.querySelector('.beautiful-alert');
+            if (alert) {
+                alert.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => alert.remove(), 300);
+            }
+        }, duration);
+    }
+    
+    // Also update the inline status for backwards compatibility
+    const statusDiv = document.getElementById('coursesStatus');
+    if (statusDiv) {
+        statusDiv.className = `alert ${alertClass}`;
+        statusDiv.innerHTML = `<i class="${icon} me-2"></i>${message}`;
+        statusDiv.style.display = 'block';
+        
+        if (duration > 0) {
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, duration);
+        }
+    }
+}
+
+// Additional functions for Quick Actions
+function loadPublishedCourses() {
+    console.log('✅ Loading published courses...');
+    showMessage('info', 'Loading published courses...', 2000);
+    
+    const coursesList = document.getElementById('coursesList');
+    if (!coursesList) return;
+    
+    coursesList.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-3 text-muted">Loading published courses...</p></div>';
+    
+    fetch('/admin/courses/list?status=published', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.courses) {
+            displayFilteredCourses(data.courses, 'Published');
+            showMessage('success', `✅ Loaded ${data.courses.length} published courses`, 3000);
+        } else {
+            showMessage('warning', 'No published courses found', 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        coursesList.innerHTML = '<div class="text-center p-4 text-danger">Error loading courses</div>';
+        showMessage('error', 'Failed to load courses', 3000);
+    });
+}
+
+function loadDraftCourses() {
+    console.log('✅ Loading draft courses...');
+    showMessage('info', 'Loading draft courses...', 2000);
+    
+    const coursesList = document.getElementById('coursesList');
+    if (!coursesList) return;
+    
+    coursesList.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-3 text-muted">Loading draft courses...</p></div>';
+    
+    fetch('/admin/courses/list?status=draft', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.courses) {
+            displayFilteredCourses(data.courses, 'Draft');
+            showMessage('success', `✅ Loaded ${data.courses.length} draft courses`, 3000);
+        } else {
+            showMessage('warning', 'No draft courses found', 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        coursesList.innerHTML = '<div class="text-center p-4 text-danger">Error loading courses</div>';
+        showMessage('error', 'Failed to load courses', 3000);
+    });
+}
+
+function displayFilteredCourses(courses, filterType) {
+    console.log('displayFilteredCourses called with:', courses ? courses.length : 0, 'courses, filter:', filterType);
+    const coursesList = document.getElementById('coursesList');
+    
+    if (!coursesList) {
+        console.error('coursesList element not found!');
+        return;
+    }
+    
+    // Preserve the original class structure
+    const originalClasses = coursesList.className;
+    
+    if (!courses || courses.length === 0) {
+        console.log('No courses to display for filter:', filterType);
+        coursesList.innerHTML = `<div class="text-center p-4"><i class="fas fa-info-circle fa-2x text-info mb-3"></i><h6 class="text-muted">No ${filterType} Courses Found</h6></div>`;
+        // Restore original classes
+        coursesList.className = originalClasses;
+        return;
+    }
+    
+    console.log('Displaying', courses.length, filterType, 'courses');
+    
+    // Create courses HTML with consistent styling
+    const coursesHTML = courses.map(course => `
+        <div class="card course-card ${course.is_published ? 'published' : 'draft'} mb-2" data-course-id="${course.id}">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-start">
+                    <img src="${getCourseImageUrl(course, true)}" 
+                         alt="${course.title}" class="course-thumbnail me-3" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px;"
+                         onerror="this.src='/static/images/placeholder.svg'; this.onerror=null;">
+                    
+                    <div class="flex-grow-1">
+                        <h6 class="card-title mb-1" style="font-size: 0.9rem;">${course.title}</h6>
+                        
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="price-badge" style="background: linear-gradient(45deg, #198754, #20c997); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.75rem;">৳${parseFloat(course.price).toLocaleString('en-BD')}</span>
+                            <span class="status-badge status-${course.is_published ? 'published' : 'draft'}" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 8px; background-color: ${course.is_published ? 'rgba(25, 135, 84, 0.1)' : 'rgba(255, 193, 7, 0.1)'}; color: ${course.is_published ? '#198754' : '#ffc107'};">
+                                ${course.is_published ? 'Published' : 'Draft'}
+                            </span>
+                        </div>
+                        
+                        <p class="text-muted small mb-1" style="font-size: 0.75rem;">${course.category || 'Uncategorized'}</p>
+                        
+                        ${course.instructor_name ? `
+                            <div class="instructor-info d-flex align-items-center gap-1 mb-2" style="font-size: 0.7rem; color: #6c757d;">
+                                ${course.instructor_image ? 
+                                    `<img src="/static/uploads/${course.instructor_image}?v=${new Date().getTime()}" alt="${course.instructor_name}" style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover;">` : 
+                                    '<i class="fas fa-user-circle"></i>'
+                                }
+                                <span>By ${course.instructor_name}</span>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="course-actions">
+                            <button class="btn btn-sm btn-outline-info" onclick="viewCourse(${course.id})" title="View Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editCourse(${course.id})" title="Edit Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-${course.is_published ? 'warning' : 'success'}" 
+                                    onclick="togglePublishCourse(${course.id}, ${course.is_published})" 
+                                    title="${course.is_published ? 'Unpublish' : 'Publish'} Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-${course.is_published ? 'eye-slash' : 'eye'}"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCourse(${course.id})" title="Delete Course" style="padding: 3px 6px; font-size: 0.7rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Update content while preserving structure
+    coursesList.innerHTML = coursesHTML;
+    coursesList.className = originalClasses;
+    
+    // Force layout recalculation to prevent style issues
+    coursesList.offsetHeight;
+    
+    // Update count
+    const countElement = document.getElementById('courseCount');
+    if (countElement) {
+        countElement.textContent = `(${courses.length} ${filterType.toLowerCase()})`;
+    }
+}
+
+function showCourseStats() {
+    console.log('✅ Loading course statistics...');
+    showMessage('info', 'Loading course statistics...', 2000);
+    
+    fetch('/admin/courses/stats', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Create a nice modal-like display
+            const statsHtml = `
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading"><i class="fas fa-chart-bar me-2"></i>Course Statistics</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <h3 class="mb-0">${data.stats.total}</h3>
+                            <p class="mb-0 text-muted">Total Courses</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="mb-0 text-success">${data.stats.published}</h3>
+                            <p class="mb-0 text-muted">Published</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="mb-0 text-warning">${data.stats.drafts}</h3>
+                            <p class="mb-0 text-muted">Drafts</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            // Insert stats at the top of coursesList
+            const coursesList = document.getElementById('coursesList');
+            if (coursesList) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = statsHtml;
+                coursesList.insertBefore(tempDiv.firstChild, coursesList.firstChild);
+            }
+            
+            // Show success message
+            showMessage('success', `✅ Statistics loaded: ${data.stats.total} total courses (${data.stats.published} published, ${data.stats.drafts} drafts)`, 4000);
+        }
+    })
+    .catch(error => {
+        console.error('Error loading stats:', error);
+        showMessage('error', 'Failed to load course statistics', 3000);
+    });
+}
+
+// Toggle custom category input
+function toggleCustomCategory() {
+    const categorySelect = document.getElementById('courseCategory');
+    const customCategoryDiv = document.getElementById('customCategoryDiv');
+    const customCategoryInput = document.getElementById('customCategory');
+    
+    if (categorySelect.value === 'Other') {
+        customCategoryDiv.style.display = 'block';
+        customCategoryInput.required = true;
+    } else {
+        customCategoryDiv.style.display = 'none';
+        customCategoryInput.required = false;
+        customCategoryInput.value = '';
+    }
+}
+
+// ===== COUPON MANAGEMENT FUNCTIONS =====
+let couponCounter = 0;
+let coupons = [];
+
+// Add new coupon to the form
+function addNewCoupon() {
+    couponCounter++;
+    const couponId = 'coupon_' + couponCounter;
+    
+    const couponHtml = `
+        <div class="coupon-item border rounded p-3 mb-3" id="${couponId}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 text-secondary"><i class="fas fa-ticket-alt me-2"></i>Coupon #${couponCounter}</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCoupon('${couponId}')">
+                    <i class="fas fa-trash me-1"></i>Remove
+                </button>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Coupon Code *</label>
+                    <input type="text" class="form-control coupon-code" name="coupons[${couponCounter}][code]" 
+                           placeholder="e.g., SAVE50" required style="text-transform: uppercase;">
+                    <div class="form-text">Enter unique coupon code</div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Discount % *</label>
+                    <input type="number" class="form-control coupon-discount" name="coupons[${couponCounter}][discount_percent]" 
+                           min="1" max="100" placeholder="25" required onchange="updateCouponPreview('${couponId}')">
+                    <div class="form-text">1-100% discount</div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Usage Limit</label>
+                    <input type="number" class="form-control" name="coupons[${couponCounter}][usage_limit]" 
+                           min="1" placeholder="100">
+                    <div class="form-text">Leave empty for unlimited</div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Valid From</label>
+                    <input type="datetime-local" class="form-control datetime-input" 
+                           name="coupons[${couponCounter}][valid_from]" 
+                           id="valid_from_${couponCounter}">
+                    <div class="form-text">Leave empty for immediate activation</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Valid Until</label>
+                    <input type="datetime-local" class="form-control datetime-input" 
+                           name="coupons[${couponCounter}][valid_until]" 
+                           id="valid_until_${couponCounter}">
+                    <div class="form-text">Leave empty for no expiry</div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="coupons[${couponCounter}][is_active]" 
+                               id="active_${couponCounter}" checked>
+                        <label class="form-check-label" for="active_${couponCounter}">
+                            Active Coupon
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="coupon-preview text-end">
+                        <small class="text-muted">Discount Preview:</small>
+                        <div class="fw-bold text-success" id="preview_${couponId}">Set discount % to see preview</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const container = document.getElementById('couponsContainer');
+    
+    // Remove the "no coupons" message if it exists
+    const noMsgElement = container.querySelector('.text-center.text-muted');
+    if (noMsgElement) {
+        noMsgElement.remove();
+    }
+    
+    container.insertAdjacentHTML('beforeend', couponHtml);
+    
+    // Convert coupon code input to uppercase
+    const codeInput = document.querySelector(`input[name="coupons[${couponCounter}][code]"]`);
+    codeInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    // Add event listeners for datetime inputs to clear validation messages
+    const validFromInput = document.getElementById(`valid_from_${couponCounter}`);
+    const validUntilInput = document.getElementById(`valid_until_${couponCounter}`);
+    
+    if (validFromInput) {
+        validFromInput.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+        validFromInput.addEventListener('change', function() {
+            this.setCustomValidity('');
+        });
+    }
+    
+    if (validUntilInput) {
+        validUntilInput.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+        validUntilInput.addEventListener('change', function() {
+            this.setCustomValidity('');
+        });
+    }
+    
+    coupons.push({id: couponId, counter: couponCounter});
+}
+
+// Remove coupon from form
+function removeCoupon(couponId) {
+    const element = document.getElementById(couponId);
+    if (element) {
+        element.remove();
+        
+        // Remove from coupons array
+        coupons = coupons.filter(c => c.id !== couponId);
+        
+        // Show "no coupons" message if all removed
+        const container = document.getElementById('couponsContainer');
+        if (container.children.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-ticket-alt fa-2x mb-2 opacity-50"></i>
+                    <p class="mb-0">No coupons added yet. Click "Add Coupon" to create one.</p>
+                </div>
+            `;
+        }
+    }
+}
+
+// Update coupon discount preview
+function updateCouponPreview(couponId) {
+    const coursePrice = parseFloat(document.getElementById('coursePrice').value) || 0;
+    const discountInput = document.querySelector(`#${couponId} .coupon-discount`);
+    const discountPercent = parseFloat(discountInput.value) || 0;
+    const previewElement = document.getElementById(`preview_${couponId}`);
+    
+    if (coursePrice > 0 && discountPercent > 0) {
+        const discountAmount = coursePrice * (discountPercent / 100);
+        const finalPrice = coursePrice - discountAmount;
+        previewElement.innerHTML = `৳${finalPrice.toFixed(0)} <small class="text-muted">(৳${discountAmount.toFixed(0)} off)</small>`;
+    } else {
+        previewElement.innerHTML = 'Set course price and discount % to see preview';
+    }
+}
+
+// Update public discount preview
+function updatePublicDiscountPreview() {
+    const coursePrice = parseFloat(document.getElementById('coursePrice').value) || 0;
+    const discountPercent = parseFloat(document.getElementById('publicDiscountPercent').value) || 0;
+    const previewElement = document.getElementById('discountedPricePreview');
+    
+    if (coursePrice > 0 && discountPercent > 0) {
+        const discountAmount = coursePrice * (discountPercent / 100);
+        const finalPrice = coursePrice - discountAmount;
+        previewElement.innerHTML = `৳${finalPrice.toFixed(0)} <small class="text-muted">(was ৳${coursePrice.toFixed(0)} - ${discountPercent}% off)</small>`;
+        previewElement.className = 'form-control-plaintext fw-bold text-success';
+    } else if (coursePrice > 0) {
+        previewElement.innerHTML = `৳${coursePrice.toFixed(0)} <small class="text-muted">(no discount)</small>`;
+        previewElement.className = 'form-control-plaintext fw-bold text-primary';
+    } else {
+        previewElement.innerHTML = 'Set course price and discount to see preview';
+        previewElement.className = 'form-control-plaintext text-muted';
+    }
+    
+    // Update all coupon previews when course price changes
+    coupons.forEach(coupon => {
+        updateCouponPreview(coupon.id);
+    });
+}
+
+// Add event listeners for price updates
+document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.getElementById('coursePrice');
+    const publicDiscountInput = document.getElementById('publicDiscountPercent');
+    
+    if (priceInput) {
+        priceInput.addEventListener('input', updatePublicDiscountPreview);
+    }
+    
+    if (publicDiscountInput) {
+        publicDiscountInput.addEventListener('input', updatePublicDiscountPreview);
+    }
+});
+
+// Smart course image URL function with cache busting
+function getCourseImageUrl(course, cacheBust = false) {
+    let imageUrl;
+    
+    // If course has a custom uploaded image, check if it exists in uploads
+    if (course.image) {
+        // For images that were uploaded with timestamp (format: YYYYMMDDHHMMSS_filename)
+        if (course.image.match(/^\d{14}_/)) {
+            imageUrl = '/static/uploads/' + course.image;
+        }
+        // For legacy image names that are actually in static/images folder
+        else {
+            imageUrl = '/static/images/' + course.image;
+        }
+    }
+    else {
+        // Smart fallback based on course title/category
+        const title = course.title.toLowerCase();
+        const category = (course.category || '').toLowerCase();
+        
+        if (title.includes('python') || title.includes('data science') || title.includes('machine learning') || category.includes('data')) {
+            imageUrl = '/static/images/premium_course_1.png';
+        } else if (title.includes('web development') || title.includes('full stack') || title.includes('react') || title.includes('javascript') || category.includes('web')) {
+            imageUrl = '/static/images/premium_course_2.png';
+        } else if (title.includes('mobile') || title.includes('flutter') || title.includes('app development') || category.includes('mobile')) {
+            imageUrl = '/static/images/premium_course_3.png';
+        } else if (title.includes('ui/ux') || title.includes('design') || category.includes('design') || category.includes('ui')) {
+            imageUrl = '/static/images/premium_course_4.png';
+        } else if (title.includes('marketing') || title.includes('digital marketing') || category.includes('marketing')) {
+            imageUrl = '/static/images/premium_course_5.png';
+        } else if (title.includes('blockchain') || title.includes('devops') || category.includes('blockchain')) {
+            imageUrl = '/static/images/free_course_cover_1.png';
+        } else {
+            imageUrl = '/static/images/premium_course_1.png';
+        }
+    }
+    
+    // Add cache busting parameter if requested
+    if (cacheBust) {
+        const timestamp = new Date().getTime();
+        imageUrl += '?v=' + timestamp;
+    }
+    
+    return imageUrl;
+}
+
+// Enhanced refresh function with visual feedback (for header refresh button)
+function refreshCourses() {
+    console.log('✅ Refreshing courses...');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const icon = refreshBtn.querySelector('i');
+    
+    // Add spinning animation
+    icon.classList.add('fa-spin');
+    refreshBtn.disabled = true;
+    refreshBtn.title = 'Refreshing...';
+    
+    // Show loading message
+    showMessage('info', 'Refreshing course list...', 2000);
+    
+    // Call the emergency load function
+    emergencyLoadCourses();
+    
+    // Reset button after 2 seconds
+    setTimeout(() => {
+        icon.classList.remove('fa-spin');
+        refreshBtn.disabled = false;
+        refreshBtn.title = 'Refresh Courses';
+        showMessage('success', '✅ Course list refreshed successfully!', 3000);
+    }, 2000);
+}
+
+// Quick Actions refresh function
+function quickRefreshCourses(event) {
+    console.log('✅ Quick refresh triggered...');
+    
+    try {
+        // Find the Quick Actions refresh button
+        const clickedButton = event ? event.target.closest('button') : document.querySelector('.btn-primary[onclick*="quickRefreshCourses"]');
+        if (!clickedButton) {
+            console.error('Refresh button not found');
+            showMessage('error', 'Error: Button not found');
+            return;
+        }
+        
+        const icon = clickedButton.querySelector('i');
+        
+        // Add spinning animation
+        if (icon) {
+            icon.classList.add('fa-spin');
+        }
+        clickedButton.disabled = true;
+        
+        // Show loading message
+        showMessage('info', '🔄 Refreshing course list...', 2000);
+        
+        // Call the emergency load function
+        emergencyLoadCourses();
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+            if (icon) {
+                icon.classList.remove('fa-spin');
+            }
+            clickedButton.disabled = false;
+            showMessage('success', '✅ Course list refreshed successfully!', 3000);
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error in quickRefreshCourses:', error);
+        showMessage('error', 'Error refreshing courses: ' + error.message);
+    }
+}
+
+// Make functions available globally for dashboard navigation
+window.loadCourses = function() {
+    console.log('window.loadCourses called');
+    loadAllCourses();
+};
+window.loadAllCourses = loadAllCourses;
+window.toggleCustomCategory = toggleCustomCategory;
+
+// Ensure courses load when section becomes visible
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up mutation observer to detect when section becomes visible
+    const createCourseSection = document.getElementById('create-course-section');
+    if (createCourseSection) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    if (createCourseSection.style.display === 'block' || 
+                        (createCourseSection.style.display === '' && !createCourseSection.hidden)) {
+                        console.log('Create Course section is now visible, loading courses...');
+                        loadAllCourses();
+                    }
+                }
+            });
+        });
+        
+        observer.observe(createCourseSection, {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+    }
+});
+
+// ===== ENSURE ALL FUNCTIONS ARE GLOBALLY ACCESSIBLE =====
+// This must be at the end to ensure all functions are defined first
+window.editCourseMain = editCourseMain;
+window.viewCourseMain = viewCourseMain;
+window.togglePublishCourseMain = togglePublishCourseMain;
+window.deleteCourseMain = deleteCourseMain;
+window.loadAllCourses = loadAllCourses;
+window.displayCourses = displayCourses;
+window.submitCourseForm = submitCourseForm;
+window.addNewCoupon = addNewCoupon;
+window.removeCoupon = removeCoupon;
+window.updateCouponPreview = updateCouponPreview;
+window.updatePublicDiscountPreview = updatePublicDiscountPreview;
+window.showMessage = showMessage;
+window.emergencyLoadCourses = emergencyLoadCourses;
+window.loadPublishedCourses = loadPublishedCourses;
+window.loadDraftCourses = loadDraftCourses;
+window.quickRefreshCourses = quickRefreshCourses;
+window.refreshCourses = refreshCourses;
+window.resetCourseForm = resetCourseForm;
+window.showCourseStats = showCourseStats;
+window.getCourseImageUrl = getCourseImageUrl;
+window.saveDraft = saveDraft;
+window.triggerFileInput = triggerFileInput;
+
+console.log('✅ All Course functions made globally accessible:', {
+    editCourse: typeof window.editCourse,
+    viewCourse: typeof window.viewCourse,
+    togglePublishCourse: typeof window.togglePublishCourse,
+    deleteCourse: typeof window.deleteCourse
+});
+</script>

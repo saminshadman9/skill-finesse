@@ -1,0 +1,23 @@
+{
+  "signIn": {
+    "email": {
+      "enabled": true,
+      "passwordRequired": true
+    },
+    "anonymous": {
+      "enabled": false
+    }
+  },
+  "providers": {
+    "emailPassword": {
+      "enabled": true
+    }
+  },
+  "authorizedDomains": [
+    "localhost",
+    "127.0.0.1",
+    "skillfinesse.com",
+    "www.skillfinesse.com",
+    "skillfinesse2025.firebaseapp.com"
+  ]
+}

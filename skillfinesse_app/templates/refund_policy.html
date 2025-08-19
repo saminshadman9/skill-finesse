@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Refund Policy - Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+    }
+    
+    /* Policy Section Styles */
+    .policy-section {
+        padding: 80px 0;
+        background-color: #f8f9fc;
+    }
+    
+    .policy-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 60px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .policy-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 40px;
+        text-align: center;
+        position: relative;
+        padding-bottom: 20px;
+    }
+    
+    .policy-title::after {
+        content: '';
+        width: 80px;
+        height: 3px;
+        background-color: var(--primary-color);
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .policy-section h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-top: 40px;
+        margin-bottom: 20px;
+        position: relative;
+        padding-left: 20px;
+    }
+    
+    .policy-section h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 4px;
+    }
+    
+    .policy-section h3 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+    
+    .policy-content p {
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 1.05rem;
+    }
+    
+    .policy-content ul {
+        padding-left: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .policy-content li {
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 10px;
+        font-size: 1.05rem;
+    }
+    
+    .last-updated {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        margin-bottom: 30px;
+        font-size: 1rem;
+    }
+    
+    .policy-highlight {
+        background-color: rgba(0, 166, 81, 0.1);
+        padding: 20px;
+        border-radius: 8px;
+        margin: 30px 0;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .policy-highlight p {
+        margin-bottom: 0;
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+    
+    .no-refund-alert {
+        background-color: rgba(220, 53, 69, 0.1);
+        padding: 25px;
+        border-radius: 8px;
+        margin: 30px 0;
+        border-left: 4px solid #dc3545;
+        border: 2px solid rgba(220, 53, 69, 0.2);
+    }
+    
+    .no-refund-alert p {
+        margin-bottom: 0;
+        color: #721c24;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .important-text {
+        font-weight: 700;
+        color: var(--secondary-color);
+    }
+    
+    /* Responsive */
+    @media (max-width: 991px) {
+        .policy-container {
+            padding: 40px;
+        }
+        
+        .policy-title {
+            font-size: 2rem;
+        }
+        
+        .policy-section h2 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .policy-section {
+            padding: 60px 0;
+        }
+        
+        .policy-container {
+            padding: 30px 20px;
+        }
+        
+        .policy-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+        
+        .policy-content p,
+        .policy-content li {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<section class="policy-section">
+    <div class="container">
+        <div class="policy-container">
+            <h1 class="policy-title">{{ policy.title if policy else 'Refund Policy' }}</h1>
+            <p class="last-updated">Last updated: {{ policy.last_updated if policy else 'July 5, 2025' }}</p>
+            
+            <div class="policy-content">
+                {% if policy and policy.content %}
+                    {{ policy.content | safe }}
+                {% else %}
+                    <div class="no-refund-alert">
+                        <p>Refund Policy – Please Read Before Enrolling</p>
+                    </div>
+                    
+                    <p>At Skill Finesse, we are committed to delivering high-quality educational content and providing an exceptional learning experience. Before enrolling in any of our courses, please carefully read and understand our <span class="important-text">No Refund Policy</span>:</p>
+                    
+                    <h2>1. No Refunds After Purchase</h2>
+                    <p>All course purchases are <span class="important-text">final</span>. We do <span class="important-text">not offer refunds</span> for any course once the payment has been processed. This applies to all learners, under all circumstances, including:</p>
+                    <ul>
+                        <li>Change of mind after purchase</li>
+                        <li>Inability to complete or attend the course</li>
+                        <li>Lack of technical knowledge or equipment</li>
+                        <li>Misunderstanding of course content or structure</li>
+                    </ul>
+                    
+                    <h2>2. Course Details Available Before Purchase</h2>
+                    <p>We encourage all users to <span class="important-text">review the course curriculum, previews, instructor information, and FAQs</span> before making a purchase decision. If you have any questions, our support team is available to help.</p>
+                    
+                    <h2>3. Exceptional Circumstances</h2>
+                    <p>While we maintain a strict no refund policy, we reserve the right to <span class="important-text">review exceptional cases</span>. (When a learner mistakenly purchased a course instead of another course of Skill Finesse)</p>
+                    
+                    <h2>4. Acceptance of Policy</h2>
+                    <p>By enrolling in our courses, you acknowledge that you have read, understood, and agreed to our No Refund Policy.</p>
+                    
+                    <div class="policy-highlight">
+                        <p>For any questions about our Refund Policy or to request review of exceptional circumstances, please contact our support team through the official channels listed on our website.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

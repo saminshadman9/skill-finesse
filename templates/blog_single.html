@@ -1,0 +1,1749 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ blog.title if blog else 'Blog Post' }} - Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<!-- Include slider-specific CSS files -->
+<link href="{{ url_for('static', filename='css/components/courses-showcase.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/components/hero-split-layout.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/components/unique-slider.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/components/hero-height-fix.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/components/image-height-fix.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+    }
+    
+    /* Blog Header Section */
+    .blog-header {
+        position: relative;
+        height: 550px;
+        overflow: hidden;
+        border-radius: 0 0 20px 20px;
+        margin-bottom: 50px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .blog-header-image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center 30%; /* Adjust vertical position of background */
+        transition: transform 0.8s ease;
+        filter: brightness(0.85);
+    }
+    
+    .blog-header:hover .blog-header-image {
+        transform: scale(1.05);
+    }
+    
+    .blog-header-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, 
+            rgba(0, 0, 0, 0.3) 0%, 
+            rgba(0, 0, 0, 0.6) 50%,
+            rgba(0, 0, 0, 0.8) 100%);
+        z-index: 1;
+    }
+    
+    .blog-header-content {
+        position: absolute;
+        bottom: 80px;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        color: white;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 30px;
+    }
+    
+    .blog-header-category {
+        display: inline-block;
+        padding: 10px 25px;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        animation: fadeInDown 0.8s ease forwards;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    
+    .blog-header-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 25px;
+        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.8s ease forwards;
+        animation-delay: 0.2s;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+    
+    .blog-header-meta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.8s ease forwards;
+        animation-delay: 0.4s;
+        font-size: 1.05rem;
+    }
+    
+    .blog-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 1);
+        font-size: 1rem;
+        position: relative;
+        padding: 8px 0;
+    }
+    
+    .blog-meta-item i {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    
+    .blog-meta-item:not(:last-child):after {
+        content: '';
+        position: absolute;
+        right: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 5px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+    }
+    
+    /* Blog Content Layout */
+    .blog-container-wrapper {
+        padding-bottom: 60px;
+    }
+    
+    .back-to-blogs {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--secondary-color);
+        font-weight: 600;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        background-color: #f8f9fc;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .back-to-blogs i {
+        transition: transform 0.3s ease;
+    }
+    
+    .back-to-blogs:hover {
+        color: var(--primary-color);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .back-to-blogs:hover i {
+        transform: translateX(-5px);
+    }
+    
+    .blog-container {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .blog-main {
+        flex: 0 0 70%;
+    }
+    
+    .blog-sidebar {
+        flex: 0 0 30%;
+    }
+    
+    /* Table of Contents */
+    .toc-container {
+        background-color: #f8f9fc;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--primary-color);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .toc-container:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .toc-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .toc-title i {
+        color: var(--primary-color);
+    }
+    
+    .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .toc-item {
+        margin-bottom: 12px;
+    }
+    
+    .toc-link {
+        color: #666;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    
+    .toc-link i {
+        font-size: 0.7rem;
+        color: var(--primary-color);
+    }
+    
+    .toc-link:hover {
+        color: var(--primary-color);
+        padding-left: 15px;
+        background-color: rgba(0, 166, 81, 0.05);
+    }
+    
+    .toc-sub-list {
+        list-style: none;
+        padding-left: 25px;
+        margin-top: 10px;
+    }
+    
+    /* Blog Content Styles */
+    .blog-content {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        padding: 35px;
+        position: relative;
+        line-height: 1.8;
+    }
+    
+    .blog-content::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    }
+    
+    .blog-content p {
+        color: #505050;
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 1.05rem;
+    }
+    
+    .blog-content h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin: 35px 0 20px;
+        position: relative;
+        padding-left: 15px;
+    }
+    
+    .blog-content h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 5px;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    .blog-content h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin: 30px 0 15px;
+    }
+    
+    .blog-content ul, 
+    .blog-content ol {
+        margin-bottom: 25px;
+        padding-left: 20px;
+    }
+    
+    .blog-content li {
+        color: #505050;
+        margin-bottom: 10px;
+        line-height: 1.7;
+    }
+    
+    .blog-content img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin: 25px 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .blog-content blockquote {
+        border-left: 4px solid var(--primary-color);
+        padding: 20px 25px;
+        background-color: #f8f9fc;
+        margin: 25px 0;
+        font-style: italic;
+        color: #666;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .blog-content pre {
+        background-color: #f5f5f5;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 25px 0;
+        font-family: monospace;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .blog-content code {
+        font-family: monospace;
+        color: #555;
+        background-color: #f5f5f5;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+    
+    /* Blog Tags */
+    .blog-tags {
+        margin-top: 35px;
+        border-top: 1px solid #eee;
+        padding-top: 25px;
+    }
+    
+    .blog-tags-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+    
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .tag-item {
+        display: inline-block;
+        padding: 8px 18px;
+        background-color: #f0f0f0;
+        color: #666;
+        font-size: 0.85rem;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .tag-item:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Social Share Buttons */
+    .share-buttons {
+        margin-top: 30px;
+        border-top: 1px solid #eee;
+        padding-top: 25px;
+    }
+    
+    .share-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+    
+    .share-button-container {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .share-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        color: white;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .share-button.facebook {
+        background-color: #3b5998;
+    }
+    
+    .share-button.twitter {
+        background-color: #1da1f2;
+    }
+    
+    .share-button.linkedin {
+        background-color: #0077b5;
+    }
+    
+    .share-button.pinterest {
+        background-color: #bd081c;
+    }
+    
+    .share-button:hover {
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+    
+    /* Author Info */
+    .blog-author {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .blog-author::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    }
+    
+    .blog-author-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .blog-author-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .blog-author-info {
+        flex: 1;
+    }
+    
+    .blog-author-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 10px;
+    }
+    
+    .blog-author-bio {
+        font-size: 0.95rem;
+        color: #505050;
+        line-height: 1.7;
+        margin: 0;
+    }
+    
+    /* Related Posts */
+    .blog-related {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        position: relative;
+    }
+    
+    .blog-related::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    }
+    
+    .blog-related-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .related-posts {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+    
+    .related-post-item {
+        display: flex;
+        gap: 15px;
+        transition: all 0.3s ease;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    .related-post-item:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        background-color: #f8f9fc;
+        transform: translateY(-5px);
+    }
+    
+    .related-post-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    
+    .related-post-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .related-post-item:hover .related-post-img img {
+        transform: scale(1.1);
+    }
+    
+    .related-post-info {
+        flex: 1;
+    }
+    
+    .related-post-category {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+    
+    .related-post-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 5px;
+        transition: color 0.3s ease;
+        line-height: 1.4;
+    }
+    
+    .related-post-item a {
+        text-decoration: none;
+    }
+    
+    .related-post-item:hover .related-post-title {
+        color: var(--primary-color);
+    }
+    
+    .related-post-date {
+        font-size: 0.75rem;
+        color: #999;
+    }
+    
+    /* Call to Action Section */
+    .blog-cta {
+        background-color: #f8f9fc;
+        border-radius: 15px;
+        padding: 50px;
+        margin-top: 50px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+    
+    .blog-cta::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(0, 166, 81, 0.08) 0%, rgba(0, 166, 81, 0.03) 100%);
+        z-index: 0;
+    }
+    
+    .blog-cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+    
+    .blog-cta-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .blog-cta-text {
+        color: #505050;
+        margin-bottom: 30px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 1.1rem;
+        line-height: 1.7;
+    }
+    
+    .blog-cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .blog-cta-primary {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 14px 35px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 166, 81, 0.3);
+    }
+    
+    .blog-cta-primary:hover {
+        background-color: #008c44;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 166, 81, 0.4);
+        color: white;
+    }
+    
+    .blog-cta-secondary {
+        display: inline-block;
+        background-color: white;
+        color: var(--secondary-color);
+        padding: 14px 35px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .blog-cta-secondary:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Sidebar Styles */
+    .sidebar-widget {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-widget:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .widget-title {
+        padding: 20px 25px;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .widget-content {
+        padding: 25px;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .search-input {
+        flex: 1;
+        height: 45px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 0 15px;
+        font-size: 0.95rem;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+    
+    .search-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .search-button:hover {
+        background-color: var(--secondary-color);
+    }
+    
+    .category-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .category-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .category-item:last-child {
+        border-bottom: none;
+    }
+    
+    .category-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #666;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .category-link:hover {
+        color: var(--primary-color);
+        padding-left: 5px;
+    }
+    
+    .category-count {
+        background-color: #f0f0f0;
+        color: #666;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+    
+    .category-link:hover .category-count {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .recent-posts-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .recent-post-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+    }
+    
+    .recent-post-item:last-child {
+        border-bottom: none;
+    }
+    
+    .recent-post-item:hover {
+        transform: translateX(5px);
+    }
+    
+    .recent-post-img {
+        width: 70px;
+        height: 70px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 3px solid white;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .recent-post-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .recent-post-item:hover .recent-post-img img {
+        transform: scale(1.1);
+    }
+    
+    .recent-post-info {
+        flex: 1;
+    }
+    
+    .recent-post-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 5px;
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .recent-post-item a {
+        text-decoration: none;
+    }
+    
+    .recent-post-item:hover .recent-post-title {
+        color: var(--primary-color);
+    }
+    
+    .recent-post-date {
+        font-size: 0.8rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .recent-post-date i {
+        color: var(--primary-color);
+        font-size: 0.75rem;
+    }
+    
+    .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .cloud-tag {
+        display: inline-block;
+        padding: 5px 15px;
+        background-color: #f0f0f0;
+        color: #666;
+        font-size: 0.85rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .cloud-tag:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    /* Newsletter Widget */
+    .blog-newsletter {
+        background-color: white;
+        border-radius: 10px;
+        padding: 30px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .blog-newsletter:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .blog-newsletter::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    }
+    
+    .blog-newsletter-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+    
+    .blog-newsletter-text {
+        margin-bottom: 20px;
+        color: #505050;
+    }
+    
+    .blog-newsletter-form {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .blog-newsletter-input {
+        flex: 1;
+        height: 50px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 0 20px;
+        font-size: 0.95rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
+    }
+    
+    .blog-newsletter-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 3px 10px rgba(0, 166, 81, 0.05);
+    }
+    
+    .blog-newsletter-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .blog-newsletter-button:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.8s ease forwards;
+    }
+    
+    .fade-in-up {
+        opacity: 0;
+        animation: fadeInUp 0.8s ease forwards;
+    }
+    
+    .fade-in-down {
+        opacity: 0;
+        animation: fadeInDown 0.8s ease forwards;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 1199px) {
+        .blog-header-title {
+            font-size: 3rem;
+        }
+        
+        .blog-header {
+            height: 500px;
+        }
+    }
+    
+    @media (max-width: 991px) {
+        .blog-container {
+            flex-direction: column;
+        }
+        
+        .blog-main,
+        .blog-sidebar {
+            flex: 0 0 100%;
+            width: 100%;
+        }
+        
+        .related-posts {
+            grid-template-columns: 1fr;
+        }
+        
+        .blog-header-title {
+            font-size: 2.5rem;
+        }
+        
+        .blog-header {
+            height: 450px;
+        }
+        
+        .blog-header-content {
+            bottom: 60px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .blog-header {
+            height: 400px;
+        }
+        
+        .blog-header-title {
+            font-size: 2rem;
+            padding: 0 10px;
+        }
+        
+        .blog-header-meta {
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .blog-meta-item:not(:last-child):after {
+            display: none;
+        }
+        
+        .blog-header-category {
+            padding: 8px 20px;
+            font-size: 0.8rem;
+        }
+        
+        .blog-header-content {
+            bottom: 40px;
+        }
+        
+        .blog-content {
+            padding: 25px 20px;
+        }
+        
+        .blog-content h2 {
+            font-size: 1.6rem;
+        }
+        
+        .blog-content h3 {
+            font-size: 1.3rem;
+        }
+        
+        .blog-author {
+            flex-direction: column;
+            text-align: center;
+            padding: 25px 20px;
+        }
+        
+        .blog-author-avatar {
+            margin: 0 auto 15px;
+        }
+        
+        .blog-related {
+            padding: 25px 20px;
+        }
+        
+        .blog-cta {
+            padding: 30px 20px;
+        }
+        
+        .blog-cta-title {
+            font-size: 1.6rem;
+        }
+        
+        .blog-cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .blog-cta-primary,
+        .blog-cta-secondary {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .blog-newsletter-form {
+            flex-direction: column;
+        }
+        
+        .blog-newsletter-button {
+            width: 100%;
+            height: 50px;
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .blog-header {
+            height: 350px;
+        }
+        
+        .blog-header-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .blog-header-meta {
+            gap: 15px;
+        }
+        
+        .blog-meta-item {
+            font-size: 0.9rem;
+        }
+        
+        .blog-header-content {
+            bottom: 30px;
+            padding: 0 15px;
+        }
+        
+        .blog-content h2 {
+            font-size: 1.4rem;
+        }
+        
+        .blog-content h3 {
+            font-size: 1.2rem;
+        }
+        
+        .related-post-item {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .related-post-img {
+            width: 100%;
+            height: 120px;
+            margin-bottom: 10px;
+        }
+        
+        .share-button-container {
+            justify-content: center;
+        }
+        
+        .toc-link {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<!-- Blog Header -->
+<div class="blog-header">
+    <div class="blog-header-image" style="background-image: url('{{ url_for('static', filename='uploads/' + blog.image) if blog and blog.image else url_for('static', filename='images/blog2.png') }}')"></div>
+    <div class="blog-header-overlay"></div>
+    <div class="container">
+        <div class="blog-header-content">
+            <span class="blog-header-category">{{ blog.category if blog else 'Technology' }}</span>
+            <h1 class="blog-header-title">{{ blog.title if blog else 'Sample Blog Post 2' }}</h1>
+            <div class="blog-header-meta">
+                <div class="blog-meta-item">
+                    <i class="far fa-user"></i>
+                    <span>Admin</span>
+                </div>
+                <div class="blog-meta-item">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>{{ blog.date.strftime('%B %d, %Y') if blog and blog.date else 'May 09, 2025' }}</span>
+                </div>
+                <div class="blog-meta-item">
+                    <i class="far fa-clock"></i>
+                    <span>{{ blog.read_time if blog and blog.read_time else '5 min read' }}</span>
+                </div>
+                <div class="blog-meta-item">
+                    <i class="far fa-folder"></i>
+                    <span>{{ blog.category if blog else 'Technology' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blog Content -->
+<div class="container blog-container-wrapper">
+    <a href="{{ url_for('blog') }}" class="back-to-blogs"><i class="fas fa-arrow-left"></i> Back to All Blogs</a>
+    
+    <div class="blog-container">
+        <!-- Main Content -->
+        <div class="blog-main">
+            <!-- Table of Contents -->
+            <div class="toc-container fade-in">
+                <h3 class="toc-title"><i class="fas fa-list"></i> Table of Contents</h3>
+                <ul class="toc-list">
+                    <li class="toc-item">
+                        <a href="#introduction" class="toc-link"><i class="fas fa-chevron-right"></i> Introduction</a>
+                    </li>
+                    <li class="toc-item">
+                        <a href="#main-content" class="toc-link"><i class="fas fa-chevron-right"></i> Main Content</a>
+                        <ul class="toc-sub-list">
+                            <li class="toc-item">
+                                <a href="#section-1" class="toc-link"><i class="fas fa-chevron-right"></i> Section 1</a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="#section-2" class="toc-link"><i class="fas fa-chevron-right"></i> Section 2</a>
+                            </li>
+                            <li class="toc-item">
+                                <a href="#section-3" class="toc-link"><i class="fas fa-chevron-right"></i> Section 3</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="toc-item">
+                        <a href="#conclusion" class="toc-link"><i class="fas fa-chevron-right"></i> Conclusion</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Blog Content -->
+            <div class="blog-content fade-in">
+                {% if blog and blog.content %}
+                    {{ blog.content|safe }}
+                {% else %}
+                    <h2 id="introduction">Introduction</h2>
+                    <p>The web development landscape is constantly evolving, with new tools and technologies emerging regularly to help developers build better websites and applications more efficiently. As we move further into 2025, staying updated with the most effective development tools has become crucial for professionals who want to remain competitive in the industry.</p>
+                    
+                    <p>In this article, we'll explore the 10 essential web development tools that are making waves in 2025. These tools have proven to be game-changers, offering robust features, enhancing productivity, and streamlining the development process.</p>
+                    
+                    <h2 id="main-content">Top Web Development Tools for 2025</h2>
+                    
+                    <h3 id="section-1">1. Next.js 14</h3>
+                    <p>Next.js has continued to evolve and strengthen its position as the leading React framework. Version 14 introduced groundbreaking features including:</p>
+                    <ul>
+                        <li>Enhanced server components with improved data fetching capabilities</li>
+                        <li>Partial rendering for optimal performance</li>
+                        <li>Integrated AI-assisted coding through Vercel's AI platform</li>
+                        <li>Advanced image optimization techniques</li>
+                    </ul>
+                    <p>Developers praise Next.js 14 for its ability to handle complex applications while maintaining excellent performance and developer experience.</p>
+                    
+                    <h3 id="section-2">2. VS Code with AI Pair Programming</h3>
+                    <p>Visual Studio Code has integrated advanced AI pair programming features that go beyond simple code completion. The 2025 version offers:</p>
+                    <ul>
+                        <li>Real-time code review and suggestions</li>
+                        <li>Automated debugging assistance</li>
+                        <li>Natural language to code translation</li>
+                        <li>Context-aware documentation generation</li>
+                    </ul>
+                    <p>This evolution has made VS Code an even more indispensable tool for developers of all experience levels.</p>
+                    
+                    <blockquote>
+                        "The AI pair programming feature in VS Code has transformed how I work. It's like having a senior developer looking over my shoulder, offering suggestions and catching issues before they become problems." - Sarah Chen, Senior Frontend Developer
+                    </blockquote>
+                    
+                    <h3 id="section-3">3. Astro 5.0</h3>
+                    <p>Astro has gained significant traction as a framework that delivers exceptional performance through its partial hydration approach. Version 5.0 brings:</p>
+                    <ul>
+                        <li>Enhanced static site generation with dynamic islands</li>
+                        <li>Built-in image optimization and content delivery features</li>
+                        <li>Seamless integration with popular UI frameworks</li>
+                        <li>Advanced developer tools and debugging capabilities</li>
+                    </ul>
+                    <p>For content-heavy sites that require excellent performance, Astro 5.0 has become the go-to solution for many development teams.</p>
+                    
+                    <h2 id="conclusion">Conclusion</h2>
+                    <p>The web development tools landscape in 2025 offers more power, flexibility, and intelligence than ever before. By leveraging these essential tools, developers can create better user experiences, maintain cleaner codebases, and ultimately deliver more value to their users and clients.</p>
+                    
+                    <p>Stay ahead of the curve by exploring these tools and integrating them into your development workflow. The investment in learning these technologies will pay dividends in improved productivity and capability.</p>
+                {% endif %}
+                
+                <!-- Blog Tags -->
+                <div class="blog-tags">
+                    <h4 class="blog-tags-title">Tags</h4>
+                    <div class="tag-list">
+                        {% if blog and blog.tags %}
+                            {% for tag in blog.tags.split(',') %}
+                                <a href="{{ url_for('blog', tag=tag.strip()) }}" class="tag-item">{{ tag.strip() }}</a>
+                            {% endfor %}
+                        {% else %}
+                            <a href="{{ url_for('blog', tag='Web Development') }}" class="tag-item">Web Development</a>
+                            <a href="{{ url_for('blog', tag='Technology') }}" class="tag-item">Technology</a>
+                            <a href="{{ url_for('blog', tag='Programming') }}" class="tag-item">Programming</a>
+                            <a href="{{ url_for('blog', tag='Tools') }}" class="tag-item">Tools</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Share Buttons -->
+                <div class="share-buttons">
+                    <h4 class="share-title">Share This Post</h4>
+                    <div class="share-button-container">
+                        <a href="#" class="share-button facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="share-button twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="share-button linkedin"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="share-button pinterest"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Author Info -->
+            <div class="blog-author fade-in">
+                <div class="blog-author-avatar">
+                    <img src="{% if admin_user and admin_user.profile_picture %}{{ url_for('static', filename='uploads/profiles/' + admin_user.profile_picture) }}{% else %}{{ url_for('static', filename='images/admin_profile.png') }}{% endif %}" 
+                         alt="{{ admin_user.first_name + ' ' + admin_user.last_name if admin_user else 'Admin' }}"
+                         onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/admin_profile.png') }}';">
+                </div>
+                <div class="blog-author-info">
+                    <h4 class="blog-author-name">{{ admin_user.first_name + ' ' + admin_user.last_name if admin_user else 'Admin' }}</h4>
+                    <p class="blog-author-bio">Skill Finesse Administrator with expertise in education technology, professional development, and online learning. Passionate about helping students achieve their career goals through quality education.</p>
+                </div>
+            </div>
+            
+            <!-- Related Posts -->
+            <div class="blog-related fade-in">
+                <h3 class="blog-related-title">Related Posts</h3>
+                <div class="related-posts">
+                    {% if related_posts %}
+                        {% for post in related_posts %}
+                            <div class="related-post-item">
+                                <div class="related-post-img">
+                                    <img src="{{ url_for('static', filename='uploads/' + post.image) if post.image else url_for('static', filename='images/blog' + ((loop.index % 3) + 1)|string + '.png') }}" alt="{{ post.title }}">
+                                </div>
+                                <div class="related-post-info">
+                                    <span class="related-post-category">{{ post.category }}</span>
+                                    <a href="{{ url_for('blog_single', blog_id=post.id) }}">
+                                        <h4 class="related-post-title">{{ post.title }}</h4>
+                                    </a>
+                                    <div class="related-post-date">{{ post.date.strftime('%B %d, %Y') if post.date else 'May ' + loop.index|string + ', 2025' }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="related-post-item">
+                            <div class="related-post-img">
+                                <img src="{{ url_for('static', filename='images/blog2.png') }}" alt="Related Post">
+                            </div>
+                            <div class="related-post-info">
+                                <span class="related-post-category">Data Science</span>
+                                <a href="{{ url_for('blog_single', blog_id=2) }}">
+                                    <h4 class="related-post-title">How to Build a Career in Data Science from Scratch</h4>
+                                </a>
+                                <div class="related-post-date">April 28, 2025</div>
+                            </div>
+                        </div>
+                        <div class="related-post-item">
+                            <div class="related-post-img">
+                                <img src="{{ url_for('static', filename='images/blog3.png') }}" alt="Related Post">
+                            </div>
+                            <div class="related-post-info">
+                                <span class="related-post-category">Career Growth</span>
+                                <a href="{{ url_for('blog_single', blog_id=3) }}">
+                                    <h4 class="related-post-title">7 Soft Skills Every Tech Professional Needs in 2025</h4>
+                                </a>
+                                <div class="related-post-date">April 25, 2025</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="blog-cta fade-in">
+                <div class="blog-cta-content">
+                    <h3 class="blog-cta-title">Ready to Enhance Your Skills?</h3>
+                    <p class="blog-cta-text">Take your career to the next level with our expert-led courses designed to help you master the most in-demand skills in the industry.</p>
+                    <div class="blog-cta-buttons">
+                        <a href="{{ url_for('user_courses') }}" class="blog-cta-primary">Explore Courses</a>
+                        <a href="{{ url_for('register') }}" class="blog-cta-secondary">Sign Up Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="blog-sidebar">
+            <!-- Search Widget -->
+            <div class="sidebar-widget fade-in">
+                <h3 class="widget-title">Search</h3>
+                <div class="widget-content">
+                    <form class="search-form" action="{{ url_for('blog') }}" method="get">
+                        <input type="text" class="search-input" name="search" placeholder="Search posts...">
+                        <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Categories Widget -->
+            <div class="sidebar-widget fade-in">
+                <h3 class="widget-title">Categories</h3>
+                <div class="widget-content">
+                    <ul class="category-list">
+                        <li class="category-item">
+                            <a href="{{ url_for('blog', category='Technology') }}" class="category-link">
+                                <span>Technology</span>
+                                <span class="category-count">24</span>
+                            </a>
+                        </li>
+                        <li class="category-item">
+                            <a href="{{ url_for('blog', category='Career Development') }}" class="category-link">
+                                <span>Career Development</span>
+                                <span class="category-count">18</span>
+                            </a>
+                        </li>
+                        <li class="category-item">
+                            <a href="{{ url_for('blog', category='Web Development') }}" class="category-link">
+                                <span>Web Development</span>
+                                <span class="category-count">15</span>
+                            </a>
+                        </li>
+                        <li class="category-item">
+                            <a href="{{ url_for('blog', category='Data Science') }}" class="category-link">
+                                <span>Data Science</span>
+                                <span class="category-count">12</span>
+                            </a>
+                        </li>
+                        <li class="category-item">
+                            <a href="{{ url_for('blog', category='Mobile Development') }}" class="category-link">
+                                <span>Mobile Development</span>
+                                <span class="category-count">9</span>
+                            </a>
+                        </li>
+                        <li class="category-item">
+                            <a href="{{ url_for('blog', category='UI/UX Design') }}" class="category-link">
+                                <span>UI/UX Design</span>
+                                <span class="category-count">7</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Recent Posts Widget -->
+            <div class="sidebar-widget fade-in">
+                <h3 class="widget-title">Recent Posts</h3>
+                <div class="widget-content">
+                    <ul class="recent-posts-list">
+                        {% if recent_posts %}
+                            {% for post in recent_posts %}
+                                <li class="recent-post-item">
+                                    <div class="recent-post-img">
+                                        <img src="{{ url_for('static', filename='uploads/' + post.image) if post.image else url_for('static', filename='images/blog' + ((loop.index % 3) + 1)|string + '.png') }}" alt="{{ post.title }}">
+                                    </div>
+                                    <div class="recent-post-info">
+                                        <a href="{{ url_for('blog_single', blog_id=post.id) }}">
+                                            <h4 class="recent-post-title">{{ post.title }}</h4>
+                                        </a>
+                                        <div class="recent-post-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            <span>{{ post.date.strftime('%B %d, %Y') if post.date else 'May ' + loop.index|string + ', 2025' }}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="recent-post-item">
+                                <div class="recent-post-img">
+                                    <img src="{{ url_for('static', filename='images/blog1.png') }}" alt="Recent Post">
+                                </div>
+                                <div class="recent-post-info">
+                                    <a href="{{ url_for('blog_single', blog_id=1) }}">
+                                        <h4 class="recent-post-title">10 Essential Web Development Tools for 2025</h4>
+                                    </a>
+                                    <div class="recent-post-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>May 01, 2025</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="recent-post-item">
+                                <div class="recent-post-img">
+                                    <img src="{{ url_for('static', filename='images/blog2.png') }}" alt="Recent Post">
+                                </div>
+                                <div class="recent-post-info">
+                                    <a href="{{ url_for('blog_single', blog_id=2) }}">
+                                        <h4 class="recent-post-title">How to Build a Career in Data Science</h4>
+                                    </a>
+                                    <div class="recent-post-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>April 28, 2025</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="recent-post-item">
+                                <div class="recent-post-img">
+                                    <img src="{{ url_for('static', filename='images/blog3.png') }}" alt="Recent Post">
+                                </div>
+                                <div class="recent-post-info">
+                                    <a href="{{ url_for('blog_single', blog_id=3) }}">
+                                        <h4 class="recent-post-title">7 Soft Skills Every Tech Professional Needs</h4>
+                                    </a>
+                                    <div class="recent-post-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>April 25, 2025</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Tags Widget -->
+            <div class="sidebar-widget fade-in">
+                <h3 class="widget-title">Popular Tags</h3>
+                <div class="widget-content">
+                    <div class="tag-cloud">
+                        <a href="{{ url_for('blog', tag='Technology') }}" class="cloud-tag">Technology</a>
+                        <a href="{{ url_for('blog', tag='Web Development') }}" class="cloud-tag">Web Development</a>
+                        <a href="{{ url_for('blog', tag='Data Science') }}" class="cloud-tag">Data Science</a>
+                        <a href="{{ url_for('blog', tag='Career') }}" class="cloud-tag">Career</a>
+                        <a href="{{ url_for('blog', tag='Python') }}" class="cloud-tag">Python</a>
+                        <a href="{{ url_for('blog', tag='JavaScript') }}" class="cloud-tag">JavaScript</a>
+                        <a href="{{ url_for('blog', tag='AI') }}" class="cloud-tag">AI</a>
+                        <a href="{{ url_for('blog', tag='Machine Learning') }}" class="cloud-tag">Machine Learning</a>
+                        <a href="{{ url_for('blog', tag='UI/UX') }}" class="cloud-tag">UI/UX</a>
+                        <a href="{{ url_for('blog', tag='Mobile') }}" class="cloud-tag">Mobile</a>
+                        <a href="{{ url_for('blog', tag='Flutter') }}" class="cloud-tag">Flutter</a>
+                        <a href="{{ url_for('blog', tag='React') }}" class="cloud-tag">React</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Newsletter Section -->
+            <div class="blog-newsletter fade-in">
+                <h3 class="blog-newsletter-title">Subscribe to Our Newsletter</h3>
+                <p class="blog-newsletter-text">Stay updated with our latest articles, courses, and industry insights delivered straight to your inbox.</p>
+                <form class="blog-newsletter-form">
+                    <input type="email" class="blog-newsletter-input" placeholder="Enter your email address">
+                    <button type="submit" class="blog-newsletter-button">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update active class for the Blog nav link
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === "{{ url_for('blog') }}") {
+                link.classList.add('active');
+            }
+        });
+        
+        // Initialize fade elements
+        const fadeElements = document.querySelectorAll('.fade-in, .fade-in-up');
+        fadeElements.forEach(element => {
+            element.style.opacity = "0";
+            element.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+        });
+        
+        // Scroll animation function
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.fade-in, .fade-in-up');
+            
+            elements.forEach((element, index) => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.2;
+                
+                if (elementPosition < screenPosition) {
+                    setTimeout(() => {
+                        element.style.opacity = "1";
+                        if (element.classList.contains('fade-in-up')) {
+                            element.style.transform = "translateY(0)";
+                        }
+                    }, index * 100);
+                }
+            });
+        };
+        
+        // Run animations on load and scroll
+        animateOnScroll();
+        window.addEventListener('scroll', animateOnScroll);
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 90,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Handle table of contents generation
+        const generateTableOfContents = () => {
+            const blogContent = document.querySelector('.blog-content');
+            const tocList = document.querySelector('.toc-list');
+            
+            if (!blogContent || !tocList) return;
+            
+            // Check if we have dynamic headings
+            const headings = blogContent.querySelectorAll('h2, h3');
+            
+            if (headings.length === 0) {
+                // If no headings found, hide the TOC container
+                document.querySelector('.toc-container').style.display = 'none';
+                return;
+            }
+            
+            // Clear existing TOC
+            tocList.innerHTML = '';
+            
+            let currentH2Item = null;
+            let currentSubList = null;
+            
+            headings.forEach((heading, index) => {
+                // Create an ID for the heading if it doesn't have one
+                if (!heading.id) {
+                    heading.id = 'heading-' + index;
+                }
+                
+                // Create TOC item
+                const tocItem = document.createElement('li');
+                tocItem.className = 'toc-item';
+                
+                const tocLink = document.createElement('a');
+                tocLink.className = 'toc-link';
+                tocLink.href = '#' + heading.id;
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-chevron-right';
+                tocLink.appendChild(icon);
+                
+                tocLink.appendChild(document.createTextNode(' ' + heading.textContent));
+                
+                tocItem.appendChild(tocLink);
+                
+                // Check if it's a subheading
+                if (heading.tagName === 'H3') {
+                    // If we don't have a current H2 item, add this directly to the main list
+                    if (!currentH2Item) {
+                        tocList.appendChild(tocItem);
+                    } else {
+                        // Create sublist if it doesn't exist
+                        if (!currentSubList) {
+                            currentSubList = document.createElement('ul');
+                            currentSubList.className = 'toc-sub-list';
+                            currentH2Item.appendChild(currentSubList);
+                        }
+                        
+                        currentSubList.appendChild(tocItem);
+                    }
+                } else {
+                    // It's an H2, so add to main list and reset current
+                    tocList.appendChild(tocItem);
+                    currentH2Item = tocItem;
+                    currentSubList = null;
+                }
+            });
+        };
+        
+        // Call TOC generation
+        generateTableOfContents();
+        
+        // Share button functionality
+        const shareButtons = document.querySelectorAll('.share-button');
+        
+        shareButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const url = window.location.href;
+                const title = document.title;
+                
+                if (button.classList.contains('facebook')) {
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, 'facebook-share', 'width=580,height=296');
+                } else if (button.classList.contains('twitter')) {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, 'twitter-share', 'width=580,height=296');
+                } else if (button.classList.contains('linkedin')) {
+                    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, 'linkedin-share', 'width=580,height=296');
+                } else if (button.classList.contains('pinterest')) {
+                    // Get the first image from the blog post
+                    const firstImage = document.querySelector('.blog-content img');
+                    const imageUrl = firstImage ? firstImage.src : '';
+                    
+                    window.open(`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(imageUrl)}&description=${encodeURIComponent(title)}`, 'pinterest-share', 'width=580,height=296');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

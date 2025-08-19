@@ -1,0 +1,47 @@
+<\!DOCTYPE html>
+<html>
+<head><title>Video Click Test</title></head>
+<body>
+<h1>Video Click Test</h1>
+
+<div onclick="testClick()" style="background: #f0f0f0; padding: 20px; cursor: pointer; border: 1px solid #ccc;">
+    CLICK HERE TO TEST VIDEO LOADING
+</div>
+
+<div id="debug" style="background: #ffffcc; padding: 10px; margin: 20px; font-family: monospace;"></div>
+
+<video id="player" controls style="width: 100%; display: none;"></video>
+
+<script>
+function log(msg) {
+    document.getElementById('debug').innerHTML += '<br>' + msg;
+    console.log(msg);
+}
+
+function testClick() {
+    log('Click detected\!');
+    
+    const player = document.getElementById('player');
+    const testUrl = 'https://skill-finesse-videos.b-cdn.net/courses/Drop%20Shipping%20Mastery%20By%20Taha%20Masud/4882ec97-f2a8-419e-bcff-ed6b5da54041.mp4';
+    
+    log('Setting up video player...');
+    player.style.display = 'block';
+    player.removeAttribute('crossorigin');
+    player.src = testUrl;
+    player.load();
+    
+    log('Video URL: ' + testUrl);
+    log('Video element src: ' + player.src);
+    log('Video load() called');
+    
+    // Test if video loads
+    player.addEventListener('loadstart', () => log('Video loading started'));
+    player.addEventListener('loadedmetadata', () => log('Video metadata loaded'));
+    player.addEventListener('canplay', () => log('Video can start playing'));
+    player.addEventListener('error', (e) => log('Video error: ' + e.message));
+}
+
+log('Test page ready');
+</script>
+</body>
+</html>

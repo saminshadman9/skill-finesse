@@ -1,0 +1,34 @@
+<\!DOCTYPE html>
+<html>
+<head><title>Video Test</title></head>
+<body>
+<h1>Video Test</h1>
+
+<div onclick="testVideo()" style="cursor: pointer; padding: 20px; border: 1px solid #ccc; background: #f0f0f0;">
+    Click here to test video loading
+</div>
+
+<div id="status" style="margin: 20px; padding: 10px; background: #eee;"></div>
+
+<video id="player" controls style="width: 100%; display: none;"></video>
+
+<script>
+function testVideo() {
+    const status = document.getElementById('status');
+    const player = document.getElementById('player');
+    
+    status.innerHTML = 'Testing video load...';
+    
+    // Test with a working video URL
+    const testUrl = 'https://skill-finesse-videos.b-cdn.net/courses/Drop%20Shipping%20Mastery%20By%20Taha%20Masud/70df0999-f176-445f-aaf5-d926bc9eafb6.mp4';
+    
+    player.style.display = 'block';
+    player.removeAttribute('crossorigin');
+    player.src = testUrl;
+    player.load();
+    
+    status.innerHTML = 'Video should load above. URL: ' + testUrl;
+}
+</script>
+</body>
+</html>

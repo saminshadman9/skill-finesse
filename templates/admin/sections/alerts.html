@@ -1,0 +1,414 @@
+<!-- Alerts Section -->
+<div class="content-section" id="alerts-section" style="display: none;">
+    <div class="page-header">
+        <h1>Set Website Alert</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Admin</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Set Alert</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <!-- Current Alert Display -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bell me-2"></i>Current Website Alert</h3>
+                </div>
+                <div class="card-body">
+                    <div id="currentAlertPreview" class="alert-preview mb-3">
+                        <div class="alert-banner" id="alertBannerPreview">
+                            <div class="alert-text-container">
+                                <div class="alert-text" id="alertTextPreview">
+                                    No active alert set
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-status">
+                        <strong>Status:</strong> 
+                        <span id="alertStatusText" class="badge bg-secondary">Inactive</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alert Form -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-edit me-2"></i>Create/Edit Alert</h3>
+                </div>
+                <div class="card-body">
+                    <form id="alertForm">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="alertMessage" class="form-label">Alert Message</label>
+                                <textarea class="form-control" id="alertMessage" name="message" rows="3" 
+                                        placeholder="Enter your alert message here..." required></textarea>
+                                <div class="form-text">This message will scroll from right to left on your website</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="alertBgColor" class="form-label">Background Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color" 
+                                           id="alertBgColor" name="background_color" value="#ff6b6b" title="Choose background color">
+                                    <input type="text" class="form-control" id="alertBgColorText" 
+                                           value="#ff6b6b" placeholder="#ff6b6b">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="alertTextColor" class="form-label">Text Color</label>
+                                <div class="input-group">
+                                    <input type="color" class="form-control form-control-color" 
+                                           id="alertTextColor" name="text_color" value="#ffffff" title="Choose text color">
+                                    <input type="text" class="form-control" id="alertTextColorText" 
+                                           value="#ffffff" placeholder="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="alertActive" name="is_active" checked>
+                                    <label class="form-check-label" for="alertActive">
+                                        <strong>Activate Alert</strong>
+                                    </label>
+                                    <div class="form-text">Toggle to show/hide the alert on your website</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Preview -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Live Preview</label>
+                                <div class="alert-preview-container">
+                                    <div class="alert-banner" id="livePreviewBanner">
+                                        <div class="alert-text-container">
+                                            <div class="alert-text" id="livePreviewText">
+                                                Enter your message to see preview...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Alert
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="clearAlert">
+                                <i class="fas fa-times me-1"></i> Clear Alert
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Alert Preview Styles */
+.alert-preview-container, .alert-preview {
+    border: 2px solid #e1e5eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fc;
+    position: relative;
+}
+
+.alert-banner {
+    background-color: #ff6b6b;
+    color: #ffffff;
+    padding: 12px 0;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.alert-text-container {
+    width: 100%;
+    position: relative;
+}
+
+.alert-text {
+    display: inline-block;
+    animation: scroll-left 15s linear infinite;
+    font-weight: 600;
+    font-size: 1rem;
+    padding-left: 100%;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.alert-status {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fc;
+    border-radius: 5px;
+}
+
+/* Form Color Input Styles */
+.form-control-color {
+    width: 60px !important;
+    height: 38px;
+    border-radius: 0.375rem 0 0 0.375rem !important;
+}
+
+.input-group .form-control:not(.form-control-color) {
+    border-radius: 0 0.375rem 0.375rem 0 !important;
+}
+
+/* Preview Enhancement */
+.alert-preview {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.alert-preview::before {
+    content: 'Preview:';
+    position: absolute;
+    top: -25px;
+    left: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .alert-text {
+        font-size: 0.9rem;
+    }
+    
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-2 .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form elements
+    const alertForm = document.getElementById('alertForm');
+    const alertMessage = document.getElementById('alertMessage');
+    const alertBgColor = document.getElementById('alertBgColor');
+    const alertBgColorText = document.getElementById('alertBgColorText');
+    const alertTextColor = document.getElementById('alertTextColor');
+    const alertTextColorText = document.getElementById('alertTextColorText');
+    const alertActive = document.getElementById('alertActive');
+    const clearAlertBtn = document.getElementById('clearAlert');
+    
+    // Preview elements
+    const livePreviewBanner = document.getElementById('livePreviewBanner');
+    const livePreviewText = document.getElementById('livePreviewText');
+    const alertBannerPreview = document.getElementById('alertBannerPreview');
+    const alertTextPreview = document.getElementById('alertTextPreview');
+    const alertStatusText = document.getElementById('alertStatusText');
+    
+    // Load current alert on page load
+    loadCurrentAlert();
+    
+    // Real-time preview updates
+    alertMessage.addEventListener('input', updateLivePreview);
+    alertBgColor.addEventListener('input', updateColorPreview);
+    alertBgColorText.addEventListener('input', updateColorFromText);
+    alertTextColor.addEventListener('input', updateTextColorPreview);
+    alertTextColorText.addEventListener('input', updateTextColorFromText);
+    alertActive.addEventListener('change', updateActiveStatus);
+    
+    function updateLivePreview() {
+        const message = alertMessage.value.trim();
+        livePreviewText.textContent = message || 'Enter your message to see preview...';
+    }
+    
+    function updateColorPreview() {
+        const bgColor = alertBgColor.value;
+        alertBgColorText.value = bgColor;
+        livePreviewBanner.style.backgroundColor = bgColor;
+    }
+    
+    function updateColorFromText() {
+        const bgColor = alertBgColorText.value;
+        if (isValidHexColor(bgColor)) {
+            alertBgColor.value = bgColor;
+            livePreviewBanner.style.backgroundColor = bgColor;
+        }
+    }
+    
+    function updateTextColorPreview() {
+        const textColor = alertTextColor.value;
+        alertTextColorText.value = textColor;
+        livePreviewBanner.style.color = textColor;
+    }
+    
+    function updateTextColorFromText() {
+        const textColor = alertTextColorText.value;
+        if (isValidHexColor(textColor)) {
+            alertTextColor.value = textColor;
+            livePreviewBanner.style.color = textColor;
+        }
+    }
+    
+    function updateActiveStatus() {
+        const status = alertActive.checked ? 'Active' : 'Inactive';
+        const badgeClass = alertActive.checked ? 'bg-success' : 'bg-secondary';
+        alertStatusText.textContent = status;
+        alertStatusText.className = `badge ${badgeClass}`;
+    }
+    
+    function isValidHexColor(hex) {
+        return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+    }
+    
+    // Form submission
+    alertForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveAlert();
+    });
+    
+    // Clear alert button
+    clearAlertBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear the current alert?')) {
+            clearAlert();
+        }
+    });
+    
+    // Load current alert from server
+    function loadCurrentAlert() {
+        fetch('/admin/get-current-alert')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.alert) {
+                    const alert = data.alert;
+                    alertMessage.value = alert.message;
+                    alertBgColor.value = alert.background_color;
+                    alertBgColorText.value = alert.background_color;
+                    alertTextColor.value = alert.text_color;
+                    alertTextColorText.value = alert.text_color;
+                    alertActive.checked = alert.is_active;
+                    
+                    // Update previews
+                    updateLivePreview();
+                    updateColorPreview();
+                    updateTextColorPreview();
+                    updateActiveStatus();
+                    
+                    // Update current alert display
+                    alertTextPreview.textContent = alert.message;
+                    alertBannerPreview.style.backgroundColor = alert.background_color;
+                    alertBannerPreview.style.color = alert.text_color;
+                } else {
+                    // No active alert
+                    alertTextPreview.textContent = 'No active alert set';
+                    alertStatusText.textContent = 'Inactive';
+                    alertStatusText.className = 'badge bg-secondary';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading current alert:', error);
+            });
+    }
+    
+    // Save alert to server
+    function saveAlert() {
+        const formData = new FormData(alertForm);
+        
+        fetch('/admin/save-alert', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Alert saved successfully!', 'success');
+                loadCurrentAlert(); // Reload to show updated alert
+            } else {
+                showNotification('Error saving alert: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving alert:', error);
+            showNotification('Error saving alert. Please try again.', 'error');
+        });
+    }
+    
+    // Clear alert
+    function clearAlert() {
+        fetch('/admin/clear-alert', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Alert cleared successfully!', 'success');
+                // Reset form
+                alertForm.reset();
+                alertBgColor.value = '#ff6b6b';
+                alertBgColorText.value = '#ff6b6b';
+                alertTextColor.value = '#ffffff';
+                alertTextColorText.value = '#ffffff';
+                alertActive.checked = false;
+                
+                // Update previews
+                updateLivePreview();
+                updateColorPreview();
+                updateTextColorPreview();
+                updateActiveStatus();
+                loadCurrentAlert();
+            } else {
+                showNotification('Error clearing alert: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing alert:', error);
+            showNotification('Error clearing alert. Please try again.', 'error');
+        });
+    }
+    
+    // Notification helper
+    function showNotification(message, type) {
+        // Create a simple notification
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+});
+</script>

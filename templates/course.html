@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<style>
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #00a651 0%, #008c44 100%);
+        color: white;
+        padding: 80px 0 60px;
+        text-align: center;
+    }
+    
+    .page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .page-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Courses Section */
+    .courses-section {
+        padding: 60px 0;
+        background: #f8f9fa;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .section-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    
+    .courses-section .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        align-items: stretch;
+        justify-content: center;
+    }
+    
+    /* ABSOLUTE DIMENSION ENFORCEMENT FOR 3-COLUMN LAYOUT - PUBLIC COURSES ONLY */
+    .courses-section .courses-grid > * {
+        width: 100% !important;
+        height: 520px !important;
+        min-height: 520px !important;
+        max-height: 520px !important;
+        max-width: 370px !important;
+    }
+    
+    /* MAINTAIN 3-COLUMN LAYOUT EVEN WITH FEWER ITEMS - PUBLIC COURSES ONLY */
+    .courses-section .courses-grid:has(> :nth-child(2):last-child) {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .courses-section .courses-grid:has(> :nth-child(1):last-child) {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .courses-section .course-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        min-height: 480px;
+    }
+    
+    .courses-section .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .courses-section .course-image {
+        width: 100%;
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+    }
+    
+    .courses-section .course-content {
+        padding: 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .courses-section .course-category {
+        display: inline-block;
+        background: rgba(0, 166, 81, 0.1);
+        color: #00a651;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+    
+    .courses-section .course-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #333;
+        line-height: 1.4;
+        height: 3.2rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-clamp: 2;
+    }
+    
+    .courses-section .course-description {
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        flex: 1;
+        height: 4.8rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        line-clamp: 3;
+    }
+    
+    .courses-section .course-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+        margin-top: auto;
+    }
+    
+    .courses-section .course-price {
+        color: #00a651;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+    
+    .courses-section .course-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: #00a651;
+        color: white;
+        border-color: #00a651;
+    }
+    
+    .btn-primary:hover {
+        background: #008c44;
+        color: white;
+    }
+    
+    .btn-outline-primary {
+        background: transparent;
+        color: #00a651;
+        border-color: #00a651;
+    }
+    
+    .btn-outline-primary:hover {
+        background: #00a651;
+        color: white;
+    }
+    
+    /* RESPONSIVE 3-COLUMN LAYOUT - PUBLIC COURSES ONLY */
+    @media (max-width: 1400px) {
+        .courses-section .courses-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 25px !important;
+            max-width: 1100px !important;
+        }
+        .courses-section .course-card, .courses-section .courses-grid > * {
+            width: 100% !important;
+            height: 500px !important;
+            min-height: 500px !important;
+            max-height: 500px !important;
+            max-width: 350px !important;
+        }
+    }
+    
+    @media (max-width: 1200px) {
+        .courses-section .courses-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 20px !important;
+            max-width: 1000px !important;
+        }
+        .courses-section .course-card, .courses-section .courses-grid > * {
+            width: 100% !important;
+            height: 480px !important;
+            min-height: 480px !important;
+            max-height: 480px !important;
+            max-width: 320px !important;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .courses-section .courses-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 20px !important;
+            max-width: 800px !important;
+        }
+        .courses-section .course-card, .courses-section .courses-grid > * {
+            width: 100% !important;
+            height: 460px !important;
+            min-height: 460px !important;
+            max-height: 460px !important;
+            max-width: 380px !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .page-header h1 { 
+            font-size: 2rem; 
+        }
+        .section-header h2 { 
+            font-size: 2rem; 
+        }
+        .courses-section .courses-grid { 
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: 15px !important;
+            padding: 0 15px !important;
+            max-width: 100% !important;
+        }
+        .courses-section .course-card, .courses-section .courses-grid > * {
+            width: 280px !important;
+            height: 280px !important;
+            min-height: 280px !important;
+            max-height: 280px !important;
+            max-width: 280px !important;
+            margin: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px rgba(0, 166, 81, 0.1) !important;
+            border: 1px solid rgba(0, 166, 81, 0.1) !important;
+            overflow: hidden !important;
+            position: relative !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .courses-section .course-card:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 12px 40px rgba(0, 166, 81, 0.15) !important;
+        }
+        .courses-section .course-image {
+            width: 100% !important;
+            height: 120px !important;
+            flex-shrink: 0 !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            position: relative !important;
+        }
+        .courses-section .course-content {
+            flex: 1 !important;
+            padding: 15px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            height: 160px !important;
+            overflow: hidden !important;
+        }
+        .courses-section .course-category {
+            font-size: 0.7rem !important;
+            padding: 3px 8px !important;
+            border-radius: 8px !important;
+            margin-bottom: 6px !important;
+            width: fit-content !important;
+        }
+        .courses-section .course-title {
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 6px !important;
+            color: #1a1a1a !important;
+            line-height: 1.3 !important;
+            height: 2.6rem !important;
+            -webkit-line-clamp: 2 !important;
+            line-clamp: 2 !important;
+            display: -webkit-box !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+        }
+        .courses-section .course-description {
+            font-size: 0.8rem !important;
+            color: #666 !important;
+            margin-bottom: 8px !important;
+            line-height: 1.4 !important;
+            height: 2.8rem !important;
+            -webkit-line-clamp: 2 !important;
+            line-clamp: 2 !important;
+            display: -webkit-box !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+        }
+        .courses-section .course-footer { 
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-top: auto !important;
+        }
+        .courses-section .course-price {
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+            color: #00a651 !important;
+        }
+        .courses-section .course-actions { 
+            display: flex !important;
+            gap: 4px !important;
+            flex-shrink: 0 !important;
+        }
+        .btn {
+            padding: 5px 10px !important;
+            font-size: 0.7rem !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00a651, #4CAF50) !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0, 166, 81, 0.3) !important;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(0, 166, 81, 0.4) !important;
+        }
+        .btn-outline-primary {
+            background: transparent !important;
+            border: 1.5px solid #00a651 !important;
+            color: #00a651 !important;
+        }
+        .btn-outline-primary:hover {
+            background: #00a651 !important;
+            color: white !important;
+            transform: translateY(-2px) !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .courses-section .courses-grid {
+            gap: 12px !important;
+            padding: 0 10px !important;
+        }
+        .courses-section .course-card {
+            width: 240px !important;
+            height: 240px !important;
+            min-height: 240px !important;
+            max-height: 240px !important;
+            max-width: 240px !important;
+            border-radius: 16px !important;
+        }
+        .courses-section .course-image {
+            height: 100px !important;
+        }
+        .courses-section .course-content {
+            padding: 12px !important;
+            height: 140px !important;
+        }
+        .courses-section .course-title {
+            font-size: 0.9rem !important;
+            height: 2.4rem !important;
+        }
+        .courses-section .course-description {
+            font-size: 0.75rem !important;
+            height: 2.4rem !important;
+        }
+        .courses-section .course-price {
+            font-size: 0.9rem !important;
+        }
+        .courses-section .course-actions {
+            gap: 3px !important;
+        }
+        .btn {
+            padding: 4px 8px !important;
+            font-size: 0.65rem !important;
+        }
+    }
+    
+    @media (max-width: 350px) {
+        .courses-section .courses-grid {
+            gap: 10px !important;
+            padding: 0 5px !important;
+        }
+        .courses-section .course-card {
+            width: 200px !important;
+            height: 200px !important;
+            min-height: 200px !important;
+            max-height: 200px !important;
+            max-width: 200px !important;
+            border-radius: 14px !important;
+        }
+        .courses-section .course-image {
+            height: 80px !important;
+        }
+        .courses-section .course-content {
+            padding: 10px !important;
+            height: 120px !important;
+        }
+        .courses-section .course-title {
+            font-size: 0.8rem !important;
+            height: 2.2rem !important;
+        }
+        .courses-section .course-description {
+            font-size: 0.7rem !important;
+            height: 2.2rem !important;
+        }
+        .courses-section .course-price {
+            font-size: 0.8rem !important;
+        }
+        .btn {
+            padding: 3px 6px !important;
+            font-size: 0.6rem !important;
+        }
+    }
+    
+    /* FIXED HEIGHT WITH FLEXIBLE WIDTH FOR 3-COLUMN GRID - PUBLIC COURSES ONLY */
+    .courses-section .course-card {
+        width: 100% !important;
+        height: 520px !important;
+        min-height: 520px !important;
+        max-height: 520px !important;
+        max-width: 370px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background: white !important;
+        border-radius: 15px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        flex-shrink: 0 !important;
+        flex-grow: 1 !important;
+    }
+    
+    .courses-section .courses-grid .course-card:nth-child(n) {
+        width: 100% !important;
+        height: 520px !important;
+        min-height: 520px !important;
+        max-height: 520px !important;
+        max-width: 370px !important;
+    }
+    
+    /* Ensure consistent content areas - PUBLIC COURSES ONLY */
+    .courses-section .course-card .course-image {
+        width: 100% !important;
+        height: 200px !important;
+        flex-shrink: 0 !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+    }
+    
+    .courses-section .course-card .course-content {
+        padding: 25px !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .courses-section .course-card .course-title {
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 12px !important;
+        color: #333 !important;
+        line-height: 1.4 !important;
+        height: 3.2rem !important;
+        overflow: hidden !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        line-clamp: 2 !important;
+    }
+    
+    .courses-section .course-card .course-description {
+        color: #666 !important;
+        margin-bottom: 20px !important;
+        line-height: 1.6 !important;
+        font-size: 0.95rem !important;
+        flex: 1 !important;
+        height: 4.8rem !important;
+        overflow: hidden !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 3 !important;
+        -webkit-box-orient: vertical !important;
+        line-clamp: 3 !important;
+    }
+    
+    .courses-section .course-card .course-footer {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding-top: 15px !important;
+        border-top: 1px solid #f0f0f0 !important;
+        margin-top: auto !important;
+        flex-shrink: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>Our Courses</h1>
+        <p>Discover our comprehensive collection of courses designed to boost your skills and advance your career</p>
+    </div>
+</section>
+
+<!-- Courses Section -->
+<section class="courses-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Courses</h2>
+            <p>Transform Your Career with Expert-Led Courses</p>
+        </div>
+        
+        <div class="courses-grid">
+            {% if courses %}
+                {% for course in courses %}
+                <div class="course-card">
+                    <div class="course-image" style="background-image: url('{% if course|get_attr('image') %}{% if '_' in course|get_attr('image') and (course|get_attr('image')).split('_')[-1].split('.')[0].isdigit() %}https://skill-finesse-videos.b-cdn.net/courses/{{ course|get_attr('image') }}{% else %}{{ url_for('static', filename='images/' + course|get_attr_safe('image', 'default-course.jpg')) }}{% endif %}{% else %}{% if 'Python' in course|get_attr('title') or 'Data Science' in course|get_attr('title') or 'Machine Learning' in course|get_attr('title') %}{{ url_for('static', filename='images/premium_course_1.png') }}{% elif 'Web Development' in course|get_attr('title') or 'Full Stack' in course|get_attr('title') or 'React' in course|get_attr('title') or 'JavaScript' in course|get_attr('title') %}{{ url_for('static', filename='images/premium_course_2.png') }}{% elif 'Mobile' in course|get_attr('title') or 'Flutter' in course|get_attr('title') or 'App Development' in course|get_attr('title') %}{{ url_for('static', filename='images/premium_course_3.png') }}{% elif 'UI/UX' in course|get_attr('title') or 'Design' in course|get_attr('title') %}{{ url_for('static', filename='images/premium_course_4.png') }}{% elif 'Marketing' in course|get_attr('title') or 'Digital Marketing' in course|get_attr('title') %}{{ url_for('static', filename='images/premium_course_5.png') }}{% elif 'Blockchain' in course|get_attr('title') or 'DevOps' in course|get_attr('title') %}{{ url_for('static', filename='images/free_course_cover_1.png') }}{% else %}{{ url_for('static', filename='images/premium_course_1.png') }}{% endif %}{% endif %}')">
+                        {% if course.coupon and course.coupon_discount %}
+                            <div style="position: absolute; top: 10px; right: 10px; background: #FF5722; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                                {{ course.coupon_discount }}% OFF
+                            </div>
+                        {% elif course.price == 0 %}
+                            <div style="position: absolute; top: 10px; right: 10px; background: #4CAF50; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                                FREE
+                            </div>
+                        {% else %}
+                            <div style="position: absolute; top: 10px; right: 10px; background: #FFD700; color: #333; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                                PREMIUM
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">{{ course.category if course.category else 'Programming' }}</div>
+                        <h3 class="course-title">{{ course.title }}</h3>
+                        <p class="course-description">{{ course.description[:120] }}{% if course.description|length > 120 %}...{% endif %}</p>
+                        <div class="course-footer">
+                            <div class="course-price">
+                                {% if course.has_public_discount %}
+                                    <span style="color: #999; text-decoration: line-through; font-size: 1rem; margin-right: 8px;">৳{{ course.price|round|int }}</span>
+                                    <span style="color: #00a651; font-size: 1.4rem; font-weight: 700;">৳{{ course.current_price|round|int }}</span>
+                                    <span style="background: #ff4757; color: white; font-size: 0.8rem; padding: 2px 6px; border-radius: 12px; margin-left: 8px;">{{ course.discount_percent|round|int }}% OFF</span>
+                                {% else %}
+                                    <span style="color: #00a651; font-size: 1.4rem; font-weight: 700;">৳{{ course.price|round|int }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="course-actions">
+                                <a href="{{ url_for('course_details', course_id=course.id) }}" class="btn btn-outline-primary">Details</a>
+                                <a href="{{ url_for('course_purchase', course_id=course.id) }}" class="btn btn-primary">Enroll</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; grid-column: 1 / -1; padding: 60px 20px;">
+                    <h3>No courses available</h3>
+                    <p>We're working hard to bring you amazing courses. Check back soon!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <div style="margin-top: 50px; text-align: center;">
+            <nav aria-label="Course pagination">
+                <ul style="display: inline-flex; list-style: none; padding: 0; margin: 0; gap: 8px;">
+                    <!-- Previous Page -->
+                    {% if pagination.has_prev %}
+                        <li>
+                            <a href="{{ url_for('courses', page=pagination.prev_num) }}" 
+                               style="display: inline-block; padding: 8px 12px; background: #00a651; color: white; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">
+                                ← Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- Page Numbers -->
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != pagination.page %}
+                                <li>
+                                    <a href="{{ url_for('courses', page=page_num) }}" 
+                                       style="display: inline-block; padding: 8px 12px; background: #f8f9fa; color: #333; text-decoration: none; border-radius: 4px; border: 1px solid #dee2e6; font-size: 0.9rem;">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <span style="display: inline-block; padding: 8px 12px; background: #00a651; color: white; border-radius: 4px; font-size: 0.9rem; font-weight: bold;">
+                                        {{ page_num }}
+                                    </span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li>
+                                <span style="display: inline-block; padding: 8px 12px; color: #999; font-size: 0.9rem;">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Next Page -->
+                    {% if pagination.has_next %}
+                        <li>
+                            <a href="{{ url_for('courses', page=pagination.next_num) }}" 
+                               style="display: inline-block; padding: 8px 12px; background: #00a651; color: white; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">
+                                Next →
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+            <!-- Pagination Info -->
+            <div style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                Showing {{ ((pagination.page - 1) * 6) + 1 }} to 
+                {{ pagination.page * 6 if pagination.page * 6 <= pagination.total else pagination.total }} 
+                of {{ pagination.total }} courses
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

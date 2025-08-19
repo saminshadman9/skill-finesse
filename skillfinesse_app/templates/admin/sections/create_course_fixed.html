@@ -1,0 +1,178 @@
+<!-- Create Course Section -->
+<div id="create-course-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>Create Course</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create Course</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <!-- Create Course Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Course</h3>
+                </div>
+                <div class="card-body">
+                    <form id="createCourseForm" method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Course Title -->
+                            <div class="col-md-12 mb-3">
+                                <label for="courseTitle" class="form-label fw-bold">Course Title *</label>
+                                <input type="text" class="form-control form-control-lg" id="courseTitle" name="title" required>
+                            </div>
+                            
+                            <!-- Course Category -->
+                            <div class="col-md-6 mb-3">
+                                <label for="courseCategory" class="form-label fw-bold">Course Category *</label>
+                                <select class="form-select" id="courseCategory" name="category" required onchange="toggleCustomCategory()">
+                                    <option value="">Select Category</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Mobile Development">Mobile Development</option>
+                                    <option value="UI/UX Design">UI/UX Design</option>
+                                    <option value="Other">Other (Custom)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Custom Category Input -->
+                            <div class="col-md-6 mb-3" id="customCategoryDiv" style="display: none;">
+                                <label for="customCategory" class="form-label fw-bold">Custom Category</label>
+                                <input type="text" class="form-control" id="customCategory" name="custom_category">
+                            </div>
+                            
+                            <!-- Course Price in BDT -->
+                            <div class="col-md-6 mb-3">
+                                <label for="coursePrice" class="form-label fw-bold">Course Price (BDT) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">৳</span>
+                                    <input type="number" class="form-control" id="coursePrice" name="price" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Create Course
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Course Management Sidebar -->
+        <div class="col-lg-4">
+            <!-- My Courses List -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>My Courses</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="coursesList" style="max-height: 600px; overflow-y: auto;">
+                        <!-- Courses will be loaded here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// IMMEDIATE COURSE LOADER
+(function() {
+    console.log('IMMEDIATE LOADER STARTED');
+    
+    function loadCoursesNow() {
+        const coursesList = document.getElementById('coursesList');
+        if (!coursesList) {
+            console.error('coursesList not found!');
+            return;
+        }
+        
+        // Show loading
+        coursesList.innerHTML = '<div class="p-3 text-center">Loading courses...</div>';
+        
+        // Fetch courses
+        fetch('/admin/courses/list')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.courses && data.courses.length > 0) {
+                let html = '';
+                data.courses.forEach((course, index) => {
+                    html += `
+                        <div class="p-3 border-bottom">
+                            <h6>${index + 1}. ${course.title}</h6>
+                            <div class="small text-muted">
+                                Price: ৳${course.price} | 
+                                Status: ${course.is_published ? 'Published' : 'Draft'}
+                            </div>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-primary" onclick="editCourse(${course.id})">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCourse(${course.id})">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                coursesList.innerHTML = html;
+            } else {
+                coursesList.innerHTML = '<div class="p-3 text-center text-muted">No courses found</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            coursesList.innerHTML = '<div class="p-3 text-center text-danger">Error loading courses</div>';
+        });
+    }
+    
+    // Load immediately when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadCoursesNow);
+    } else {
+        loadCoursesNow();
+    }
+    
+    // Also load when section becomes visible
+    const observer = new MutationObserver(function(mutations) {
+        const section = document.getElementById('create-course-section');
+        if (section && section.style.display !== 'none') {
+            loadCoursesNow();
+        }
+    });
+    
+    const targetNode = document.getElementById('create-course-section');
+    if (targetNode) {
+        observer.observe(targetNode, { attributes: true, attributeFilter: ['style'] });
+    }
+    
+    // Make it globally available
+    window.loadCoursesNow = loadCoursesNow;
+})();
+
+// Placeholder functions
+function editCourse(id) {
+    alert('Edit course ' + id);
+}
+
+function deleteCourse(id) {
+    if (confirm('Delete this course?')) {
+        alert('Delete course ' + id);
+    }
+}
+
+function toggleCustomCategory() {
+    const categorySelect = document.getElementById('courseCategory');
+    const customCategoryDiv = document.getElementById('customCategoryDiv');
+    if (categorySelect.value === 'Other') {
+        customCategoryDiv.style.display = 'block';
+    } else {
+        customCategoryDiv.style.display = 'none';
+    }
+}
+</script>

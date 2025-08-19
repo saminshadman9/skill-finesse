@@ -1,0 +1,863 @@
+<!-- Policy Editor Section -->
+<div id="policy-editor-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>Policy Editor</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" data-section="dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Policy Editor</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <!-- Policy Selection -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3><i class="fas fa-file-contract me-2"></i>Policy Management</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Select Policy to Edit</label>
+                    <select class="form-control" id="policySelect" onchange="loadPolicy()">
+                        <option value="">-- Select Policy --</option>
+                        <option value="privacy_policy">Privacy Policy</option>
+                        <option value="refund_policy">Refund Policy</option>
+                        <option value="terms_of_service">Terms of Service</option>
+                        <option value="cookie_policy">Cookie Policy</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success" onclick="savePolicy()" disabled id="saveBtn">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
+                        <button class="btn btn-info" onclick="previewPolicy()" disabled id="previewBtn">
+                            <i class="fas fa-eye me-1"></i>Preview
+                        </button>
+                        <button class="btn btn-warning" onclick="resetPolicy()" disabled id="resetBtn">
+                            <i class="fas fa-undo me-1"></i>Reset to Default
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy Editor -->
+    <div class="card" id="policyEditorCard" style="display: none;">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 id="policyTitle"><i class="fas fa-edit me-2"></i>Policy Content</h3>
+            <span class="badge bg-secondary" id="policyStatus">Not Selected</span>
+        </div>
+        <div class="card-body">
+            <!-- Policy Title -->
+            <div class="mb-3">
+                <label class="form-label">Policy Title</label>
+                <input type="text" class="form-control" id="policyTitleInput" placeholder="Enter policy title">
+            </div>
+
+            <!-- Last Updated -->
+            <div class="mb-3">
+                <label class="form-label">Last Updated</label>
+                <input type="text" class="form-control" id="lastUpdatedInput" placeholder="e.g., May 10, 2025">
+            </div>
+
+            <!-- Policy Content -->
+            <div class="mb-3">
+                <label class="form-label">Policy Content</label>
+                <textarea class="form-control rich-editor" id="policyContent" rows="20" placeholder="Enter policy content..."></textarea>
+            </div>
+
+            <!-- Save Instructions -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Instructions:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Use the rich text editor to format your content</li>
+                    <li>Click "Save Changes" to save your modifications</li>
+                    <li>Use "Preview" to see how the policy will look on the website</li>
+                    <li>Use "Reset to Default" to restore original content</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Preview Modal -->
+<div class="modal fade" id="policyPreviewModal" tabindex="-1" aria-labelledby="policyPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="policyPreviewModalLabel">Policy Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="policyPreviewContent" class="policy-preview-container">
+                    <!-- Preview content will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Policy Editor Specific Styles */
+.policy-preview-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.policy-preview-container .policy-section {
+    padding: 40px 0;
+    background-color: #f8f9fc;
+}
+
+.policy-preview-container .policy-container {
+    max-width: 100%;
+    margin: 0;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.policy-preview-container .policy-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.policy-preview-container .policy-title::after {
+    content: '';
+    width: 80px;
+    height: 3px;
+    background-color: #00a651;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.policy-preview-container .last-updated {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+.policy-preview-container .policy-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333333;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.policy-preview-container .policy-content h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 100%;
+    background-color: #00a651;
+    border-radius: 4px;
+}
+
+.policy-preview-container .policy-content h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333333;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.policy-preview-container .policy-content p {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.policy-preview-container .policy-content ul {
+    padding-left: 25px;
+    margin-bottom: 15px;
+}
+
+.policy-preview-container .policy-content li {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.policy-preview-container .policy-highlight {
+    background-color: rgba(0, 166, 81, 0.1);
+    padding: 15px;
+    border-radius: 6px;
+    margin: 20px 0;
+    border-left: 4px solid #00a651;
+}
+
+.policy-preview-container .policy-highlight p {
+    margin-bottom: 0;
+    color: #333333;
+    font-weight: 600;
+}
+
+.policy-preview-container .no-refund-alert {
+    background-color: rgba(220, 53, 69, 0.1);
+    padding: 20px;
+    border-radius: 6px;
+    margin: 20px 0;
+    border-left: 4px solid #dc3545;
+    border: 2px solid rgba(220, 53, 69, 0.2);
+}
+
+.policy-preview-container .no-refund-alert p {
+    margin-bottom: 0;
+    color: #721c24;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.policy-preview-container .cookie-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.9rem;
+}
+
+.policy-preview-container .cookie-table th,
+.policy-preview-container .cookie-table td {
+    border: 1px solid #e1e1e1;
+    padding: 10px;
+    text-align: left;
+}
+
+.policy-preview-container .cookie-table th {
+    background-color: #f8f9fc;
+    font-weight: 700;
+    color: #333333;
+}
+
+.policy-preview-container .cookie-table td {
+    color: #666;
+}
+
+.policy-preview-container .important-text {
+    font-weight: 700;
+    color: #333333;
+}
+
+/* Rich Editor Styles */
+.rich-editor {
+    min-height: 400px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+.custom-editor-container {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.editor-toolbar {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.editor-content {
+    min-height: 400px;
+    padding: 15px;
+    outline: none;
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.editor-content:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.editor-toolbar .btn {
+    border: 1px solid #dee2e6;
+    background-color: white;
+    color: #495057;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.editor-toolbar .btn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.editor-toolbar .btn-group {
+    display: flex;
+    gap: 2px;
+}
+
+.editor-toolbar .btn-group .btn {
+    border-radius: 0;
+}
+
+.editor-toolbar .btn-group .btn:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.editor-toolbar .btn-group .btn:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* Status badges */
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+</style>
+
+<script>
+// Policy Editor JavaScript
+let currentPolicy = '';
+let originalContent = '';
+let isContentModified = false;
+
+// Default policy content
+const defaultPolicyContent = {
+    privacy_policy: {
+        title: 'Privacy Policy',
+        last_updated: 'May 10, 2025',
+        content: `<div class="policy-highlight">
+    <p>At Skill Finesse, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our services.</p>
+</div>
+
+<h2>1. Information We Collect</h2>
+<p>We collect information you provide directly to us, such as when you create an account, enroll in a course, or contact us for support. This may include:</p>
+<ul>
+    <li>Name and contact information</li>
+    <li>Email address</li>
+    <li>Account credentials</li>
+    <li>Payment information</li>
+    <li>Course enrollment and progress data</li>
+    <li>Communication preferences</li>
+</ul>
+
+<h2>2. How We Use Your Information</h2>
+<p>We use the information we collect to:</p>
+<ul>
+    <li>Provide, maintain, and improve our services</li>
+    <li>Process transactions and send you related information</li>
+    <li>Send you technical notices, updates, security alerts, and support messages</li>
+    <li>Respond to your comments, questions, and customer service requests</li>
+    <li>Communicate with you about courses, offers, promotions, and news</li>
+    <li>Monitor and analyze trends, usage, and activities</li>
+    <li>Detect, investigate, and prevent fraudulent transactions</li>
+</ul>
+
+<h2>3. Information Sharing and Disclosure</h2>
+<p>We do not sell, trade, or rent your personal information to third parties. We may share your information in the following circumstances:</p>
+<ul>
+    <li>With instructors whose courses you enroll in</li>
+    <li>With service providers who perform services on our behalf</li>
+    <li>To comply with legal obligations</li>
+    <li>To protect and defend our rights and property</li>
+    <li>With your consent or at your direction</li>
+</ul>
+
+<h2>4. Data Security</h2>
+<p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security.</p>
+
+<h2>5. Your Rights and Choices</h2>
+<p>You have the right to:</p>
+<ul>
+    <li>Access and update your account information</li>
+    <li>Request deletion of your personal data</li>
+    <li>Opt-out of marketing communications</li>
+    <li>Request a copy of your personal information</li>
+    <li>Lodge a complaint with a supervisory authority</li>
+</ul>
+
+<h2>6. Cookies and Tracking Technologies</h2>
+<p>We use cookies and similar tracking technologies to track activity on our website and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.</p>
+
+<h2>7. Children's Privacy</h2>
+<p>Our services are not directed to individuals under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected personal information from a child under 13, we will take steps to delete such information.</p>
+
+<h2>8. International Data Transfers</h2>
+<p>Your information may be transferred to and maintained on computers located outside of your state, province, country, or other governmental jurisdiction where the data protection laws may differ from those of your jurisdiction.</p>
+
+<h2>9. Changes to This Privacy Policy</h2>
+<p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.</p>
+
+<div class="policy-highlight">
+    <p>If you have any questions about this Privacy Policy, please contact us at privacy@skillfinesse.com</p>
+</div>`
+    },
+    refund_policy: {
+        title: 'Refund Policy',
+        last_updated: 'July 5, 2025',
+        content: `<div class="no-refund-alert">
+    <p>Refund Policy – Please Read Before Enrolling</p>
+</div>
+
+<p>At Skill Finesse, we are committed to delivering high-quality educational content and providing an exceptional learning experience. Before enrolling in any of our courses, please carefully read and understand our <span class="important-text">No Refund Policy</span>:</p>
+
+<h2>1. No Refunds After Purchase</h2>
+<p>All course purchases are <span class="important-text">final</span>. We do <span class="important-text">not offer refunds</span> for any course once the payment has been processed. This applies to all learners, under all circumstances, including:</p>
+<ul>
+    <li>Change of mind after purchase</li>
+    <li>Inability to complete or attend the course</li>
+    <li>Lack of technical knowledge or equipment</li>
+    <li>Misunderstanding of course content or structure</li>
+</ul>
+
+<h2>2. Course Details Available Before Purchase</h2>
+<p>We encourage all users to <span class="important-text">review the course curriculum, previews, instructor information, and FAQs</span> before making a purchase decision. If you have any questions, our support team is available to help.</p>
+
+<h2>3. Exceptional Circumstances</h2>
+<p>While we maintain a strict no refund policy, we reserve the right to <span class="important-text">review exceptional cases</span>. (When a learner mistakenly purchased a course instead of another course of Skill Finesse)</p>
+
+<h2>4. Acceptance of Policy</h2>
+<p>By enrolling in our courses, you acknowledge that you have read, understood, and agreed to our No Refund Policy.</p>
+
+<div class="policy-highlight">
+    <p>For any questions about our Refund Policy or to request review of exceptional circumstances, please contact our support team through the official channels listed on our website.</p>
+</div>`
+    },
+    terms_of_service: {
+        title: 'Terms of Service',
+        last_updated: 'July 5, 2025',
+        content: `<div class="policy-highlight">
+    <p>These Terms & Conditions ("Terms") govern your use of our website www.skillfinesse.com and services between Shikho Technologies Limited and its users.</p>
+</div>
+
+<h2>1. Agreement Overview</h2>
+<p>These Terms & Conditions ("Terms") of (a) use of our website www.skillfinesse.com ("Website"), Website/products ("Services") or (b) any modes of registrations or usage of products, including through SD cards, tablets or other storage/transmitting device are between Shikho Technologies Limited ("Company/We/Us/Our") and its users ("User/You/Your").</p>
+
+<p>These Terms constitute an electronic record in accordance with the provisions of the ICT Act 2006 and the Information Technology (Intermediaries guidelines) Rules, 2011 thereunder, as amended from time to time.</p>
+
+<h2>2. Acceptance and Compliance</h2>
+<p>Please read the Terms and the privacy policy of the Company ("Privacy Policy") with respect to registration with us, the use of the Application, Website, Services and products carefully before using the Application, Website, Services or products. In the event of any discrepancy between the Terms and any other policies with respect to the Application or Website or Services or products, the provisions of the Terms shall prevail.</p>
+
+<p>Your use/access/browsing of the Application or Website or the Services or products or registration (with or without payment/with or without subscription) through any means shall signify Your acceptance of the Terms and Your agreement to be legally bound by the same.</p>
+
+<p>If You do not agree with the Terms or the Privacy Policy, please do not use the Application or Website or avail the Services or products. Any access to our Services/Application/products through registrations/subscription is non transferable.</p>
+
+<h2>3. Permitted Use and Restrictions</h2>
+<p>It is prohibited to use our products, services, website, and application for any purpose other than personal or non-commercial. It is prohibited to use the application, website, services, or products for any purpose except personal ones. The following rules apply to your use of this application, website, and our services for personal and non-commercial purposes:</p>
+
+<ul>
+    <li><strong>i)</strong> You may not copy, modify, translate, display, distribute, or perform any information or software obtained from the Application and / or our Website and/or Services/Products or remove any copyright, trademark registration, or other proprietary notices from the contents of the Application and / or and / or our Website and/or Services/Products.</li>
+    <li><strong>ii)</strong> You are prohibited from using this application, our website, and our products and services for commercial purposes, including but not limited to selling, advertising, or promoting the application or any of our products or services, asking for contributions or donations, or using public forums for commercial purposes.</li>
+</ul>
+
+<h2>4. User Information and Feedback</h2>
+<p>Your information, provided about the Application, will be considered non-confidential. Applications can use the information whatever they choose. In addition, you represent and warrant by sending feedback that (i) your feedback does not contain confidential or patent information from you or third parties; (ii) the Company is not obligated or implied to maintain confidentiality regarding feedback; (iii) the Application could be similar to the feedback already being considered or under development;</p>
+
+<h2>5. Limitation of Liability</h2>
+<p>The Company is not liable for anything published by other users, including inappropriate or harmful content. It is important to be careful when visiting the Application.</p>
+
+<div class="policy-highlight">
+    <p>For any questions about these Terms of Service, please contact us through our official channels listed on our website.</p>
+</div>`
+    },
+    cookie_policy: {
+        title: 'Cookie Policy',
+        last_updated: 'May 10, 2025',
+        content: `<div class="policy-highlight">
+    <p>This Cookie Policy explains how Skill Finesse uses cookies and similar technologies to recognize you when you visit our website. It explains what these technologies are and why we use them, as well as your rights to control our use of them.</p>
+</div>
+
+<h2>1. What Are Cookies?</h2>
+<p>Cookies are small data files that are placed on your computer or mobile device when you visit a website. Cookies are widely used by website owners in order to make their websites work, or to work more efficiently, as well as to provide reporting information.</p>
+
+<p>Cookies set by the website owner (in this case, Skill Finesse) are called "first-party cookies." Cookies set by parties other than the website owner are called "third-party cookies." Third-party cookies enable third-party features or functionality to be provided on or through the website (e.g., advertising, interactive content, and analytics).</p>
+
+<h2>2. Why Do We Use Cookies?</h2>
+<p>We use first- and third-party cookies for several reasons. Some cookies are required for technical reasons in order for our website to operate, and we refer to these as "essential" or "strictly necessary" cookies. Other cookies enable us to track and target the interests of our users to enhance the experience on our website. Third parties serve cookies through our website for advertising, analytics, and other purposes.</p>
+
+<h2>3. Types of Cookies We Use</h2>
+<table class="cookie-table">
+    <thead>
+        <tr>
+            <th>Type of Cookie</th>
+            <th>Purpose</th>
+            <th>Duration</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Essential Cookies</strong></td>
+            <td>These cookies are strictly necessary to provide you with services available through our website and to use some of its features, such as access to secure areas.</td>
+            <td>Session</td>
+        </tr>
+        <tr>
+            <td><strong>Performance Cookies</strong></td>
+            <td>These cookies are used to enhance the performance and functionality of our website but are non-essential. They help us understand how visitors interact with our website.</td>
+            <td>Persistent</td>
+        </tr>
+        <tr>
+            <td><strong>Functionality Cookies</strong></td>
+            <td>These cookies enable personalized features such as remembering your preferences, login details, and language selection.</td>
+            <td>Persistent</td>
+        </tr>
+        <tr>
+            <td><strong>Analytics Cookies</strong></td>
+            <td>These cookies help us understand how our website is being used, how effective marketing campaigns are, and help us customize our website for you.</td>
+            <td>Persistent</td>
+        </tr>
+        <tr>
+            <td><strong>Advertising Cookies</strong></td>
+            <td>These cookies are used to make advertising messages more relevant to you. They perform functions like preventing the same ad from continuously reappearing.</td>
+            <td>Persistent</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>4. How Can You Control Cookies?</h2>
+<p>You have the right to decide whether to accept or reject cookies. You can exercise your cookie rights by setting your preferences in the Cookie Consent Manager. The Cookie Consent Manager allows you to select which categories of cookies you accept or reject. Essential cookies cannot be rejected as they are strictly necessary to provide you with services.</p>
+
+<p>You can also set or amend your web browser controls to accept or refuse cookies. If you choose to reject cookies, you may still use our website though your access to some functionality and areas of our website may be restricted.</p>
+
+<h3>4.1 Browser Controls</h3>
+<p>Most web browsers allow some control of most cookies through the browser settings. To find out more about cookies, including how to see what cookies have been set, visit:</p>
+<ul>
+    <li><a href="https://www.aboutcookies.org" target="_blank">www.aboutcookies.org</a></li>
+    <li><a href="https://www.allaboutcookies.org" target="_blank">www.allaboutcookies.org</a></li>
+</ul>
+
+<h3>4.2 Disabling Cookies</h3>
+<p>You can typically remove and reject cookies from our website by changing your browser settings. To do this, follow the instructions provided by your browser (usually located within the "settings," "help," "tools," or "edit" facility). Many browsers are set to accept cookies until you change your settings.</p>
+
+<h2>5. Cookies We Use</h2>
+<p>The specific types of first- and third-party cookies served through our website and the purposes they perform are described below:</p>
+
+<h3>5.1 Essential Cookies</h3>
+<ul>
+    <li><strong>Session ID Cookie:</strong> Maintains your session state across page requests</li>
+    <li><strong>Security Cookie:</strong> Helps protect against Cross-Site Request Forgery (CSRF) attacks</li>
+    <li><strong>Authentication Cookie:</strong> Identifies you when you're logged in to our website</li>
+</ul>
+
+<h3>5.2 Analytics Cookies</h3>
+<ul>
+    <li><strong>Google Analytics:</strong> Helps us understand how visitors interact with our website</li>
+    <li><strong>Performance Monitoring:</strong> Tracks website performance and loading times</li>
+</ul>
+
+<h3>5.3 Functionality Cookies</h3>
+<ul>
+    <li><strong>Language Preference:</strong> Remembers your language selection</li>
+    <li><strong>User Preferences:</strong> Stores your preferences like layout and theme</li>
+    <li><strong>Recently Viewed:</strong> Keeps track of courses you've recently viewed</li>
+</ul>
+
+<h2>6. Third-Party Cookies</h2>
+<p>In addition to our own cookies, we may also use various third-party cookies to report usage statistics of our website, deliver advertisements on and through our website, and so on. These third parties may include:</p>
+<ul>
+    <li>Google Analytics</li>
+    <li>Facebook Pixel</li>
+    <li>LinkedIn Insight Tag</li>
+    <li>YouTube</li>
+</ul>
+
+<h2>7. Updates to This Cookie Policy</h2>
+<p>We may update this Cookie Policy from time to time to reflect changes to the cookies we use or for other operational, legal, or regulatory reasons. Please revisit this Cookie Policy regularly to stay informed about our use of cookies and related technologies.</p>
+
+<h2>8. More Information</h2>
+<p>If you have any questions about our use of cookies or other technologies, please contact us:</p>
+
+<div class="policy-highlight">
+    <p>Email: privacy@skillfinesse.com<br>
+    Address: 123 Learning Street, Education City, EC 12345<br>
+    Phone: +1 (555) 123-4567</p>
+</div>`
+    }
+};
+
+function loadPolicy() {
+    const policyType = document.getElementById('policySelect').value;
+    const editorCard = document.getElementById('policyEditorCard');
+    const policyTitle = document.getElementById('policyTitle');
+    const policyStatus = document.getElementById('policyStatus');
+    const titleInput = document.getElementById('policyTitleInput');
+    const lastUpdatedInput = document.getElementById('lastUpdatedInput');
+    const contentArea = document.getElementById('policyContent');
+    
+    // Enable/disable buttons
+    const saveBtn = document.getElementById('saveBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    
+    if (policyType) {
+        currentPolicy = policyType;
+        editorCard.style.display = 'block';
+        
+        // Update title and status
+        policyTitle.innerHTML = `<i class="fas fa-edit me-2"></i>${defaultPolicyContent[policyType].title}`;
+        policyStatus.textContent = 'Loaded';
+        policyStatus.className = 'badge bg-success';
+        
+        // Load content from server or use default
+        fetch(`/admin/api/policy/${policyType}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    titleInput.value = data.policy.title;
+                    lastUpdatedInput.value = data.policy.last_updated;
+                    contentArea.value = data.policy.content;
+                    originalContent = data.policy.content;
+                } else {
+                    // Use default content
+                    titleInput.value = defaultPolicyContent[policyType].title;
+                    lastUpdatedInput.value = defaultPolicyContent[policyType].last_updated;
+                    contentArea.value = defaultPolicyContent[policyType].content;
+                    originalContent = defaultPolicyContent[policyType].content;
+                }
+                
+                // Initialize rich editor for this content
+                initializeRichEditor();
+                
+                // Enable buttons
+                saveBtn.disabled = false;
+                previewBtn.disabled = false;
+                resetBtn.disabled = false;
+                
+                isContentModified = false;
+                updateStatus();
+            })
+            .catch(error => {
+                console.error('Error loading policy:', error);
+                // Use default content on error
+                titleInput.value = defaultPolicyContent[policyType].title;
+                lastUpdatedInput.value = defaultPolicyContent[policyType].last_updated;
+                contentArea.value = defaultPolicyContent[policyType].content;
+                originalContent = defaultPolicyContent[policyType].content;
+                
+                initializeRichEditor();
+                
+                saveBtn.disabled = false;
+                previewBtn.disabled = false;
+                resetBtn.disabled = false;
+                
+                isContentModified = false;
+                updateStatus();
+            });
+    } else {
+        editorCard.style.display = 'none';
+        currentPolicy = '';
+        
+        // Disable buttons
+        saveBtn.disabled = true;
+        previewBtn.disabled = true;
+        resetBtn.disabled = true;
+    }
+}
+
+function initializeRichEditor() {
+    // Re-initialize the rich editor for the policy content
+    const editorElement = document.getElementById('policyContent');
+    
+    // Remove existing editor if any
+    const existingEditor = editorElement.parentNode.querySelector('.custom-editor-container');
+    if (existingEditor) {
+        existingEditor.remove();
+    }
+    
+    // Show the textarea temporarily
+    editorElement.style.display = 'block';
+    
+    // Re-initialize the rich editor
+    setTimeout(() => {
+        initCustomRichEditors();
+        
+        // Add content change listener
+        const contentArea = editorElement.parentNode.querySelector('.editor-content');
+        if (contentArea) {
+            contentArea.addEventListener('input', function() {
+                isContentModified = true;
+                updateStatus();
+            });
+        }
+    }, 100);
+}
+
+function updateStatus() {
+    const policyStatus = document.getElementById('policyStatus');
+    if (isContentModified) {
+        policyStatus.textContent = 'Modified';
+        policyStatus.className = 'badge bg-warning';
+    } else {
+        policyStatus.textContent = 'Loaded';
+        policyStatus.className = 'badge bg-success';
+    }
+}
+
+function savePolicy() {
+    if (!currentPolicy) return;
+    
+    const titleInput = document.getElementById('policyTitleInput');
+    const lastUpdatedInput = document.getElementById('lastUpdatedInput');
+    const contentArea = document.getElementById('policyContent');
+    
+    const policyData = {
+        title: titleInput.value,
+        last_updated: lastUpdatedInput.value,
+        content: contentArea.value
+    };
+    
+    // Show loading status
+    const policyStatus = document.getElementById('policyStatus');
+    policyStatus.textContent = 'Saving...';
+    policyStatus.className = 'badge bg-info';
+    
+    fetch(`/admin/api/policy/${currentPolicy}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(policyData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            originalContent = contentArea.value;
+            isContentModified = false;
+            policyStatus.textContent = 'Saved';
+            policyStatus.className = 'badge bg-success';
+            
+            // Show success message
+            alert('Policy saved successfully!');
+        } else {
+            policyStatus.textContent = 'Error';
+            policyStatus.className = 'badge bg-danger';
+            alert('Error saving policy: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving policy:', error);
+        policyStatus.textContent = 'Error';
+        policyStatus.className = 'badge bg-danger';
+        alert('Error saving policy. Please try again.');
+    });
+}
+
+function previewPolicy() {
+    if (!currentPolicy) return;
+    
+    const titleInput = document.getElementById('policyTitleInput');
+    const lastUpdatedInput = document.getElementById('lastUpdatedInput');
+    const contentArea = document.getElementById('policyContent');
+    
+    const previewContent = document.getElementById('policyPreviewContent');
+    const modalLabel = document.getElementById('policyPreviewModalLabel');
+    
+    // Update modal title
+    modalLabel.textContent = `${titleInput.value} - Preview`;
+    
+    // Generate preview HTML
+    const previewHTML = `
+        <div class="policy-section">
+            <div class="policy-container">
+                <h1 class="policy-title">${titleInput.value}</h1>
+                <p class="last-updated">Last updated: ${lastUpdatedInput.value}</p>
+                <div class="policy-content">
+                    ${contentArea.value}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    previewContent.innerHTML = previewHTML;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('policyPreviewModal'));
+    modal.show();
+}
+
+function resetPolicy() {
+    if (!currentPolicy) return;
+    
+    if (confirm('Are you sure you want to reset this policy to its default content? This action cannot be undone.')) {
+        const titleInput = document.getElementById('policyTitleInput');
+        const lastUpdatedInput = document.getElementById('lastUpdatedInput');
+        const contentArea = document.getElementById('policyContent');
+        
+        // Reset to default content
+        titleInput.value = defaultPolicyContent[currentPolicy].title;
+        lastUpdatedInput.value = defaultPolicyContent[currentPolicy].last_updated;
+        contentArea.value = defaultPolicyContent[currentPolicy].content;
+        
+        // Update the rich editor content
+        const editorContentArea = contentArea.parentNode.querySelector('.editor-content');
+        if (editorContentArea) {
+            editorContentArea.innerHTML = defaultPolicyContent[currentPolicy].content;
+        }
+        
+        isContentModified = true;
+        updateStatus();
+        
+        alert('Policy content has been reset to default. Click "Save Changes" to save the reset.');
+    }
+}
+
+// Monitor input changes
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('policyTitleInput');
+    const lastUpdatedInput = document.getElementById('lastUpdatedInput');
+    
+    if (titleInput) {
+        titleInput.addEventListener('input', function() {
+            isContentModified = true;
+            updateStatus();
+        });
+    }
+    
+    if (lastUpdatedInput) {
+        lastUpdatedInput.addEventListener('input', function() {
+            isContentModified = true;
+            updateStatus();
+        });
+    }
+});
+</script>

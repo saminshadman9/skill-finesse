@@ -1,0 +1,610 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #008c44 100%);
+        color: white;
+        padding: 100px 0 80px;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Course Filter */
+    .course-filter {
+        padding: 40px 0;
+        background: white;
+        border-bottom: 1px solid #eee;
+    }
+
+    .filter-tabs {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .filter-tab {
+        padding: 12px 24px;
+        background: #f8f9fa;
+        color: #666;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .filter-tab.active,
+    .filter-tab:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .search-box {
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 15px 50px 15px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 30px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .search-box input:focus {
+        border-color: var(--primary-color);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--primary-color);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        color: white;
+        cursor: pointer;
+    }
+
+    /* SIMPLE COURSES SECTION */
+    .courses-section {
+        padding: 60px 0;
+        background: #f8f9fa;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .section-badge {
+        display: inline-block;
+        background: var(--primary-color);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .section-subtitle {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    /* SIMPLE GRID */
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* SIMPLE COURSE CARD */
+    .modern-course-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .modern-course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .course-image-container {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .course-image {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .course-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .premium-badge {
+        background: #FFD700;
+        color: #333;
+    }
+
+    .discount-badge {
+        background: #FF5722;
+        color: white;
+    }
+
+    .free-badge {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .course-content {
+        padding: 20px;
+    }
+
+    .course-category-badge {
+        display: inline-block;
+        background: rgba(0, 166, 81, 0.1);
+        color: var(--primary-color);
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .course-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    .course-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+
+    .course-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding: 12px 0;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .course-stats .stat-item {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .course-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .course-rating .stars {
+        color: #FFC107;
+    }
+
+    .rating-value {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .rating-count {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .course-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .course-price .current-price {
+        color: var(--primary-color);
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .course-price .original-price {
+        color: #999;
+        text-decoration: line-through;
+        font-size: 1rem;
+        margin-right: 8px;
+    }
+
+    .course-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background: #008c44;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        background: transparent;
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    /* No Courses */
+    .no-courses-container {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 15px;
+        margin: 0 20px;
+    }
+
+    .no-courses-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    /* Statistics Section */
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #008c44 100%);
+        color: white;
+        padding: 60px 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header h1 { font-size: 2.2rem; }
+        .section-title { font-size: 2rem; }
+        .courses-grid { 
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .filter-tabs { justify-content: center; }
+        .course-footer { 
+            flex-direction: column; 
+            gap: 10px; 
+            align-items: stretch;
+        }
+        .course-actions { justify-content: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>Our Courses</h1>
+        <p>Discover our comprehensive collection of courses designed to boost your skills and advance your career</p>
+    </div>
+</section>
+
+<!-- Course Filter Section -->
+<section class="course-filter">
+    <div class="container">
+        <div class="filter-tabs">
+            <a href="#" class="filter-tab active" data-category="all">All Courses</a>
+            <a href="#" class="filter-tab" data-category="programming">Programming</a>
+            <a href="#" class="filter-tab" data-category="web-development">Web Development</a>
+            <a href="#" class="filter-tab" data-category="data-science">Data Science</a>
+            <a href="#" class="filter-tab" data-category="mobile-development">Mobile Development</a>
+            <a href="#" class="filter-tab" data-category="ui-ux-design">UI/UX Design</a>
+            <a href="#" class="filter-tab" data-category="marketing">Marketing</a>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" placeholder="Search courses..." id="courseSearch">
+            <button class="search-btn" type="button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Courses Section -->
+<section class="courses-section" id="courses">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Featured Courses
+            </div>
+            <h2 class="section-title">Transform Your Career with Expert-Led Courses</h2>
+            <p class="section-subtitle">Join thousands of students and learn from industry professionals</p>
+        </div>
+        
+        <div class="courses-grid" id="courseGrid">
+            {% if courses %}
+                {% for course in courses %}
+                <div class="course-card-wrapper" data-category="{{ course.category.lower().replace(' ', '-') if course.category else 'programming' }}">
+                    <div class="modern-course-card">
+                        <!-- Course Image -->
+                        <div class="course-image-container">
+                            <div class="course-image" style="background-image: url('{% if course.image %}https://skill-finesse-videos.b-cdn.net/courses/{{ course.image }}{% else %}{% if 'Python' in course.title or 'Data Science' in course.title or 'Machine Learning' in course.title %}{{ url_for('static', filename='images/premium_course_1.png') }}{% elif 'Web Development' in course.title or 'Full Stack' in course.title or 'React' in course.title or 'JavaScript' in course.title %}{{ url_for('static', filename='images/premium_course_2.png') }}{% elif 'Mobile' in course.title or 'Flutter' in course.title or 'App Development' in course.title %}{{ url_for('static', filename='images/premium_course_3.png') }}{% elif 'UI/UX' in course.title or 'Design' in course.title %}{{ url_for('static', filename='images/premium_course_4.png') }}{% elif 'Marketing' in course.title or 'Digital Marketing' in course.title %}{{ url_for('static', filename='images/premium_course_5.png') }}{% elif 'Blockchain' in course.title or 'DevOps' in course.title %}{{ url_for('static', filename='images/free_course_cover_1.png') }}{% else %}{{ url_for('static', filename='images/premium_course_1.png') }}{% endif %}{% endif %}')">
+                                {% if course.coupon and course.coupon_discount %}
+                                    <div class="course-badge discount-badge">
+                                        {{ course.coupon_discount }}% OFF
+                                    </div>
+                                {% elif course.price == 0 %}
+                                    <div class="course-badge free-badge">
+                                        FREE
+                                    </div>
+                                {% else %}
+                                    <div class="course-badge premium-badge">
+                                        PREMIUM
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Course Content -->
+                        <div class="course-content">
+                            <!-- Course Category -->
+                            <div class="course-category-badge">
+                                {{ course.category if course.category else 'Programming' }}
+                            </div>
+                            
+                            <!-- Course Title -->
+                            <h3 class="course-title">{{ course.title }}</h3>
+                            
+                            <!-- Course Description -->
+                            <p class="course-description">{{ course.description[:120] }}{% if course.description|length > 120 %}...{% endif %}</p>
+                            
+                            <!-- Course Stats -->
+                            <div class="course-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>{{ course.enrollments|length if course.enrollments else 0 }} students</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Self-paced</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>{{ course.created_at.strftime('%b %Y') }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Course Rating -->
+                            <div class="course-rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="rating-value">4.8</span>
+                                <span class="rating-count">(127 reviews)</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Course Footer -->
+                        <div class="course-footer">
+                            <div class="course-price">
+                                {% if course.coupon and course.coupon_discount %}
+                                    <span class="original-price">৳{{ course.price|round|int }}</span>
+                                    <span class="current-price">৳{{ (course.price * (100 - course.coupon_discount) / 100)|round|int }}</span>
+                                {% else %}
+                                    <span class="current-price">৳{{ course.price|round|int }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="course-actions">
+                                <a href="{{ url_for('course_details', course_id=course.id) }}" class="btn btn-outline-primary">
+                                    Details
+                                </a>
+                                <a href="{{ url_for('course_purchase', course_id=course.id) }}" class="btn btn-primary">
+                                    Enroll
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-courses-container">
+                    <div class="no-courses-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>No Courses Available Yet</h3>
+                    <p>We're working hard to bring you amazing courses. Check back soon!</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        Back to Home
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <div class="stat-label">Professional Courses</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">15k+</span>
+                    <div class="stat-label">Active Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Learning Support</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const courseItems = document.querySelectorAll('.course-card-wrapper');
+    const searchInput = document.getElementById('courseSearch');
+    
+    // Filter by category
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Update active tab
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const category = this.dataset.category;
+            
+            courseItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            courseItems.forEach(item => {
+                const title = item.querySelector('.course-title').textContent.toLowerCase();
+                const description = item.querySelector('.course-description').textContent.toLowerCase();
+                const category = item.querySelector('.course-category-badge').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || category.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

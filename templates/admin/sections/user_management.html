@@ -1,0 +1,1666 @@
+<!-- User Management Section -->
+<div id="users-section" class="content-section" style="display: none;">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1>User Management</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Users</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="fas fa-user-plus me-2"></i>Add New User
+                </button>
+                <div id="adminStatusIndicator" class="badge bg-secondary">
+                    <i class="fas fa-spinner fa-spin me-1"></i>Checking Admin Status...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="table-controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearch" placeholder="Search users by name or email...">
+            </div>
+            <div class="filter-buttons">
+                <button class="btn btn-sm btn-outline-secondary active" data-filter="all">All Users</button>
+                <button class="btn btn-sm btn-outline-secondary" data-filter="active">Active</button>
+                <button class="btn btn-sm btn-outline-secondary" data-filter="inactive">Inactive</button>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Join Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    {% if users %}
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <img src="{% if user.profile_picture %}{{ url_for('static', filename='uploads/profiles/' + user.profile_picture) }}{% else %}{{ url_for('static', filename='images/default-avatar.png') }}{% endif %}" 
+                                         alt="{{ user.first_name + ' ' + user.last_name }}" class="user-avatar"
+                                         onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default-user.svg') }}';">
+                                    <div>
+                                        <div class="user-name">{{ user.first_name + ' ' + user.last_name }}</div>
+                                        <div class="user-email">{{ user.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.created_at.strftime('%b %d, %Y') if user.created_at else 'N/A' }}</td>
+                            <td>
+                                <span class="status-badge active">Active</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-primary" onclick="editUserDirect({{ user.id }})" title="Edit User">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" onclick="deleteUserDirect({{ user.id }})" title="Delete User">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No users found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">
+                    <i class="fas fa-user-plus me-2"></i>Add New User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addUserForm" method="POST">
+                <div class="modal-body">
+                    <!-- Status Message -->
+                    <div id="userFormStatus" class="alert" style="display: none;"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label fw-bold">First Name *</label>
+                            <input type="text" class="form-control" id="firstName" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label fw-bold">Last Name *</label>
+                            <input type="text" class="form-control" id="lastName" name="last_name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label fw-bold">Username *</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                            <div class="form-text">Unique username for login</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label fw-bold">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label fw-bold">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                            <div class="form-text">Minimum 6 characters</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phoneNumber" class="form-label fw-bold">Phone Number</label>
+                            <input type="tel" class="form-control" id="phoneNumber" name="phone_number" placeholder="01XXXXXXXXX">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="gender" class="form-label fw-bold">Gender</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other" selected>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="birthDate" class="form-label fw-bold">Birth Date</label>
+                            <input type="date" class="form-control" id="birthDate" name="birth_date">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="country" class="form-label fw-bold">Country</label>
+                            <input type="text" class="form-control" id="country" name="country" value="Bangladesh">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isAdmin" name="is_admin" value="true">
+                                <label class="form-check-label fw-bold" for="isAdmin">
+                                    Grant Admin Privileges
+                                </label>
+                                <div class="form-text">Check this to give the user admin access</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Course and Ebook Assignment Section -->
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="fas fa-graduation-cap me-2"></i>Assign Previously Purchased Content
+                                    </h6>
+                                    <small class="text-muted">Select courses and ebooks this user has already purchased</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fas fa-video me-1"></i>Purchased Courses
+                                            </label>
+                                            <div class="course-selection-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; background-color: #f8f9fa;">
+                                                <div id="coursesList">
+                                                    <div class="text-center py-3 text-muted">
+                                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading courses...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-text">Select all courses this user has purchased</div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fas fa-book me-1"></i>Purchased Ebooks
+                                            </label>
+                                            <div class="ebook-selection-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; background-color: #f8f9fa;">
+                                                <div id="ebooksList">
+                                                    <div class="text-center py-3 text-muted">
+                                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading ebooks...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-text">Select all ebooks this user has purchased</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="alert alert-info mb-0">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>Note:</strong> Selected courses and ebooks will be automatically added to the user's purchased content. They won't need to purchase these items again.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="addUserBtn">
+                        <i class="fas fa-user-plus me-2"></i>Add User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">
+                    <i class="fas fa-user-edit me-2"></i>Edit User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editUserForm" method="POST">
+                <div class="modal-body">
+                    <!-- Status Message -->
+                    <div id="editUserFormStatus" class="alert" style="display: none;"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editFirstName" class="form-label fw-bold">First Name *</label>
+                            <input type="text" class="form-control" id="editFirstName" name="first_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editLastName" class="form-label fw-bold">Last Name *</label>
+                            <input type="text" class="form-control" id="editLastName" name="last_name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editUsername" class="form-label fw-bold">Username *</label>
+                            <input type="text" class="form-control" id="editUsername" name="username" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editEmail" class="form-label fw-bold">Email Address *</label>
+                            <input type="email" class="form-control" id="editEmail" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editPassword" class="form-label fw-bold">New Password</label>
+                            <input type="password" class="form-control" id="editPassword" name="password" minlength="6">
+                            <div class="form-text">Leave blank to keep current password</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editPhoneNumber" class="form-label fw-bold">Phone Number</label>
+                            <input type="tel" class="form-control" id="editPhoneNumber" name="phone_number" placeholder="01XXXXXXXXX">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="editGender" class="form-label fw-bold">Gender</label>
+                            <select class="form-select" id="editGender" name="gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="editBirthDate" class="form-label fw-bold">Birth Date</label>
+                            <input type="date" class="form-control" id="editBirthDate" name="birth_date">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="editCountry" class="form-label fw-bold">Country</label>
+                            <input type="text" class="form-control" id="editCountry" name="country">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editIsAdmin" name="is_admin" value="true">
+                                <label class="form-check-label fw-bold" for="editIsAdmin">
+                                    Grant Admin Privileges
+                                </label>
+                                <div class="form-text">Check this to give the user admin access</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Course and Ebook Assignment Section for Edit -->
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="fas fa-graduation-cap me-2"></i>Update Purchased Content
+                                    </h6>
+                                    <small class="text-muted">Modify courses and ebooks this user has purchased</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fas fa-video me-1"></i>Purchased Courses
+                                            </label>
+                                            <div class="course-selection-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; background-color: #f8f9fa;">
+                                                <div id="editCoursesList">
+                                                    <div class="text-center py-3 text-muted">
+                                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading courses...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-text">Select all courses this user has purchased</div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fas fa-book me-1"></i>Purchased Ebooks
+                                            </label>
+                                            <div class="ebook-selection-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; background-color: #f8f9fa;">
+                                                <div id="editEbooksList">
+                                                    <div class="text-center py-3 text-muted">
+                                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading ebooks...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-text">Select all ebooks this user has purchased</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="alert alert-warning mb-0">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <strong>Warning:</strong> Unchecking items will remove them from the user's purchased content. They will need to purchase them again to access.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="editUserBtn">
+                        <i class="fas fa-save me-2"></i>Update User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* User Management Styling */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.user-email {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Table Controls */
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.search-box input {
+    padding-left: 35px;
+    width: 300px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 8px 12px 8px 35px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Button improvements */
+.btn-group-sm .btn {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-danger:hover {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Modal improvements */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.form-label.fw-bold {
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+/* Course and Ebook Selection Styling */
+.course-selection-container .form-check,
+.ebook-selection-container .form-check {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.course-selection-container .form-check:hover,
+.ebook-selection-container .form-check:hover {
+    background-color: #f8f9fa;
+    border-color: #00a651;
+}
+
+.course-selection-container .form-check-input:checked + .form-check-label,
+.ebook-selection-container .form-check-input:checked + .form-check-label {
+    color: #00a651;
+    font-weight: 600;
+}
+
+.course-selection-container .form-check-input,
+.ebook-selection-container .form-check-input {
+    margin-top: 0.25rem;
+}
+
+.course-selection-container .form-check-label,
+.ebook-selection-container .form-check-label {
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.course-selection-container .form-check-label small,
+.ebook-selection-container .form-check-label small {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* Table styling */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    padding: 16px 12px;
+}
+
+.table td {
+    padding: 16px 12px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+
+<script>
+// Edit User Function - Opens Edit Modal Popup
+function editUser(userId) {
+    console.log('✏️ Opening edit modal for user:', userId);
+    
+    // First, show the modal immediately
+    const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    editModal.show();
+    
+    // Show loading state in modal
+    const statusDiv = document.getElementById('editUserFormStatus');
+    statusDiv.className = 'alert alert-info';
+    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading user data...';
+    statusDiv.style.display = 'block';
+    
+    // Load user data
+    fetch(`/admin/users/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.user) {
+            // Populate form with user data
+            document.getElementById('editFirstName').value = data.user.first_name || '';
+            document.getElementById('editLastName').value = data.user.last_name || '';
+            document.getElementById('editUsername').value = data.user.username || '';
+            document.getElementById('editEmail').value = data.user.email || '';
+            document.getElementById('editPhoneNumber').value = data.user.phone_number || '';
+            document.getElementById('editGender').value = data.user.gender || 'Other';
+            document.getElementById('editBirthDate').value = data.user.birth_date || '';
+            document.getElementById('editCountry').value = data.user.country || 'Bangladesh';
+            document.getElementById('editIsAdmin').checked = data.user.is_admin || false;
+            
+            // Store user ID for update
+            document.getElementById('editUserForm').setAttribute('data-user-id', userId);
+            
+            // Hide loading status
+            statusDiv.style.display = 'none';
+            
+            // Load courses and ebooks, then load user purchases
+            loadCoursesAndEbooks(true).then(() => {
+                console.log('📚 Courses and ebooks loaded, now loading user purchases...');
+                loadUserPurchases(userId);
+            }).catch(error => {
+                console.error('❌ Error loading courses/ebooks:', error);
+                // Still try to load user purchases even if courses/ebooks fail
+                setTimeout(() => loadUserPurchases(userId), 1000);
+            });
+        } else {
+            statusDiv.className = 'alert alert-danger';
+            statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error: ' + (data.message || 'Failed to load user data');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading user:', error);
+        statusDiv.className = 'alert alert-danger';
+        statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error loading user data';
+    });
+}
+
+// Delete User Function - Shows Confirmation Popup
+function deleteUser(userId) {
+    console.log('🗑️ Opening delete confirmation for user:', userId);
+    
+    // Get user name from table for confirmation
+    const userRow = document.querySelector(`button[data-user-id="${userId}"]`).closest('tr');
+    const userName = userRow.querySelector('.user-name').textContent;
+    
+    // Show confirmation popup
+    const confirmed = confirm(`⚠️ DELETE USER CONFIRMATION\n\nAre you sure you want to delete user "${userName}"?\n\nThis action cannot be undone and will:\n• Remove the user permanently\n• Delete all their data\n• Cannot be recovered\n\nClick OK to confirm deletion or Cancel to abort.`);
+    
+    if (confirmed) {
+        // Show processing message
+        const loadingAlert = document.createElement('div');
+        loadingAlert.className = 'alert alert-info position-fixed top-0 start-50 translate-middle-x mt-3';
+        loadingAlert.style.zIndex = '9999';
+        loadingAlert.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting user...';
+        document.body.appendChild(loadingAlert);
+        
+        fetch(`/admin/users/${userId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Remove loading alert
+            loadingAlert.remove();
+            
+            if (data.success) {
+                // Show success popup
+                alert(`✅ SUCCESS!\n\nUser "${userName}" has been deleted successfully!`);
+                
+                // Remove user row from table
+                removeUserFromTable(userId);
+            } else {
+                alert('❌ DELETE FAILED\n\n' + (data.message || 'Unknown error occurred'));
+            }
+        })
+        .catch(error => {
+            // Remove loading alert
+            loadingAlert.remove();
+            console.error('Error deleting user:', error);
+            alert(`❌ DELETE ERROR\n\nFailed to delete user: ${error.message}`);
+        });
+    }
+}
+
+// Add User Form Handler
+document.addEventListener('DOMContentLoaded', function() {
+    const addUserForm = document.getElementById('addUserForm');
+    const addUserModal = document.getElementById('addUserModal');
+    
+    if (addUserForm) {
+        addUserForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitAddUserFormWithContent();
+        });
+    }
+    
+    // Add event listeners for edit and delete buttons
+    document.addEventListener('click', function(e) {
+        // Handle edit button clicks
+        if (e.target.closest('.edit-user-btn')) {
+            e.preventDefault();
+            const button = e.target.closest('.edit-user-btn');
+            const userId = button.getAttribute('data-user-id');
+            console.log('✏️ Edit button clicked for user:', userId);
+            editUser(userId);
+            return false;
+        }
+        
+        // Handle delete button clicks
+        if (e.target.closest('.delete-user-btn')) {
+            e.preventDefault();
+            const button = e.target.closest('.delete-user-btn');
+            const userId = button.getAttribute('data-user-id');
+            console.log('🗑️ Delete button clicked for user:', userId);
+            deleteUser(userId);
+            return false;
+        }
+    });
+});
+
+
+function addUserToTable(user) {
+    const tableBody = document.getElementById('usersTableBody');
+    
+    // Check if "No users found" row exists and remove it
+    const noUsersRow = tableBody.querySelector('td[colspan="5"]');
+    if (noUsersRow) {
+        noUsersRow.parentElement.remove();
+    }
+    
+    // Create new row
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>
+            <div class="user-info">
+                <img src="/static/images/default-avatar.png" 
+                     alt="${user.name}" class="user-avatar"
+                     onerror="this.onerror=null; this.src='/static/images/default-user.svg';">
+                <div>
+                    <div class="user-name">${user.name}</div>
+                    <div class="user-email">${user.email}</div>
+                </div>
+            </div>
+        </td>
+        <td>${user.email}</td>
+        <td>${user.created_at}</td>
+        <td>
+            <span class="status-badge active">Active</span>
+        </td>
+        <td>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-primary edit-user-btn" data-user-id="${user.id}" title="Edit User">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger delete-user-btn" data-user-id="${user.id}" title="Delete User">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    
+    // Add to beginning of table
+    tableBody.insertBefore(newRow, tableBody.firstChild);
+}
+
+
+function removeUserFromTable(userId) {
+    const tableBody = document.getElementById('usersTableBody');
+    const userRows = tableBody.querySelectorAll('tr');
+    
+    userRows.forEach(row => {
+        const editBtn = row.querySelector(`button[onclick="editUser(${userId})"]`);
+        if (editBtn) {
+            row.remove();
+        }
+    });
+    
+    // If no users left, show "No users found" message
+    if (tableBody.children.length === 0) {
+        const noUsersRow = document.createElement('tr');
+        noUsersRow.innerHTML = '<td colspan="5" class="text-center py-4">No users found</td>';
+        tableBody.appendChild(noUsersRow);
+    }
+}
+
+function populateEditForm(user) {
+    console.log('📝 populateEditForm called with user:', user);
+    
+    try {
+        document.getElementById('editFirstName').value = user.first_name || '';
+        document.getElementById('editLastName').value = user.last_name || '';
+        document.getElementById('editUsername').value = user.username || '';
+        document.getElementById('editEmail').value = user.email || '';
+        document.getElementById('editPhoneNumber').value = user.phone_number || '';
+        document.getElementById('editGender').value = user.gender || 'Other';
+        document.getElementById('editBirthDate').value = user.birth_date || '';
+        document.getElementById('editCountry').value = user.country || 'Bangladesh';
+        document.getElementById('editIsAdmin').checked = user.is_admin || false;
+        
+        // Store user ID for update
+        document.getElementById('editUserForm').dataset.userId = user.id;
+        
+        console.log('✅ Form populated successfully');
+    } catch (error) {
+        console.error('❌ Error populating edit form:', error);
+    }
+}
+
+function submitEditUserForm() {
+    const form = document.getElementById('editUserForm');
+    const userId = form.getAttribute('data-user-id');
+    const submitBtn = document.getElementById('editUserBtn');
+    const statusDiv = document.getElementById('editUserFormStatus');
+    const formData = new FormData(form);
+    
+    // Collect selected courses
+    const selectedCourses = [];
+    document.querySelectorAll('#editCoursesList input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedCourses.push(checkbox.value);
+    });
+    
+    // Collect selected ebooks
+    const selectedEbooks = [];
+    document.querySelectorAll('#editEbooksList input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedEbooks.push(checkbox.value);
+    });
+    
+    // Add courses and ebooks to form data
+    selectedCourses.forEach(courseId => {
+        formData.append('courses[]', courseId);
+    });
+    
+    selectedEbooks.forEach(ebookId => {
+        formData.append('ebooks[]', ebookId);
+    });
+    
+    // Update button state
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating User...';
+    submitBtn.disabled = true;
+    
+    // Hide previous status
+    statusDiv.style.display = 'none';
+    
+    fetch(`/admin/users/${userId}/update`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message in modal
+            statusDiv.className = 'alert alert-success';
+            statusDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i>${data.message}`;
+            statusDiv.style.display = 'block';
+            
+            // Show success popup
+            alert(`✅ USER UPDATED SUCCESSFULLY!\n\nUser has been updated successfully!\n\nChanges:\n• User information updated\n• Course and ebook assignments updated`);
+            
+            // Update user in table
+            updateUserInTable(data.user);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            if (modal) {
+                modal.hide();
+            }
+            statusDiv.style.display = 'none';
+            
+        } else {
+            // Show error message
+            statusDiv.className = 'alert alert-danger';
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${data.message}`;
+            statusDiv.style.display = 'block';
+            
+            // Show error popup
+            alert(`❌ UPDATE FAILED\n\n${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        statusDiv.className = 'alert alert-danger';
+        statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>An error occurred while updating the user.`;
+        statusDiv.style.display = 'block';
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function updateUserInTable(user) {
+    const tableBody = document.getElementById('usersTableBody');
+    const userRows = tableBody.querySelectorAll('tr');
+    
+    userRows.forEach(row => {
+        const editBtn = row.querySelector(`button[onclick="editUser(${user.id})"]`);
+        if (editBtn) {
+            // Update the row content
+            const userNameDiv = row.querySelector('.user-name');
+            const userEmailDiv = row.querySelector('.user-email');
+            const emailCell = row.querySelectorAll('td')[1];
+            
+            if (userNameDiv) userNameDiv.textContent = user.name;
+            if (userEmailDiv) userEmailDiv.textContent = user.email;
+            if (emailCell) emailCell.textContent = user.email;
+        }
+    });
+}
+
+// Set up edit form handler
+document.addEventListener('DOMContentLoaded', function() {
+    const editUserForm = document.getElementById('editUserForm');
+    if (editUserForm) {
+        editUserForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitEditUserForm();
+        });
+    }
+    
+    // Load courses and ebooks when modals are shown
+    const addUserModal = document.getElementById('addUserModal');
+    const editUserModal = document.getElementById('editUserModal');
+    
+    if (addUserModal) {
+        console.log('🔧 Setting up add user modal event listener');
+        addUserModal.addEventListener('shown.bs.modal', function() {
+            console.log('➕ Add user modal shown - loading courses and ebooks');
+            loadAddModalContent();
+        });
+    } else {
+        console.log('❌ Add user modal not found');
+    }
+    
+    if (editUserModal) {
+        editUserModal.addEventListener('shown.bs.modal', function() {
+            // Simple direct approach - load content immediately when modal opens
+            loadEditModalContent();
+        });
+        
+        // Clean up when modal is hidden
+        editUserModal.addEventListener('hidden.bs.modal', function() {
+            console.log('✏️ Edit user modal hidden - cleaning up');
+            window.currentEditingUserId = null;
+        });
+    } else {
+        console.log('❌ Edit user modal not found');
+    }
+});
+
+// Simple direct function to load edit modal content
+function loadEditModalContent() {
+    const editCoursesContainer = document.getElementById('editCoursesList');
+    const editEbooksContainer = document.getElementById('editEbooksList');
+    
+    if (!editCoursesContainer || !editEbooksContainer) {
+        console.error('Edit containers not found');
+        return;
+    }
+    
+    // Load courses
+    fetch('/admin/get-courses')
+        .then(response => {
+            if (response.status === 401) {
+                throw new Error('Authentication failed. Please ensure you are logged in as admin.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.courses) {
+                let coursesHTML = '';
+                data.courses.forEach(course => {
+                    coursesHTML += `
+                        <div class="form-check mb-2 p-2 border rounded">
+                            <input class="form-check-input" type="checkbox" value="${course.id}" 
+                                   id="edit_course_${course.id}" name="courses">
+                            <label class="form-check-label fw-semibold" for="edit_course_${course.id}">
+                                ${course.title}
+                                <div class="text-muted small">
+                                    Instructor: ${course.instructor_name || 'N/A'} | Price: ৳${course.price}
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                });
+                editCoursesContainer.innerHTML = coursesHTML || '<div class="text-muted">No courses available</div>';
+            } else {
+                editCoursesContainer.innerHTML = `<div class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${data.message || 'No courses available'}
+                </div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading courses:', error);
+            editCoursesContainer.innerHTML = `<div class="text-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Error loading courses: ${error.message}
+            </div>`;
+        });
+    
+    // Load ebooks
+    fetch('/admin/get-ebooks')
+        .then(response => {
+            if (response.status === 401) {
+                throw new Error('Authentication failed. Please ensure you are logged in as admin.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.ebooks) {
+                let ebooksHTML = '';
+                data.ebooks.forEach(ebook => {
+                    ebooksHTML += `
+                        <div class="form-check mb-2 p-2 border rounded">
+                            <input class="form-check-input" type="checkbox" value="${ebook.id}" 
+                                   id="edit_ebook_${ebook.id}" name="ebooks">
+                            <label class="form-check-label fw-semibold" for="edit_ebook_${ebook.id}">
+                                ${ebook.title || ebook.name}
+                                <div class="text-muted small">
+                                    Author: ${ebook.author || 'N/A'} | Price: ৳${ebook.price}
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                });
+                editEbooksContainer.innerHTML = ebooksHTML || '<div class="text-muted">No ebooks available</div>';
+            } else {
+                editEbooksContainer.innerHTML = `<div class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${data.message || 'No ebooks available'}
+                </div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading ebooks:', error);
+            editEbooksContainer.innerHTML = `<div class="text-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Error loading ebooks: ${error.message}
+            </div>`;
+        });
+    
+    // Load user purchases if we have a user ID
+    if (window.currentEditingUserId) {
+        setTimeout(() => loadUserPurchases(window.currentEditingUserId), 500);
+    }
+}
+
+// Simple direct function to load add modal content
+function loadAddModalContent() {
+    const coursesContainer = document.getElementById('coursesList');
+    const ebooksContainer = document.getElementById('ebooksList');
+    
+    if (!coursesContainer || !ebooksContainer) {
+        console.error('Add modal containers not found');
+        return;
+    }
+    
+    console.log('🔍 Loading content for Add User modal...');
+    
+    // Load courses
+    fetch('/admin/get-courses')
+        .then(response => {
+            if (response.status === 401) {
+                throw new Error('Authentication failed. Please ensure you are logged in as admin.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.courses) {
+                let coursesHTML = '';
+                data.courses.forEach(course => {
+                    coursesHTML += `
+                        <div class="form-check mb-2 p-2 border rounded">
+                            <input class="form-check-input" type="checkbox" value="${course.id}" 
+                                   id="course_${course.id}" name="courses">
+                            <label class="form-check-label fw-semibold" for="course_${course.id}">
+                                ${course.title}
+                                <div class="text-muted small">
+                                    Instructor: ${course.instructor_name || 'N/A'} | Price: ৳${course.price}
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                });
+                coursesContainer.innerHTML = coursesHTML || '<div class="text-muted">No courses available</div>';
+            } else {
+                coursesContainer.innerHTML = `<div class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${data.message || 'No courses available'}
+                </div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading courses:', error);
+            coursesContainer.innerHTML = `<div class="text-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Error loading courses: ${error.message}
+            </div>`;
+        });
+    
+    // Load ebooks
+    fetch('/admin/get-ebooks')
+        .then(response => {
+            if (response.status === 401) {
+                throw new Error('Authentication failed. Please ensure you are logged in as admin.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.ebooks) {
+                let ebooksHTML = '';
+                data.ebooks.forEach(ebook => {
+                    ebooksHTML += `
+                        <div class="form-check mb-2 p-2 border rounded">
+                            <input class="form-check-input" type="checkbox" value="${ebook.id}" 
+                                   id="ebook_${ebook.id}" name="ebooks">
+                            <label class="form-check-label fw-semibold" for="ebook_${ebook.id}">
+                                ${ebook.title || ebook.name}
+                                <div class="text-muted small">
+                                    Author: ${ebook.author || 'N/A'} | Price: ৳${ebook.price}
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                });
+                ebooksContainer.innerHTML = ebooksHTML || '<div class="text-muted">No ebooks available</div>';
+            } else {
+                ebooksContainer.innerHTML = `<div class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${data.message || 'No ebooks available'}
+                </div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading ebooks:', error);
+            ebooksContainer.innerHTML = `<div class="text-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Error loading ebooks: ${error.message}
+            </div>`;
+        });
+}
+
+function getCourseImageUrl(course) {
+    if (!course.image) {
+        return '/static/images/default-course.jpg';
+    }
+    
+    // Check if the image filename starts with 8 digits (admin-uploaded pattern)
+    if (course.image.substring(0, 8).match(/^\d{8}$/)) {
+        return `https://skill-finesse-videos.b-cdn.net/courses/${course.image}`;
+    }
+    return `/static/images/${course.image}`;
+}
+
+function getEbookImageUrl(ebook) {
+    if (!ebook.cover_image) {
+        return '/static/images/default-ebook.jpg';
+    }
+    
+    // Check if it's a Bunny CDN file (has timestamp pattern)
+    if (ebook.cover_image.includes('_')) {
+        const parts = ebook.cover_image.split('_');
+        const lastPart = parts[parts.length - 1].split('.')[0];
+        if (!isNaN(lastPart) && lastPart.length > 0) {
+            return `https://skill-finesse-videos.b-cdn.net/ebooks/${ebook.cover_image}`;
+        }
+    }
+    return `/static/images/ebook_cover/${ebook.cover_image}`;
+}
+
+// Load available courses and ebooks
+function loadCoursesAndEbooks(isEditMode = false) {
+    console.log('🔄 Loading courses and ebooks, editMode:', isEditMode);
+    const coursesContainer = isEditMode ? 'editCoursesList' : 'coursesList';
+    const ebooksContainer = isEditMode ? 'editEbooksList' : 'ebooksList';
+    
+    console.log('📚 Containers:', coursesContainer, ebooksContainer);
+    
+    // Check if containers exist
+    const coursesElement = document.getElementById(coursesContainer);
+    const ebooksElement = document.getElementById(ebooksContainer);
+    
+    if (!coursesElement) {
+        console.error('❌ Courses container not found:', coursesContainer);
+        return Promise.reject('Courses container not found');
+    }
+    
+    if (!ebooksElement) {
+        console.error('❌ Ebooks container not found:', ebooksContainer);
+        return Promise.reject('Ebooks container not found');
+    }
+    
+    console.log('✅ Both containers found successfully');
+    
+    // Load courses and ebooks in parallel and return a Promise when both are done
+    const coursesPromise = fetch('/admin/get-courses', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        console.log('🎓 Courses response status:', response.status);
+        if (response.status === 401) {
+            throw new Error('Authentication failed. Please ensure you are logged in as admin.');
+        }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('🎓 Courses data received:', data);
+        console.log('🎓 Number of courses:', data.courses ? data.courses.length : 0);
+        if (data.success && data.courses) {
+            displayCourses(data.courses, coursesContainer, isEditMode);
+        } else {
+            console.log('❌ Courses request unsuccessful:', data.message);
+            document.getElementById(coursesContainer).innerHTML = `<div class="text-center py-3 text-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${data.message || 'No courses available'}
+                <br><small class="text-muted">Make sure courses are created and you have admin access</small>
+            </div>`;
+        }
+        return data;
+    })
+    .catch(error => {
+        console.error('❌ Error loading courses:', error);
+        document.getElementById(coursesContainer).innerHTML = `<div class="text-center py-3 text-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            Error loading courses: ${error.message}
+            <br><small class="text-muted">Check console for details</small>
+        </div>`;
+        throw error;
+    });
+    
+    const ebooksPromise = fetch('/admin/get-ebooks', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        console.log('📖 Ebooks response status:', response.status);
+        if (response.status === 401) {
+            throw new Error('Authentication failed. Please ensure you are logged in as admin.');
+        }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('📖 Ebooks data received:', data);
+        console.log('📖 Number of ebooks:', data.ebooks ? data.ebooks.length : 0);
+        if (data.success && data.ebooks) {
+            displayEbooks(data.ebooks, ebooksContainer, isEditMode);
+        } else {
+            console.log('❌ Ebooks request unsuccessful:', data.message);
+            document.getElementById(ebooksContainer).innerHTML = `<div class="text-center py-3 text-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${data.message || 'No ebooks available'}
+                <br><small class="text-muted">Make sure ebooks are created and you have admin access</small>
+            </div>`;
+        }
+        return data;
+    })
+    .catch(error => {
+        console.error('❌ Error loading ebooks:', error);
+        document.getElementById(ebooksContainer).innerHTML = `<div class="text-center py-3 text-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            Error loading ebooks: ${error.message}
+            <br><small class="text-muted">Check console for details</small>
+        </div>`;
+        throw error;
+    });
+    
+    // Return a Promise that resolves when both courses and ebooks are loaded
+    return Promise.all([coursesPromise, ebooksPromise])
+        .then(([coursesData, ebooksData]) => {
+            console.log('✅ Both courses and ebooks loaded successfully');
+            return { courses: coursesData, ebooks: ebooksData };
+        });
+}
+
+// Display courses with checkboxes
+function displayCourses(courses, containerId, isEditMode = false) {
+    console.log('🎓 displayCourses called with:', courses.length, 'courses for container:', containerId);
+    const container = document.getElementById(containerId);
+    const prefix = isEditMode ? 'edit_' : '';
+    
+    if (!container) {
+        console.error('❌ Container not found:', containerId);
+        return;
+    }
+    
+    if (courses.length === 0) {
+        console.log('⚠️ No courses to display');
+        container.innerHTML = '<div class="text-center py-3 text-muted">No courses available</div>';
+        return;
+    }
+    
+    console.log('🎓 Generating HTML for courses...');
+    
+    // Helper function to get course image URL
+    function getCourseImageUrl(course) {
+        if (!course.image) return '/static/images/default-course.jpg';
+        
+        // Check if filename has timestamp pattern (Bunny CDN file)
+        if (course.image.includes('_')) {
+            const parts = course.image.split('_');
+            const lastPart = parts[parts.length - 1].split('.')[0];
+            if (lastPart.length === 10 && /^\d{10}$/.test(lastPart)) {
+                return `https://skill-finesse-videos.b-cdn.net/courses/${course.image}`;
+            }
+        }
+        return `/static/uploads/${course.image}`;
+    }
+    
+    const coursesHtml = courses.map(course => {
+        return `
+        <div class="form-check mb-3 p-2 border rounded" style="background-color: #ffffff;">
+            <input class="form-check-input" type="checkbox" value="${course.id}" id="${prefix}course_${course.id}" name="courses[]">
+            <label class="form-check-label" for="${prefix}course_${course.id}">
+                <strong>${course.title}</strong>
+                <br><small class="text-muted">৳${course.price} - ${course.category || 'General'}</small>
+                ${course.instructor_name ? `<br><small class="text-info">Instructor: ${course.instructor_name}</small>` : ''}
+            </label>
+        </div>
+        `;
+    }).join('');
+    
+    console.log('🎓 Setting innerHTML for container:', containerId);
+    container.innerHTML = coursesHtml;
+    console.log('✅ Courses displayed successfully');
+}
+
+// Display ebooks with checkboxes
+function displayEbooks(ebooks, containerId, isEditMode = false) {
+    console.log('📖 displayEbooks called with:', ebooks.length, 'ebooks for container:', containerId);
+    const container = document.getElementById(containerId);
+    const prefix = isEditMode ? 'edit_' : '';
+    
+    if (!container) {
+        console.error('❌ Container not found:', containerId);
+        return;
+    }
+    
+    if (ebooks.length === 0) {
+        console.log('⚠️ No ebooks to display');
+        container.innerHTML = '<div class="text-center py-3 text-muted">No ebooks available</div>';
+        return;
+    }
+    
+    console.log('📖 Generating HTML for ebooks...');
+    
+    // Helper function to get ebook cover image URL
+    function getEbookImageUrl(ebook) {
+        if (!ebook.cover_image) return '/static/images/default-ebook.jpg';
+        
+        // Check if filename has timestamp pattern (Bunny CDN file)
+        if (ebook.cover_image.includes('_')) {
+            const parts = ebook.cover_image.split('_');
+            const lastPart = parts[parts.length - 1].split('.')[0];
+            if (lastPart.length === 10 && /^\d{10}$/.test(lastPart)) {
+                return `https://skill-finesse-videos.b-cdn.net/ebooks/${ebook.cover_image}`;
+            }
+        }
+        return `/static/images/ebook_cover/${ebook.cover_image}`;
+    }
+    
+    const ebooksHtml = ebooks.map(ebook => {
+        return `
+        <div class="form-check mb-3 p-2 border rounded" style="background-color: #ffffff;">
+            <input class="form-check-input" type="checkbox" value="${ebook.id}" id="${prefix}ebook_${ebook.id}" name="ebooks[]">
+            <label class="form-check-label" for="${prefix}ebook_${ebook.id}">
+                <strong>${ebook.title || ebook.name}</strong>
+                <br><small class="text-muted">৳${ebook.price} - ${ebook.status}</small>
+                ${ebook.author ? `<br><small class="text-info">Author: ${ebook.author}</small>` : ''}
+            </label>
+        </div>
+        `;
+    }).join('');
+    
+    console.log('📖 Setting innerHTML for container:', containerId);
+    container.innerHTML = ebooksHtml;
+    console.log('✅ Ebooks displayed successfully');
+}
+
+// Modified submitAddUserForm to include courses and ebooks
+function submitAddUserFormWithContent() {
+    const form = document.getElementById('addUserForm');
+    const submitBtn = document.getElementById('addUserBtn');
+    const statusDiv = document.getElementById('userFormStatus');
+    const formData = new FormData(form);
+    
+    // Collect selected courses
+    const selectedCourses = [];
+    document.querySelectorAll('#coursesList input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedCourses.push(checkbox.value);
+    });
+    
+    // Collect selected ebooks
+    const selectedEbooks = [];
+    document.querySelectorAll('#ebooksList input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedEbooks.push(checkbox.value);
+    });
+    
+    // Add courses and ebooks to form data
+    selectedCourses.forEach(courseId => {
+        formData.append('courses[]', courseId);
+    });
+    
+    selectedEbooks.forEach(ebookId => {
+        formData.append('ebooks[]', ebookId);
+    });
+    
+    // Update button state
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating User...';
+    submitBtn.disabled = true;
+    
+    // Hide previous status
+    statusDiv.style.display = 'none';
+    
+    fetch('/admin/users/create', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            statusDiv.className = 'alert alert-success';
+            statusDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i>${data.message}`;
+            statusDiv.style.display = 'block';
+            
+            // Reset form
+            form.reset();
+            
+            // Reset checkboxes
+            document.querySelectorAll('#coursesList input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#ebooksList input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            // Add user to table dynamically
+            addUserToTable(data.user);
+            
+            // Close modal after a delay
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                statusDiv.style.display = 'none';
+            }, 2000);
+            
+        } else {
+            // Show error message
+            statusDiv.className = 'alert alert-danger';
+            statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${data.message}`;
+            statusDiv.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        statusDiv.className = 'alert alert-danger';
+        statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>An error occurred while creating the user.`;
+        statusDiv.style.display = 'block';
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// Load user's existing purchases when editing
+function loadUserPurchases(userId) {
+    console.log('🛒 Loading purchases for user:', userId);
+    
+    fetch(`/admin/users/${userId}/purchases`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+    })
+        .then(response => {
+            console.log('🛒 Purchases response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('🛒 Purchases data received:', data);
+            if (data.success) {
+                console.log('🛒 User has courses:', data.courses, 'ebooks:', data.ebooks);
+                
+                // First clear all checkboxes
+                document.querySelectorAll('#editCoursesList input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#editEbooksList input[type="checkbox"]').forEach(cb => cb.checked = false);
+                
+                // Check the courses this user has purchased
+                console.log(`🎯 Checking ${data.courses.length} courses for user`);
+                data.courses.forEach(courseId => {
+                    const checkbox = document.querySelector(`#edit_course_${courseId}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        console.log(`✅ Checked course ${courseId}`);
+                    } else {
+                        console.log(`⚠️ Course checkbox not found: edit_course_${courseId}`);
+                        // Debug: Show all available course checkboxes
+                        const allCourseCheckboxes = document.querySelectorAll('#editCoursesList input[type="checkbox"]');
+                        console.log('Available course checkboxes:', Array.from(allCourseCheckboxes).map(cb => cb.id));
+                    }
+                });
+                
+                // Check the ebooks this user has purchased
+                console.log(`🎯 Checking ${data.ebooks.length} ebooks for user`);
+                data.ebooks.forEach(ebookId => {
+                    const checkbox = document.querySelector(`#edit_ebook_${ebookId}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        console.log(`✅ Checked ebook ${ebookId}`);
+                    } else {
+                        console.log(`⚠️ Ebook checkbox not found: edit_ebook_${ebookId}`);
+                        // Debug: Show all available ebook checkboxes
+                        const allEbookCheckboxes = document.querySelectorAll('#editEbooksList input[type="checkbox"]');
+                        console.log('Available ebook checkboxes:', Array.from(allEbookCheckboxes).map(cb => cb.id));
+                    }
+                });
+            } else {
+                console.log('❌ Failed to load user purchases:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error loading user purchases:', error);
+        });
+}
+
+// DIRECT FUNCTIONS - These will work immediately
+function editUserDirect(userId) {
+    // Store user ID globally for the modal event listener to use
+    window.currentEditingUserId = userId;
+    
+    // Show the modal immediately (this will trigger the shown.bs.modal event)
+    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+    
+    // Load user data
+    fetch('/admin/users/' + userId, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Fill form
+            document.getElementById('editFirstName').value = data.user.first_name || '';
+            document.getElementById('editLastName').value = data.user.last_name || '';
+            document.getElementById('editUsername').value = data.user.username || '';
+            document.getElementById('editEmail').value = data.user.email || '';
+            document.getElementById('editPhoneNumber').value = data.user.phone_number || '';
+            document.getElementById('editGender').value = data.user.gender || 'Other';
+            document.getElementById('editBirthDate').value = data.user.birth_date || '';
+            document.getElementById('editCountry').value = data.user.country || 'Bangladesh';
+            document.getElementById('editIsAdmin').checked = data.user.is_admin || false;
+            
+            // Store ID for saving
+            document.getElementById('editUserForm').setAttribute('data-user-id', userId);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error.message);
+    });
+}
+
+function deleteUserDirect(userId) {
+    // Get user name
+    const userRow = document.querySelector('button[onclick="deleteUserDirect(' + userId + ')"]').closest('tr');
+    const userName = userRow.querySelector('.user-name').textContent;
+    
+    if (confirm('Delete user "' + userName + '"? This cannot be undone!')) {
+        fetch('/admin/users/' + userId + '/delete', {
+            method: 'DELETE',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('SUCCESS: User deleted!');
+                location.reload(); // Refresh page
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    }
+}
+
+console.log('🔧 User Management JavaScript loaded');
+
+// Debug: Check session status
+function checkSessionStatus() {
+    const indicator = document.getElementById('adminStatusIndicator');
+    
+    fetch('/admin/get-courses', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('✅ Admin session is working, found', data.courses.length, 'courses');
+            indicator.className = 'badge bg-success';
+            indicator.innerHTML = '<i class="fas fa-check me-1"></i>Admin Session Active';
+        } else {
+            console.error('❌ Admin session failed:', data.message);
+            indicator.className = 'badge bg-danger';
+            indicator.innerHTML = '<i class="fas fa-times me-1"></i>Admin Session Failed';
+            
+            // Show detailed error
+            setTimeout(() => {
+                alert('❌ ADMIN AUTHENTICATION FAILED\n\n' + 
+                      'Error: ' + data.message + '\n\n' +
+                      'Solutions:\n' +
+                      '1. Log out and log back in as admin@skillfinesse.com\n' +
+                      '2. Make sure you are using the correct admin password\n' +
+                      '3. Clear browser cookies and try again\n' +
+                      '4. Check if you are accessing the admin dashboard correctly');
+            }, 1000);
+        }
+    })
+    .catch(error => {
+        console.error('❌ Session check failed:', error);
+        indicator.className = 'badge bg-warning';
+        indicator.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Connection Failed';
+        
+        setTimeout(() => {
+            alert('❌ CONNECTION ERROR\n\n' + 
+                  'Cannot connect to server: ' + error.message + '\n\n' +
+                  'Please check your internet connection and try refreshing the page.');
+        }, 1000);
+    });
+}
+
+// Check session status immediately
+checkSessionStatus();
+
+console.log('🔧 User Management JavaScript loaded');
+
+</script>

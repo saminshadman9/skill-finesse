@@ -1,0 +1,572 @@
+<!-- Contact Management Section -->
+<div class="content-section" id="contact-management-section" style="display: none;">
+    <div class="page-header">
+        <h1>Contact Management</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Admin</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contact Management</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <!-- Contact Messages Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-info">
+                        <h3 id="totalContactMessages" class="stat-value">{{ contact_messages|length }}</h3>
+                        <p class="stat-label">Total Messages</p>
+                    </div>
+                    <div class="stat-icon primary">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-info">
+                        <h3 id="unreadContactMessages" class="stat-value">{{ contact_messages|selectattr('is_read', 'equalto', false)|list|length }}</h3>
+                        <p class="stat-label">Unread Messages</p>
+                    </div>
+                    <div class="stat-icon warning">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Messages Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-filter me-2"></i>Filter Messages</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="readFilter" class="form-label">Read Status</label>
+                            <select class="form-select" id="readFilter">
+                                <option value="">All Messages</option>
+                                <option value="unread">Unread</option>
+                                <option value="read">Read</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="contactSearch" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="contactSearch" placeholder="Search by name, email, or subject...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Messages List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3><i class="fas fa-list me-2"></i>Contact Messages</h3>
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshContactMessages()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" id="markSelectedReadBtn" onclick="markSelectedAsRead()" style="display: none;">
+                            <i class="fas fa-check"></i> Mark Selected Read
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double"></i> Mark All Read
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" id="deleteSelectedBtn" onclick="deleteSelectedMessages()" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete Selected
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <input type="checkbox" id="selectAllMessages" class="form-check-input" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactMessagesTableBody">
+                                {% for message in contact_messages %}
+                                <tr class="contact-message-row {{ 'table-warning' if not message.is_read else '' }}" 
+                                    data-read="{{ 'read' if message.is_read else 'unread' }}"
+                                    data-search="{{ (message.first_name + ' ' + message.last_name + ' ' + message.email + ' ' + message.subject).lower() }}">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input message-checkbox" value="{{ message.id }}" onchange="updateBulkButtons()">
+                                    </td>
+                                    <td>
+                                        {% if not message.is_read %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-envelope"></i> Unread
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-envelope-open"></i> Read
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="contact-name">
+                                        <strong>{{ message.first_name }} {{ message.last_name }}</strong>
+                                    </td>
+                                    <td class="contact-email">
+                                        <a href="mailto:{{ message.email }}">{{ message.email }}</a>
+                                    </td>
+                                    <td class="contact-subject">
+                                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ message.subject }}">
+                                            {{ message.subject }}
+                                        </span>
+                                    </td>
+                                    <td class="contact-date">
+                                        <small>{{ message.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </td>
+                                    <td class="contact-actions">
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="viewContactMessage({{ message.id }})" title="View Message">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="openGmailReply('{{ message.email }}', '{{ message.subject }}', '{{ message.first_name }} {{ message.last_name }}')" title="Reply via Gmail">
+                                                <i class="fas fa-reply"></i>
+                                            </button>
+                                            {% if not message.is_read %}
+                                            <button class="btn btn-outline-info" onclick="markAsRead({{ message.id }})" title="Mark as Read">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                            <button class="btn btn-outline-danger" onclick="deleteContactMessage({{ message.id }})" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                                            <p>No contact messages yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Message View Modal -->
+<div class="modal fade" id="contactMessageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Contact Message Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="contactMessageModalBody">
+                <!-- Message details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="replyFromModal">
+                    <i class="fas fa-reply"></i> Reply via Gmail
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Contact Management JavaScript Functions
+function viewContactMessage(messageId) {
+    // Fetch and display contact message details
+    fetch(`/admin/contact-message/${messageId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const message = data.message;
+                document.getElementById('contactMessageModalBody').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>From:</strong><br>
+                            ${message.first_name} ${message.last_name}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Email:</strong><br>
+                            <a href="mailto:${message.email}">${message.email}</a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Subject:</strong><br>
+                            ${message.subject}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Date:</strong><br>
+                            ${new Date(message.submitted_at).toLocaleString()}
+                        </div>
+                        <div class="col-12 mb-3">
+                            <strong>Message:</strong><br>
+                            <div class="border rounded p-3 bg-light">
+                                ${message.message.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                        ${message.admin_reply ? `
+                        <div class="col-12">
+                            <strong>Admin Reply:</strong><br>
+                            <div class="border rounded p-3 bg-success-subtle">
+                                ${message.admin_reply.replace(/\n/g, '<br>')}
+                            </div>
+                            <small class="text-muted">
+                                Replied on ${new Date(message.replied_at).toLocaleString()}
+                            </small>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                document.getElementById('replyFromModal').onclick = () => {
+                    bootstrap.Modal.getInstance(document.getElementById('contactMessageModal')).hide();
+                    openGmailReply(message.email, message.subject, message.first_name + ' ' + message.last_name);
+                };
+                
+                new bootstrap.Modal(document.getElementById('contactMessageModal')).show();
+                
+                // Mark as read if not already read
+                if (!message.is_read) {
+                    markAsRead(messageId);
+                }
+            } else {
+                alert('Error loading message: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading message details');
+        });
+}
+
+function openGmailReply(email, subject, senderName) {
+    // Create Gmail compose URL
+    const replySubject = encodeURIComponent('Re: ' + subject);
+    const toEmail = encodeURIComponent(email);
+    const body = encodeURIComponent(`Dear ${senderName},\n\nThank you for contacting us. \n\nBest regards,\nSkill Finesse Team`);
+    
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${toEmail}&su=${replySubject}&body=${body}`;
+    
+    // Open Gmail in a new tab
+    window.open(gmailUrl, '_blank');
+}
+
+function markAsRead(messageId) {
+    fetch(`/admin/contact-message/${messageId}/mark-read`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the row to remove unread styling
+            const row = document.querySelector(`tr[data-search*="${messageId}"]`);
+            if (row) {
+                row.classList.remove('table-warning');
+                row.setAttribute('data-read', 'read');
+                // Remove unread badge and mark as read button
+                const statusCell = row.querySelector('td:first-child');
+                const unreadBadge = statusCell.querySelector('.badge.bg-warning');
+                if (unreadBadge) {
+                    unreadBadge.remove();
+                }
+                const markReadBtn = row.querySelector('button[onclick*="markAsRead"]');
+                if (markReadBtn) {
+                    markReadBtn.remove();
+                }
+            }
+            // Update statistics
+            refreshContactStats();
+        } else {
+            alert('Error marking message as read: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error marking message as read');
+    });
+}
+
+function markAllAsRead() {
+    if (confirm('Are you sure you want to mark all messages as read?')) {
+        fetch('/admin/contact-messages/mark-all-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Refresh the page to update all statuses
+            } else {
+                alert('Error marking all messages as read: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error marking all messages as read');
+        });
+    }
+}
+
+function deleteContactMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
+        fetch(`/admin/contact-message/${messageId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the row from the table
+                const row = document.querySelector(`button[onclick*="${messageId}"]`).closest('tr');
+                if (row) {
+                    row.remove();
+                }
+                // Update statistics
+                refreshContactStats();
+            } else {
+                alert('Error deleting message: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting message');
+        });
+    }
+}
+
+function refreshContactMessages() {
+    location.reload();
+}
+
+function refreshContactStats() {
+    // You can implement this to update statistics without full page reload
+    // For now, we'll use a simple reload for statistics
+}
+
+// Bulk Operations Functions
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('selectAllMessages');
+    const messageCheckboxes = document.querySelectorAll('.message-checkbox');
+    
+    messageCheckboxes.forEach(checkbox => {
+        // Only toggle visible checkboxes (not filtered out)
+        if (checkbox.closest('tr').style.display !== 'none') {
+            checkbox.checked = selectAllCheckbox.checked;
+        }
+    });
+    
+    updateBulkButtons();
+}
+
+function updateBulkButtons() {
+    const selectedCheckboxes = document.querySelectorAll('.message-checkbox:checked');
+    const markSelectedReadBtn = document.getElementById('markSelectedReadBtn');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+    const selectAllCheckbox = document.getElementById('selectAllMessages');
+    
+    // Show/hide bulk action buttons based on selection
+    if (selectedCheckboxes.length > 0) {
+        markSelectedReadBtn.style.display = 'inline-block';
+        deleteSelectedBtn.style.display = 'inline-block';
+    } else {
+        markSelectedReadBtn.style.display = 'none';
+        deleteSelectedBtn.style.display = 'none';
+    }
+    
+    // Update select all checkbox state
+    const allVisibleCheckboxes = Array.from(document.querySelectorAll('.message-checkbox')).filter(
+        checkbox => checkbox.closest('tr').style.display !== 'none'
+    );
+    const checkedVisibleCheckboxes = allVisibleCheckboxes.filter(checkbox => checkbox.checked);
+    
+    if (checkedVisibleCheckboxes.length === 0) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = false;
+    } else if (checkedVisibleCheckboxes.length === allVisibleCheckboxes.length) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = true;
+    } else {
+        selectAllCheckbox.indeterminate = true;
+        selectAllCheckbox.checked = false;
+    }
+}
+
+function getSelectedMessageIds() {
+    const selectedCheckboxes = document.querySelectorAll('.message-checkbox:checked');
+    return Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+}
+
+function markSelectedAsRead() {
+    const selectedIds = getSelectedMessageIds();
+    
+    if (selectedIds.length === 0) {
+        alert('Please select messages to mark as read.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to mark ${selectedIds.length} message(s) as read?`)) {
+        // Send batch request to mark selected messages as read
+        fetch('/admin/contact-messages/mark-selected-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message_ids: selectedIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the UI for each marked message
+                selectedIds.forEach(messageId => {
+                    const checkbox = document.querySelector(`input[value="${messageId}"]`);
+                    if (checkbox) {
+                        const row = checkbox.closest('tr');
+                        row.classList.remove('table-warning');
+                        row.setAttribute('data-read', 'read');
+                        
+                        // Update status badge from unread to read
+                        const statusCell = row.querySelector('td:nth-child(2)');
+                        const unreadBadge = statusCell.querySelector('.badge.bg-warning');
+                        if (unreadBadge) {
+                            unreadBadge.innerHTML = '<i class="fas fa-envelope-open"></i> Read';
+                            unreadBadge.classList.remove('bg-warning');
+                            unreadBadge.classList.add('bg-success');
+                        }
+                        
+                        // Remove mark as read button
+                        const markReadBtn = row.querySelector('button[onclick*="markAsRead"]');
+                        if (markReadBtn) {
+                            markReadBtn.remove();
+                        }
+                    }
+                });
+                
+                // Clear selections and update buttons
+                document.querySelectorAll('.message-checkbox:checked').forEach(cb => cb.checked = false);
+                updateBulkButtons();
+                refreshContactStats();
+                
+                alert(`${selectedIds.length} message(s) marked as read successfully.`);
+            } else {
+                alert('Error marking messages as read: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error marking messages as read');
+        });
+    }
+}
+
+function deleteSelectedMessages() {
+    const selectedIds = getSelectedMessageIds();
+    
+    if (selectedIds.length === 0) {
+        alert('Please select messages to delete.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} message(s)? This action cannot be undone.`)) {
+        // Send batch request to delete selected messages
+        fetch('/admin/contact-messages/delete-selected', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message_ids: selectedIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the rows from the table
+                selectedIds.forEach(messageId => {
+                    const checkbox = document.querySelector(`input[value="${messageId}"]`);
+                    if (checkbox) {
+                        const row = checkbox.closest('tr');
+                        row.remove();
+                    }
+                });
+                
+                // Clear selections and update buttons
+                updateBulkButtons();
+                refreshContactStats();
+                
+                alert(`${selectedIds.length} message(s) deleted successfully.`);
+            } else {
+                alert('Error deleting messages: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting messages');
+        });
+    }
+}
+
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const readFilter = document.getElementById('readFilter');
+    const searchInput = document.getElementById('contactSearch');
+    
+    function filterMessages() {
+        const readValue = readFilter.value;
+        const searchValue = searchInput.value.toLowerCase();
+        
+        const rows = document.querySelectorAll('.contact-message-row');
+        rows.forEach(row => {
+            let show = true;
+            
+            // Read filter
+            if (readValue && row.getAttribute('data-read') !== readValue) {
+                show = false;
+            }
+            
+            // Search filter
+            if (searchValue && !row.getAttribute('data-search').includes(searchValue)) {
+                show = false;
+            }
+            
+            row.style.display = show ? '' : 'none';
+        });
+        
+        // Update bulk buttons and select all checkbox after filtering
+        updateBulkButtons();
+    }
+    
+    readFilter.addEventListener('change', filterMessages);
+    searchInput.addEventListener('input', filterMessages);
+});
+</script>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Skill Finesse{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
+    <!-- Custom styles -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Website Alert Styles -->
+    <style>
+        /* Website Alert Banner Styles */
+        .website-alert {
+            background-color: #ff6b6b;
+            color: #ffffff;
+            padding: 10px 0;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 1050;
+        }
+        
+        .alert-text-container {
+            width: 100%;
+            position: relative;
+        }
+        
+        .alert-text {
+            display: inline-block;
+            animation: scroll-right-to-left 20s linear infinite;
+            font-weight: 600;
+            font-size: 1rem;
+            padding-left: 100%;
+        }
+        
+        @keyframes scroll-right-to-left {
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        /* Responsive design for alert */
+        @media (max-width: 768px) {
+            .alert-text {
+                font-size: 0.9rem;
+                animation-duration: 15s;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .alert-text {
+                font-size: 0.85rem;
+                animation-duration: 12s;
+            }
+        }
+        
+        /* Ensure navbar positioning when alert is shown */
+        .website-alert + .navbar {
+            top: 0;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Initialize AOS animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true,
+                easing: 'ease-in-out'
+            });
+            
+            // Load and display website alert
+            loadWebsiteAlert();
+        });
+        
+        // Website Alert Functionality
+        function loadWebsiteAlert() {
+            fetch('/api/get-active-alert')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.alert) {
+                        const alertBanner = document.getElementById('websiteAlert');
+                        const alertText = document.getElementById('websiteAlertText');
+                        
+                        if (alertBanner && alertText) {
+                            // Set alert content and styles
+                            alertText.textContent = data.alert.message;
+                            alertBanner.style.backgroundColor = data.alert.background_color;
+                            alertBanner.style.color = data.alert.text_color;
+                            
+                            // Show the alert
+                            alertBanner.style.display = 'block';
+                        }
+                    } else {
+                        // Hide the alert if no active alert
+                        const alertBanner = document.getElementById('websiteAlert');
+                        if (alertBanner) {
+                            alertBanner.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading website alert:', error);
+                    // Hide alert on error
+                    const alertBanner = document.getElementById('websiteAlert');
+                    if (alertBanner) {
+                        alertBanner.style.display = 'none';
+                    }
+                });
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

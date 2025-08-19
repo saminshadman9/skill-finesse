@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+        --light-bg: #f7f8fa;
+        --white: #ffffff;
+    }
+    
+    .about-title {
+        color: var(--primary-color);
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .about-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    .star-icon {
+        position: absolute;
+        top: -30px;
+        right: 30%;
+        color: #ffc107;
+        font-size: 1.5rem;
+    }
+    
+    .about-container {
+        background-color: var(--light-bg);
+        border-radius: 15px;
+        padding: 40px;
+        margin: 40px 0;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+        border-left: 4px solid var(--primary-color);
+        border-right: 4px solid var(--primary-color);
+    }
+    
+    .about-section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .about-subtitle {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
+    
+    .about-text {
+        color: #666;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        text-align: center;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .feature-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 10px;
+    }
+    
+    .feature-desc {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .journey-section {
+        background-color: white;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+    
+    .journey-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    .journey-subtitle {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .journey-image {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .ready-text {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .community-text {
+        text-align: center;
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-primary-custom {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 25px;
+        font-weight: 600;
+        display: block;
+        width: 100%;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-primary-custom:hover {
+        background-color: #008c44;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 166, 81, 0.3);
+        color: white;
+    }
+    
+    .btn-outline-custom {
+        background-color: rgba(0, 166, 81, 0.1);
+        color: var(--primary-color);
+        border: none;
+        border-radius: 30px;
+        padding: 10px 20px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .btn-outline-custom:hover {
+        background-color: rgba(0, 166, 81, 0.2);
+        transform: translateY(-3px);
+        color: var(--primary-color);
+    }
+    
+    .btn-arrow {
+        margin-left: 5px;
+    }
+    
+    /* Team Section Styles */
+    .team-section {
+        padding: 80px 0;
+        background-color: var(--light-bg);
+    }
+    
+    .team-title {
+        color: var(--primary-color);
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .team-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    .team-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .team-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 20px;
+        border: 5px solid rgba(0, 166, 81, 0.1);
+    }
+    
+    .team-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 5px;
+    }
+    
+    .team-position {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .team-social {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .team-social a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        background-color: rgba(0, 166, 81, 0.1);
+        color: var(--primary-color);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+    
+    .team-social a:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* Mission Section Styles */
+    .mission-section {
+        padding: 80px 0;
+    }
+    
+    .mission-title {
+        color: var(--primary-color);
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .mission-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    .mission-card {
+        background-color: var(--light-bg);
+        border-radius: 15px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .mission-subtitle {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .mission-text {
+        color: #666;
+        line-height: 1.8;
+    }
+    
+    .mission-list {
+        margin: 20px 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .mission-list li {
+        padding-left: 30px;
+        position: relative;
+        margin-bottom: 15px;
+        color: #666;
+    }
+    
+    .mission-list li::before {
+        content: '\f00c';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        color: var(--primary-color);
+    }
+    
+    /* Make sure the About nav link is active */
+    .nav-item .nav-link[href="{{ url_for('about') }}"] {
+        color: var(--primary-color);
+    }
+    
+    .nav-item .nav-link[href="{{ url_for('about') }}"]::after {
+        width: 100%;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+        .about-container {
+            padding: 30px;
+        }
+        
+        .journey-section {
+            margin-top: 30px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .about-title {
+            font-size: 2rem;
+        }
+        
+        .about-section-title {
+            font-size: 1.5rem;
+        }
+        
+        .star-icon {
+            right: 25%;
+        }
+        
+        .btn-outline-custom {
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<div class="container">
+    <!-- About Title Section -->
+    <h1 class="about-title mt-5">
+        {{ main_about_data.main_about_title }}
+        <i class="fas fa-star star-icon"></i>
+    </h1>
+    
+    <!-- Main About Section -->
+    <div class="about-container">
+        <div class="row">
+            <!-- Left Side Content -->
+            <div class="col-lg-8">
+                <h2 class="about-section-title">{{ main_about_data.main_about_title }}</h2>
+                <div class="about-subtitle">{{ main_about_data.main_about_subtitle }}</div>
+                
+                <div class="about-text">
+                    {{ main_about_data.main_about_content|safe }}
+                </div>
+                
+                <!-- Feature Cards -->
+                <div class="row mt-4">
+                    {% for feature in main_about_data.main_about_features|from_json %}
+                    <div class="col-md-6 mb-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="{{ feature.icon }}"></i>
+                            </div>
+                            <h3 class="feature-title">{{ feature.title }}</h3>
+                            <p class="feature-desc">{{ feature.description }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="mt-4">
+                    <a href="#mission" class="btn-outline-custom">
+                        Our Mission <i class="fas fa-arrow-right btn-arrow"></i>
+                    </a>
+                    <a href="#team" class="btn-outline-custom">
+                        Our Team <i class="fas fa-arrow-right btn-arrow"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right Side - Journey Section -->
+            <div class="col-lg-4">
+                <div class="journey-section">
+                    {% for image in main_about_data.main_about_images|from_json %}
+                    <h3 class="journey-title">Our Journey</h3>
+                    <p class="journey-subtitle">Building a community of lifelong learners</p>
+                    
+                    <img src="{{ url_for('static', filename='images/' + image|get_attr_safe('image', 'default-image.jpg')) }}" alt="{{ image|get_attr_safe('alt', 'Image') }}" class="journey-image" onerror="this.src='https://via.placeholder.com/500x400?text=Happy+Student'">
+                    
+                    <h4 class="ready-text">{{ image|get_attr('caption') }}</h4>
+                    <p class="community-text">{{ image|get_attr('description') }}</p>
+                    
+                    <a href="{{ url_for('register') }}" class="btn-primary-custom">
+                        Learn More About Us <i class="fas fa-arrow-right btn-arrow"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mission Section -->
+    <section id="mission" class="mission-section">
+        <h2 class="mission-title">{{ mission_data.mission_title }}</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mission-card">
+                    <h3 class="mission-subtitle">Our Mission</h3>
+                    <div class="mission-text">
+                        {{ mission_data.mission_content|safe }}
+                    </div>
+                    
+                    <ul class="mission-list">
+                        {% for point in mission_data.mission_points|from_json %}
+                        <li>{{ point }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mission-card">
+                    <h3 class="mission-subtitle">{{ mission_data.mission_vision_title }}</h3>
+                    <div class="mission-text">
+                        {{ mission_data.mission_vision_content|safe }}
+                    </div>
+                    
+                    <ul class="mission-list">
+                        {% for point in mission_data.vision_points|from_json %}
+                        <li>{{ point }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Team Section -->
+    <section id="team" class="team-section">
+        <h2 class="team-title">{{ team_data.team_title }}</h2>
+        
+        <div class="row">
+            {% for member in team_data.team_members|from_json %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="team-card">
+                    <img src="{{ url_for('static', filename='images/' + member|get_attr_safe('image', 'default-team.jpg')) }}" alt="{{ member|get_attr_safe('name', 'Team Member') }}" class="team-image">
+                    <h3 class="team-name">{{ member|get_attr('name') }}</h3>
+                    <p class="team-position">{{ member|get_attr('position') }}</p>
+                    <div class="team-social">
+                        {% if member|get_attr('social_links')|get_attr('linkedin') %}
+                        <a href="{{ member|get_attr('social_links')|get_attr('linkedin') }}"><i class="fab fa-linkedin-in"></i></a>
+                        {% endif %}
+                        {% if member|get_attr('social_links')|get_attr('twitter') %}
+                        <a href="{{ member|get_attr('social_links')|get_attr('twitter') }}"><i class="fab fa-twitter"></i></a>
+                        {% endif %}
+                        {% if member|get_attr('social_links')|get_attr('facebook') %}
+                        <a href="{{ member|get_attr('social_links')|get_attr('facebook') }}"><i class="fab fa-facebook-f"></i></a>
+                        {% endif %}
+                        {% if member|get_attr('social_links')|get_attr('github') %}
+                        <a href="{{ member|get_attr('social_links')|get_attr('github') }}"><i class="fab fa-github"></i></a>
+                        {% endif %}
+                        {% if member|get_attr('social_links')|get_attr('youtube') %}
+                        <a href="{{ member|get_attr('social_links')|get_attr('youtube') }}"><i class="fab fa-youtube"></i></a>
+                        {% endif %}
+                        {% if member|get_attr('social_links')|get_attr('instagram') %}
+                        <a href="{{ member|get_attr('social_links')|get_attr('instagram') }}"><i class="fab fa-instagram"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make sure the About nav link is active
+        const aboutNavLink = document.querySelector('.nav-link[href="{{ url_for("about") }}"]');
+        if (aboutNavLink) {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            aboutNavLink.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

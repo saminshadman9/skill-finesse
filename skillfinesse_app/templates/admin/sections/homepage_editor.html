@@ -1,0 +1,2192 @@
+<!-- Homepage Editor Section -->
+<div id="homepage-editor-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>Homepage Editor</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" data-section="dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active">Homepage Editor</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Edit Homepage Sections</h4>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" onclick="previewHomepage()">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetToDefaults()">
+                        <i class="fas fa-undo"></i> Reset to Defaults
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Upload Guidelines -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-lightbulb"></i> Image Upload Guidelines</h5>
+                <p class="mb-2">For best results, please follow these general guidelines when uploading images:</p>
+                <ul class="mb-0 small">
+                    <li><strong>Quality:</strong> Use high-resolution images for crisp display on all devices</li>
+                    <li><strong>Optimization:</strong> Compress images before uploading to reduce load times</li>
+                    <li><strong>Content:</strong> Choose images that are relevant to your content and audience</li>
+                    <li><strong>Backup:</strong> Save your original images separately before uploading</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-star"></i> Features Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSection('features')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSection('features')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveFeaturesSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="featuresSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="featuresTitle" class="form-label">Section Title</label>
+                            <input type="text" class="form-control" id="featuresTitle" placeholder="Why Choose Skill Finesse">
+                        </div>
+                        <div class="mb-3">
+                            <label for="featuresSubtitle" class="form-label">Section Subtitle</label>
+                            <textarea class="form-control" id="featuresSubtitle" rows="2" placeholder="Discover the benefits that set us apart..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-primary"></i> Features Guidelines</h6>
+                                <ul>
+                                    <li><strong>Icons:</strong> Use FontAwesome class names (e.g., fas fa-graduation-cap)</li>
+                                    <li><strong>Title:</strong> Keep titles concise and descriptive</li>
+                                    <li><strong>Description:</strong> Write clear, benefit-focused descriptions</li>
+                                    <li><strong>Count:</strong> Recommended 3-6 features for best display</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Feature Items</label>
+                    <div id="featuresItemsContainer">
+                        <!-- Feature items will be dynamically loaded here -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addFeatureItem()">
+                        <i class="fas fa-plus"></i> Add Feature
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Video Showcase Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-video"></i> Video Showcase Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSection('videos')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSection('videos')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveVideosSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="videosSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="videosTitle" class="form-label">Section Title</label>
+                            <input type="text" class="form-control" id="videosTitle" placeholder="Featured Videos">
+                        </div>
+                        <div class="mb-3">
+                            <label for="videosSubtitle" class="form-label">Section Subtitle</label>
+                            <textarea class="form-control" id="videosSubtitle" rows="2" placeholder="Watch our most popular videos..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="videosYoutubeLink" class="form-label">YouTube Channel Link</label>
+                            <input type="url" class="form-control" id="videosYoutubeLink" placeholder="https://www.youtube.com/@SkillFinesse">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-warning"></i> YouTube Video Guidelines</h6>
+                                <ul>
+                                    <li><strong>Embed ID:</strong> Use only the video ID from YouTube URL</li>
+                                    <li><strong>Example:</strong> From https://youtube.com/watch?v=ABC123, use ABC123</li>
+                                    <li><strong>Categories:</strong> Use descriptive categories for organization</li>
+                                    <li><strong>Descriptions:</strong> Keep descriptions concise and engaging</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Video Items</label>
+                    <div id="videosItemsContainer">
+                        <!-- Video items will be dynamically loaded here -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addVideoItem()">
+                        <i class="fas fa-plus"></i> Add Video
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- About Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-info-circle"></i> About Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSection('about')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSection('about')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveAboutSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="aboutSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="aboutTitle" class="form-label">Section Title</label>
+                            <input type="text" class="form-control" id="aboutTitle" placeholder="About Skill Finesse">
+                        </div>
+                        <div class="mb-3">
+                            <label for="aboutContent" class="form-label">About Content (HTML allowed)</label>
+                            <textarea class="form-control rich-editor" id="aboutContent" rows="4" placeholder="Skill Finesse is a premier online learning platform..."></textarea>
+                        </div>
+                        
+                        <!-- About Points -->
+                        <div class="mb-3">
+                            <label class="form-label">About Points</label>
+                            <div id="aboutPointsContainer">
+                                <!-- About points will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAboutPoint()">
+                                <i class="fas fa-plus"></i> Add Point
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-success"></i> About Image Guidelines</h6>
+                                <ul>
+                                    <li><strong>Dimensions:</strong> 800x600px or 4:3 ratio recommended</li>
+                                    <li><strong>File Size:</strong> Maximum 1.5MB per image</li>
+                                    <li><strong>Formats:</strong> JPG, PNG, WEBP</li>
+                                    <li><strong>Content:</strong> Professional, engaging images</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- About Images -->
+                        <div class="mb-3">
+                            <label class="form-label">About Images</label>
+                            <div id="aboutImagesContainer">
+                                <!-- About images will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAboutImage()">
+                                <i class="fas fa-plus"></i> Add Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CTA Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-bullhorn"></i> CTA (Call-to-Action) Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSection('cta')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSection('cta')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveCtaSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="ctaSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="ctaTitle" class="form-label">CTA Title</label>
+                            <input type="text" class="form-control" id="ctaTitle" placeholder="Ready to Transform Your Career?">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ctaContent" class="form-label">CTA Content (HTML allowed)</label>
+                            <textarea class="form-control rich-editor" id="ctaContent" rows="3" placeholder="Take the first step toward your professional growth..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ctaButtonText" class="form-label">Button Text</label>
+                                    <input type="text" class="form-control" id="ctaButtonText" placeholder="Get Started Today">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ctaButtonUrl" class="form-label">Button URL</label>
+                                    <input type="text" class="form-control" id="ctaButtonUrl" placeholder="/register">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Points -->
+                        <div class="mb-3">
+                            <label class="form-label">CTA Points</label>
+                            <div id="ctaPointsContainer">
+                                <!-- CTA points will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCtaPoint()">
+                                <i class="fas fa-plus"></i> Add Point
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-danger"></i> CTA Image Guidelines</h6>
+                                <ul>
+                                    <li><strong>Dimensions:</strong> 500x400px or 5:4 ratio recommended</li>
+                                    <li><strong>File Size:</strong> Maximum 1MB per image</li>
+                                    <li><strong>Formats:</strong> JPG, PNG, WEBP</li>
+                                    <li><strong>Content:</strong> Success stories, testimonials, achievements</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Images -->
+                        <div class="mb-3">
+                            <label class="form-label">CTA Images</label>
+                            <div id="ctaImagesContainer">
+                                <!-- CTA images will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCtaImage()">
+                                <i class="fas fa-plus"></i> Add Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hero Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-home"></i> Hero Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSection('hero')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSection('hero')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveHeroSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="heroSectionForm">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="heroTitle" class="form-label">Main Title (HTML allowed)</label>
+                            <textarea class="form-control" id="heroTitle" rows="2" placeholder="Begin Your <span>Learning Journey</span> Today"></textarea>
+                            <div class="form-text">Use &lt;span&gt; tags to highlight specific words.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="heroSubtitle" class="form-label">Subtitle</label>
+                            <input type="text" class="form-control" id="heroSubtitle" placeholder="Transform Your Career with Expert-Led Courses">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="heroDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="heroDescription" rows="3" placeholder="Join thousands of students who have transformed their careers..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="heroButtonText" class="form-label">Primary Button Text</label>
+                                    <input type="text" class="form-control" id="heroButtonText" placeholder="Get Started Now">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="heroButtonUrl" class="form-label">Primary Button URL</label>
+                                    <input type="text" class="form-control" id="heroButtonUrl" placeholder="/register">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="heroVideoButtonText" class="form-label">Video Button Text</label>
+                            <input type="text" class="form-control" id="heroVideoButtonText" placeholder="Watch Video">
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <!-- Hero Stats -->
+                        <div class="mb-4">
+                            <label class="form-label">Hero Statistics</label>
+                            <div id="heroStatsContainer">
+                                <!-- Stats will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addHeroStat()">
+                                <i class="fas fa-plus"></i> Add Stat
+                            </button>
+                        </div>
+
+                        <!-- Hero Slider Images -->
+                        <div class="mb-3">
+                            <label class="form-label">Slider Images</label>
+                            <div class="upload-instructions mb-2">
+                                <div class="instruction-card">
+                                    <h6><i class="fas fa-info-circle text-primary"></i> Image Requirements</h6>
+                                    <ul>
+                                        <li><strong>Dimensions:</strong> 1920x1080px or 16:9 ratio</li>
+                                        <li><strong>File Size:</strong> Maximum 2MB</li>
+                                        <li><strong>Formats:</strong> JPG, PNG, WEBP, GIF</li>
+                                        <li><strong>Recommendation:</strong> Use high-quality images for best display</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="heroSliderContainer">
+                                <!-- Slider images will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addHeroSlide()">
+                                <i class="fas fa-plus"></i> Add Slide
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Courses Showcase Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-graduation-cap"></i> Courses Showcase Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSection('courses')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSection('courses_showcase')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveCoursesSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="coursesSectionForm">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="coursesTitle" class="form-label">Section Title</label>
+                            <input type="text" class="form-control" id="coursesTitle" placeholder="Your Learning Journey Starts Here">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="coursesSubtitle" class="form-label">Section Subtitle</label>
+                            <input type="text" class="form-control" id="coursesSubtitle" placeholder="Discover Quality Education">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="coursesDescription" class="form-label">Section Description</label>
+                            <textarea class="form-control" id="coursesDescription" rows="3" placeholder="Choose from our comprehensive collection..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="coursesGridTitle" class="form-label">Grid Section Title</label>
+                                    <input type="text" class="form-control" id="coursesGridTitle" placeholder="All Featured Online Courses">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="coursesGridBadge" class="form-label">Grid Badge</label>
+                                    <input type="text" class="form-control" id="coursesGridBadge" placeholder="Enrollment Open!">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course Cards -->
+                        <div class="mb-4">
+                            <label class="form-label">Course Cards</label>
+                            <div class="upload-instructions mb-2">
+                                <div class="instruction-card">
+                                    <h6><i class="fas fa-info-circle text-warning"></i> Course Card Image Requirements</h6>
+                                    <ul>
+                                        <li><strong>Dimensions:</strong> 400x300px or 4:3 ratio</li>
+                                        <li><strong>File Size:</strong> Maximum 1MB</li>
+                                        <li><strong>Formats:</strong> JPG, PNG, WEBP</li>
+                                        <li><strong>Recommendation:</strong> Use clear, course-related images</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="coursesCardsContainer">
+                                <!-- Course cards will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCourseCard()">
+                                <i class="fas fa-plus"></i> Add Course Card
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="coursesMiniSliderTitle" class="form-label">Mini Slider Title</label>
+                                    <input type="text" class="form-control" id="coursesMiniSliderTitle" placeholder="Learn Skills Your Way">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="coursesMiniSliderSubtitle" class="form-label">Mini Slider Subtitle</label>
+                                    <textarea class="form-control" id="coursesMiniSliderSubtitle" rows="2" placeholder="Personalized learning paths for your career growth"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini Slider Images -->
+                        <div class="mb-3">
+                            <label class="form-label">Mini Slider Images</label>
+                            <div class="upload-instructions mb-2">
+                                <div class="instruction-card">
+                                    <h6><i class="fas fa-info-circle text-success"></i> Mini Slider Image Requirements</h6>
+                                    <ul>
+                                        <li><strong>Dimensions:</strong> 500x300px or 5:3 ratio</li>
+                                        <li><strong>File Size:</strong> Maximum 800KB</li>
+                                        <li><strong>Formats:</strong> JPG, PNG, WEBP</li>
+                                        <li><strong>Recommendation:</strong> Use vibrant, engaging images</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="coursesMiniSliderContainer">
+                                <!-- Mini slider images will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addMiniSliderImage()">
+                                <i class="fas fa-plus"></i> Add Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Save All Button -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="saveAllSections()">
+                <i class="fas fa-save"></i> Save All Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Homepage Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="previewFrame" src="" width="100%" height="600" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/" target="_blank" class="btn btn-primary">Open in New Tab</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Homepage Editor Specific Styles */
+.hero-stat-item,
+.hero-slide-item,
+.course-card-item,
+.mini-slider-image-item {
+    background-color: #f8f9fc;
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.hero-stat-item .remove-btn,
+.hero-slide-item .remove-btn,
+.course-card-item .remove-btn,
+.mini-slider-image-item .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-stat-item .remove-btn:hover,
+.hero-slide-item .remove-btn:hover,
+.course-card-item .remove-btn:hover,
+.mini-slider-image-item .remove-btn:hover {
+    background-color: #c82333;
+}
+
+.image-preview {
+    max-width: 100px;
+    max-height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.image-preview-large {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.image-preview-large:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+.image-upload-container {
+    position: relative;
+}
+
+.image-preview-container {
+    width: 100%;
+    height: 120px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    margin-bottom: 5px;
+}
+
+.image-preview-container:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 166, 81, 0.05);
+}
+
+.upload-placeholder {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.upload-placeholder i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.sortable-item {
+    cursor: move;
+}
+
+.sortable-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Upload progress indicator */
+.upload-progress {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    z-index: 10;
+}
+
+.upload-success {
+    border-color: var(--primary-color) !important;
+    background-color: rgba(0, 166, 81, 0.1) !important;
+}
+
+.upload-error {
+    border-color: #dc3545 !important;
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Upload Instructions Styles */
+.upload-instructions {
+    margin-bottom: 15px;
+}
+
+.instruction-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.instruction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-card h6 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.instruction-card h6 i {
+    font-size: 1.1rem;
+}
+
+.instruction-card ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.instruction-card li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.instruction-card li strong {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Specific instruction card colors */
+.instruction-card h6 .text-primary {
+    color: #0066cc !important;
+}
+
+.instruction-card h6 .text-warning {
+    color: #ff8c00 !important;
+}
+
+.instruction-card h6 .text-success {
+    color: #28a745 !important;
+}
+
+/* Responsive instruction cards */
+@media (max-width: 768px) {
+    .instruction-card {
+        padding: 12px;
+    }
+    
+    .instruction-card h6 {
+        font-size: 0.9rem;
+    }
+    
+    .instruction-card ul {
+        font-size: 0.8rem;
+    }
+}
+
+/* File info display */
+.file-info {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    margin-top: 5px;
+    font-size: 0.8rem;
+}
+
+.file-info.text-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.file-info.text-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.file-info i {
+    margin-right: 5px;
+}
+
+/* Image upload container styles */
+.image-upload-container {
+    position: relative;
+    width: 100%;
+}
+
+.image-preview-container {
+    width: 100%;
+    height: 120px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.image-preview-container:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 166, 81, 0.05);
+}
+
+.image-preview-container.uploading {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 166, 81, 0.1);
+}
+
+.image-preview-large {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.upload-placeholder {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+    padding: 20px;
+}
+
+.upload-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #adb5bd;
+}
+
+.image-upload {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Upload overlay */
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 166, 81, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-preview-container.uploading .upload-overlay {
+    opacity: 1;
+}
+</style>
+
+<script>
+// Homepage Editor JavaScript
+let heroStats = [];
+let heroSlides = [];
+let courseCards = [];
+let miniSliderImages = [];
+let featuresItems = [];
+let videosItems = [];
+let aboutImages = [];
+let aboutPoints = [];
+let ctaImages = [];
+let ctaPoints = [];
+
+// Initialize homepage editor
+function initHomepageEditor() {
+    console.log('initHomepageEditor called');
+    // Wait a bit to ensure DOM is ready
+    setTimeout(() => {
+        console.log('Loading homepage content...');
+        loadHomepageContent();
+    }, 100);
+}
+
+// Load existing homepage content
+function loadHomepageContent() {
+    console.log('loadHomepageContent called');
+    fetch('/admin/get-homepage-content', {
+        credentials: 'include'
+    })
+        .then(response => {
+            console.log('API response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('API response data:', data);
+            if (data.success) {
+                console.log('Successfully loaded homepage content');
+                populateHeroForm(data.hero);
+                populateCoursesForm(data.courses);
+                populateFeaturesForm(data.features);
+                populateVideosForm(data.videos);
+                populateAboutForm(data.about);
+                populateCtaForm(data.cta);
+            } else {
+                console.error('Failed to load homepage content:', data.message);
+                // Load defaults if no content exists
+                loadDefaultContent();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading homepage content:', error);
+            console.error('Error details:', error.message);
+            console.log('Attempting to load default content instead...');
+            loadDefaultContent();
+        });
+}
+
+// Load default content
+function loadDefaultContent() {
+    fetch('/admin/get-default-homepage-content', {
+        credentials: 'include'
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                populateHeroForm(data.hero);
+                populateCoursesForm(data.courses);
+                populateFeaturesForm(data.features);
+                populateVideosForm(data.videos);
+                populateAboutForm(data.about);
+                populateCtaForm(data.cta);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading default content:', error);
+        });
+}
+
+// Populate form functions for each section
+function populateHeroForm(heroData) {
+    if (!heroData) return;
+    
+    document.getElementById('heroTitle').value = heroData.hero_title || '';
+    document.getElementById('heroSubtitle').value = heroData.hero_subtitle || '';
+    document.getElementById('heroDescription').value = heroData.hero_description || '';
+    document.getElementById('heroButtonText').value = heroData.hero_button_text || '';
+    document.getElementById('heroButtonUrl').value = heroData.hero_button_url || '';
+    document.getElementById('heroVideoButtonText').value = heroData.hero_video_button_text || '';
+    
+    // Parse and load stats
+    try {
+        heroStats = JSON.parse(heroData.hero_stats || '[]');
+        renderHeroStats();
+    } catch (e) {
+        heroStats = [];
+        renderHeroStats();
+    }
+    
+    // Parse and load slides
+    try {
+        heroSlides = JSON.parse(heroData.hero_slider_images || '[]');
+        renderHeroSlides();
+    } catch (e) {
+        heroSlides = [];
+        renderHeroSlides();
+    }
+}
+
+function populateCoursesForm(coursesData) {
+    if (!coursesData) return;
+    
+    document.getElementById('coursesTitle').value = coursesData.courses_title || '';
+    document.getElementById('coursesSubtitle').value = coursesData.courses_subtitle || '';
+    document.getElementById('coursesDescription').value = coursesData.courses_description || '';
+    document.getElementById('coursesGridTitle').value = coursesData.courses_grid_title || '';
+    document.getElementById('coursesGridBadge').value = coursesData.courses_grid_badge || '';
+    document.getElementById('coursesMiniSliderTitle').value = coursesData.courses_mini_slider_title || '';
+    document.getElementById('coursesMiniSliderSubtitle').value = coursesData.courses_mini_slider_subtitle || '';
+    
+    // Parse and load course cards
+    try {
+        courseCards = JSON.parse(coursesData.courses_cards || '[]');
+        renderCourseCards();
+    } catch (e) {
+        courseCards = [];
+        renderCourseCards();
+    }
+    
+    // Parse and load mini slider images
+    try {
+        miniSliderImages = JSON.parse(coursesData.courses_mini_slider_images || '[]');
+        renderMiniSliderImages();
+    } catch (e) {
+        miniSliderImages = [];
+        renderMiniSliderImages();
+    }
+}
+
+function populateFeaturesForm(featuresData) {
+    if (!featuresData) return;
+    
+    document.getElementById('featuresTitle').value = featuresData.features_title || '';
+    document.getElementById('featuresSubtitle').value = featuresData.features_subtitle || '';
+    
+    // Parse and load features items
+    try {
+        featuresItems = JSON.parse(featuresData.features_items || '[]');
+        renderFeaturesItems();
+    } catch (e) {
+        featuresItems = [];
+        renderFeaturesItems();
+    }
+}
+
+function populateVideosForm(videosData) {
+    if (!videosData) return;
+    
+    document.getElementById('videosTitle').value = videosData.videos_title || '';
+    document.getElementById('videosSubtitle').value = videosData.videos_subtitle || '';
+    document.getElementById('videosYoutubeLink').value = videosData.videos_youtube_link || '';
+    
+    // Parse and load videos items
+    try {
+        videosItems = JSON.parse(videosData.videos_items || '[]');
+        renderVideosItems();
+    } catch (e) {
+        videosItems = [];
+        renderVideosItems();
+    }
+}
+
+function populateAboutForm(aboutData) {
+    if (!aboutData) {
+        console.log('populateAboutForm: No aboutData provided');
+        return;
+    }
+    
+    console.log('populateAboutForm called with:', aboutData);
+    
+    document.getElementById('aboutTitle').value = aboutData.about_title || '';
+    document.getElementById('aboutContent').value = aboutData.about_content || '';
+    
+    // Parse and load about images
+    try {
+        aboutImages = JSON.parse(aboutData.about_images || '[]');
+        console.log('Parsed about images:', aboutImages);
+        
+        // Ensure at least one image slot exists for easy uploading
+        if (aboutImages.length === 0) {
+            aboutImages.push({ image: '', alt: '', caption: '', description: '' });
+            console.log('Added default about image slot');
+        }
+        
+        renderAboutImages();
+    } catch (e) {
+        console.error('Error parsing about images:', e);
+        aboutImages = [{ image: '', alt: '', caption: '', description: '' }];
+        renderAboutImages();
+    }
+    
+    // Parse and load about points
+    try {
+        aboutPoints = JSON.parse(aboutData.about_points || '[]');
+        console.log('Parsed about points:', aboutPoints);
+        renderAboutPoints();
+    } catch (e) {
+        console.error('Error parsing about points:', e);
+        aboutPoints = [];
+        renderAboutPoints();
+    }
+}
+
+function populateCtaForm(ctaData) {
+    if (!ctaData) {
+        console.log('populateCtaForm: No ctaData provided');
+        return;
+    }
+    
+    console.log('populateCtaForm called with:', ctaData);
+    
+    document.getElementById('ctaTitle').value = ctaData.cta_title || '';
+    document.getElementById('ctaContent').value = ctaData.cta_content || '';
+    document.getElementById('ctaButtonText').value = ctaData.cta_button_text || '';
+    document.getElementById('ctaButtonUrl').value = ctaData.cta_button_url || '';
+    
+    // Parse and load cta images
+    try {
+        ctaImages = JSON.parse(ctaData.cta_images || '[]');
+        console.log('Parsed CTA images:', ctaImages);
+        
+        // Ensure at least one image slot exists for easy uploading
+        if (ctaImages.length === 0) {
+            ctaImages.push({ image: '', alt: '' });
+            console.log('Added default CTA image slot');
+        }
+        
+        renderCtaImages();
+    } catch (e) {
+        console.error('Error parsing CTA images:', e);
+        ctaImages = [{ image: '', alt: '' }];
+        renderCtaImages();
+    }
+    
+    // Parse and load cta points
+    try {
+        ctaPoints = JSON.parse(ctaData.cta_points || '[]');
+        console.log('Parsed CTA points:', ctaPoints);
+        renderCtaPoints();
+    } catch (e) {
+        console.error('Error parsing CTA points:', e);
+        ctaPoints = [];
+        renderCtaPoints();
+    }
+}
+
+// Render functions for each section
+function renderHeroStats() {
+    const container = document.getElementById('heroStatsContainer');
+    container.innerHTML = '';
+    
+    heroStats.forEach((stat, index) => {
+        const statItem = document.createElement('div');
+        statItem.className = 'hero-stat-item sortable-item';
+        statItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeHeroStat(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Number</label>
+                    <input type="text" class="form-control" value="${stat.number || ''}" onchange="updateHeroStat(${index}, 'number', this.value)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Label</label>
+                    <input type="text" class="form-control" value="${stat.label || ''}" onchange="updateHeroStat(${index}, 'label', this.value)">
+                </div>
+            </div>
+        `;
+        container.appendChild(statItem);
+    });
+}
+
+function renderHeroSlides() {
+    const container = document.getElementById('heroSliderContainer');
+    container.innerHTML = '';
+    
+    heroSlides.forEach((slide, index) => {
+        const slideItem = document.createElement('div');
+        slideItem.className = 'hero-slide-item sortable-item';
+        slideItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeHeroSlide(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" onchange="uploadHeroSlideImage(${index}, this)" style="display: none;" id="heroSlideUpload${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('heroSlideUpload${index}').click()">
+                            ${slide.image ? '<img src="https://skill-finesse-videos.b-cdn.net/static/images/' + slide.image + '" class="image-preview-large" alt="Preview">' : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('heroSlideUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${slide.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Title (HTML allowed)</label>
+                    <textarea class="form-control" rows="2" onchange="updateHeroSlide(${index}, 'title', this.value)">${slide.title || ''}</textarea>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateHeroSlide(${index}, 'description', this.value)">${slide.description || ''}</textarea>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <label class="form-label">Button Text</label>
+                    <input type="text" class="form-control" value="${slide.button_text || ''}" onchange="updateHeroSlide(${index}, 'button_text', this.value)">
+                </div>
+            </div>
+        `;
+        container.appendChild(slideItem);
+    });
+}
+
+function renderCourseCards() {
+    const container = document.getElementById('coursesCardsContainer');
+    container.innerHTML = '';
+    
+    courseCards.forEach((card, index) => {
+        const cardItem = document.createElement('div');
+        cardItem.className = 'course-card-item sortable-item';
+        cardItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeCourseCard(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" onchange="uploadCourseCardImage(${index}, this)" style="display: none;" id="courseCardUpload${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('courseCardUpload${index}').click()">
+                            ${card.image ? '<img src="https://skill-finesse-videos.b-cdn.net/static/images/' + card.image + '" class="image-preview-large" alt="Preview">' : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('courseCardUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${card.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" value="${card.title || ''}" onchange="updateCourseCard(${index}, 'title', this.value)">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateCourseCard(${index}, 'description', this.value)">${card.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(cardItem);
+    });
+}
+
+function renderMiniSliderImages() {
+    const container = document.getElementById('coursesMiniSliderContainer');
+    container.innerHTML = '';
+    
+    miniSliderImages.forEach((image, index) => {
+        const imageItem = document.createElement('div');
+        imageItem.className = 'mini-slider-image-item sortable-item';
+        imageItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeMiniSliderImage(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" onchange="uploadMiniSliderImage(${index}, this)" style="display: none;" id="miniSliderUpload${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('miniSliderUpload${index}').click()">
+                            ${image.image ? '<img src="https://skill-finesse-videos.b-cdn.net/static/images/' + image.image + '" class="image-preview-large" alt="Preview">' : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('miniSliderUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${image.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Alt Text</label>
+                    <input type="text" class="form-control" value="${image.alt || ''}" onchange="updateMiniSliderImage(${index}, 'alt', this.value)">
+                </div>
+            </div>
+        `;
+        container.appendChild(imageItem);
+    });
+}
+
+function renderFeaturesItems() {
+    const container = document.getElementById('featuresItemsContainer');
+    container.innerHTML = '';
+    
+    featuresItems.forEach((item, index) => {
+        const featureItem = document.createElement('div');
+        featureItem.className = 'feature-item sortable-item';
+        featureItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeFeatureItem(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Icon (FontAwesome)</label>
+                    <input type="text" class="form-control" value="${item.icon || ''}" onchange="updateFeatureItem(${index}, 'icon', this.value)" placeholder="fas fa-graduation-cap">
+                    <div class="form-text">Use FontAwesome class names</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" value="${item.title || ''}" onchange="updateFeatureItem(${index}, 'title', this.value)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateFeatureItem(${index}, 'description', this.value)">${item.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(featureItem);
+    });
+}
+
+function renderVideosItems() {
+    const container = document.getElementById('videosItemsContainer');
+    container.innerHTML = '';
+    
+    videosItems.forEach((item, index) => {
+        const videoItem = document.createElement('div');
+        videoItem.className = 'video-item sortable-item';
+        videoItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeVideoItem(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">YouTube Video ID</label>
+                    <input type="text" class="form-control" value="${item.embed_id || ''}" onchange="updateVideoItem(${index}, 'embed_id', this.value)" placeholder="ABC123xyz">
+                    <div class="form-text">From youtube.com/watch?v=ABC123xyz</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Category</label>
+                    <input type="text" class="form-control" value="${item.category || ''}" onchange="updateVideoItem(${index}, 'category', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Upload Date</label>
+                    <input type="text" class="form-control" value="${item.upload_date || ''}" onchange="updateVideoItem(${index}, 'upload_date', this.value)" placeholder="May 2025">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" value="${item.title || ''}" onchange="updateVideoItem(${index}, 'title', this.value)">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateVideoItem(${index}, 'description', this.value)">${item.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(videoItem);
+    });
+}
+
+function renderAboutImages() {
+    console.log('renderAboutImages called with:', aboutImages);
+    const container = document.getElementById('aboutImagesContainer');
+    if (!container) {
+        console.error('aboutImagesContainer element not found');
+        return;
+    }
+    container.innerHTML = '';
+    
+    aboutImages.forEach((image, index) => {
+        console.log(`Rendering about image ${index}:`, image);
+        const imageItem = document.createElement('div');
+        imageItem.className = 'about-image-item sortable-item';
+        imageItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeAboutImage(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" onchange="uploadAboutImage(${index}, this)" style="display: none;" id="aboutImageUpload${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('aboutImageUpload${index}').click()">
+                            ${image.image ? '<img src="https://skill-finesse-videos.b-cdn.net/static/images/' + image.image + '" class="image-preview-large" alt="Preview">' : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('aboutImageUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${image.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Alt Text</label>
+                    <input type="text" class="form-control" value="${image.alt || ''}" onchange="updateAboutImage(${index}, 'alt', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Caption</label>
+                    <input type="text" class="form-control" value="${image.caption || ''}" onchange="updateAboutImage(${index}, 'caption', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateAboutImage(${index}, 'description', this.value)">${image.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(imageItem);
+    });
+}
+
+function renderAboutPoints() {
+    const container = document.getElementById('aboutPointsContainer');
+    container.innerHTML = '';
+    
+    aboutPoints.forEach((point, index) => {
+        const pointItem = document.createElement('div');
+        pointItem.className = 'about-point-item sortable-item';
+        pointItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeAboutPoint(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Icon (FontAwesome)</label>
+                    <input type="text" class="form-control" value="${point.icon || ''}" onchange="updateAboutPoint(${index}, 'icon', this.value)" placeholder="fas fa-book-reader">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" value="${point.title || ''}" onchange="updateAboutPoint(${index}, 'title', this.value)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateAboutPoint(${index}, 'description', this.value)">${point.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(pointItem);
+    });
+}
+
+function renderCtaImages() {
+    console.log('renderCtaImages called with:', ctaImages);
+    const container = document.getElementById('ctaImagesContainer');
+    if (!container) {
+        console.error('ctaImagesContainer element not found');
+        return;
+    }
+    container.innerHTML = '';
+    
+    ctaImages.forEach((image, index) => {
+        console.log(`Rendering CTA image ${index}:`, image);
+        const imageItem = document.createElement('div');
+        imageItem.className = 'cta-image-item sortable-item';
+        imageItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeCtaImage(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" onchange="uploadCtaImage(${index}, this)" style="display: none;" id="ctaImageUpload${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('ctaImageUpload${index}').click()">
+                            ${image.image ? '<img src="https://skill-finesse-videos.b-cdn.net/static/images/' + image.image + '" class="image-preview-large" alt="Preview">' : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('ctaImageUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${image.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Alt Text</label>
+                    <input type="text" class="form-control" value="${image.alt || ''}" onchange="updateCtaImage(${index}, 'alt', this.value)">
+                </div>
+            </div>
+        `;
+        container.appendChild(imageItem);
+    });
+}
+
+function renderCtaPoints() {
+    const container = document.getElementById('ctaPointsContainer');
+    container.innerHTML = '';
+    
+    ctaPoints.forEach((point, index) => {
+        const pointItem = document.createElement('div');
+        pointItem.className = 'cta-point-item sortable-item';
+        pointItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeCtaPoint(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Icon (FontAwesome)</label>
+                    <input type="text" class="form-control" value="${point.icon || ''}" onchange="updateCtaPoint(${index}, 'icon', this.value)" placeholder="fas fa-certificate">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" value="${point.title || ''}" onchange="updateCtaPoint(${index}, 'title', this.value)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateCtaPoint(${index}, 'description', this.value)">${point.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(pointItem);
+    });
+}
+
+// Add functions for new sections
+function addFeatureItem() {
+    featuresItems.push({ icon: '', title: '', description: '' });
+    renderFeaturesItems();
+}
+
+function addVideoItem() {
+    videosItems.push({ embed_id: '', title: '', category: '', description: '', upload_date: '' });
+    renderVideosItems();
+}
+
+function addAboutImage() {
+    aboutImages.push({ image: '', alt: '', caption: '', description: '' });
+    renderAboutImages();
+}
+
+function addAboutPoint() {
+    aboutPoints.push({ icon: '', title: '', description: '' });
+    renderAboutPoints();
+}
+
+function addCtaImage() {
+    ctaImages.push({ image: '', alt: '' });
+    renderCtaImages();
+}
+
+function addCtaPoint() {
+    ctaPoints.push({ icon: '', title: '', description: '' });
+    renderCtaPoints();
+}
+
+// Existing add functions
+function addHeroStat() {
+    heroStats.push({ number: '', label: '' });
+    renderHeroStats();
+}
+
+function addHeroSlide() {
+    heroSlides.push({ image: '', title: '', description: '', button_text: '' });
+    renderHeroSlides();
+}
+
+function addCourseCard() {
+    courseCards.push({ image: '', title: '', description: '' });
+    renderCourseCards();
+}
+
+function addMiniSliderImage() {
+    miniSliderImages.push({ image: '', alt: '' });
+    renderMiniSliderImages();
+}
+
+// Remove functions for new sections
+function removeFeatureItem(index) {
+    featuresItems.splice(index, 1);
+    renderFeaturesItems();
+}
+
+function removeVideoItem(index) {
+    videosItems.splice(index, 1);
+    renderVideosItems();
+}
+
+function removeAboutImage(index) {
+    aboutImages.splice(index, 1);
+    renderAboutImages();
+}
+
+function removeAboutPoint(index) {
+    aboutPoints.splice(index, 1);
+    renderAboutPoints();
+}
+
+function removeCtaImage(index) {
+    ctaImages.splice(index, 1);
+    renderCtaImages();
+}
+
+function removeCtaPoint(index) {
+    ctaPoints.splice(index, 1);
+    renderCtaPoints();
+}
+
+// Existing remove functions
+function removeHeroStat(index) {
+    heroStats.splice(index, 1);
+    renderHeroStats();
+}
+
+function removeHeroSlide(index) {
+    heroSlides.splice(index, 1);
+    renderHeroSlides();
+}
+
+function removeCourseCard(index) {
+    courseCards.splice(index, 1);
+    renderCourseCards();
+}
+
+function removeMiniSliderImage(index) {
+    miniSliderImages.splice(index, 1);
+    renderMiniSliderImages();
+}
+
+// Update functions for new sections
+function updateFeatureItem(index, field, value) {
+    if (featuresItems[index]) {
+        featuresItems[index][field] = value;
+    }
+}
+
+function updateVideoItem(index, field, value) {
+    if (videosItems[index]) {
+        videosItems[index][field] = value;
+    }
+}
+
+function updateAboutImage(index, field, value) {
+    if (aboutImages[index]) {
+        aboutImages[index][field] = value;
+        if (field === 'image') {
+            renderAboutImages();
+        }
+    }
+}
+
+function updateAboutPoint(index, field, value) {
+    if (aboutPoints[index]) {
+        aboutPoints[index][field] = value;
+    }
+}
+
+function updateCtaImage(index, field, value) {
+    if (ctaImages[index]) {
+        ctaImages[index][field] = value;
+        if (field === 'image') {
+            renderCtaImages();
+        }
+    }
+}
+
+function updateCtaPoint(index, field, value) {
+    if (ctaPoints[index]) {
+        ctaPoints[index][field] = value;
+    }
+}
+
+// Existing update functions
+function updateHeroStat(index, field, value) {
+    if (heroStats[index]) {
+        heroStats[index][field] = value;
+    }
+}
+
+function updateHeroSlide(index, field, value) {
+    if (heroSlides[index]) {
+        heroSlides[index][field] = value;
+        if (field === 'image') {
+            renderHeroSlides();
+        }
+    }
+}
+
+function updateCourseCard(index, field, value) {
+    if (courseCards[index]) {
+        courseCards[index][field] = value;
+        if (field === 'image') {
+            renderCourseCards();
+        }
+    }
+}
+
+function updateMiniSliderImage(index, field, value) {
+    if (miniSliderImages[index]) {
+        miniSliderImages[index][field] = value;
+        if (field === 'image') {
+            renderMiniSliderImages();
+        }
+    }
+}
+
+/* CACHE BUSTED VERSION v2.0 - About Section Upload Fixed */
+// Image upload functions for new sections - UPDATED AND FIXED
+// Simple, direct upload function that works immediately
+function simpleUpload(fileInput, type, index) {
+    const file = fileInput.files[0];
+    if (!file) {
+        showNotification('No file selected!', 'error');
+        return;
+    }
+    
+    showNotification(`File selected: ${file.name}`, 'info');
+    
+    // Show immediate preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const container = fileInput.closest('.image-upload-container').querySelector('.image-preview-container');
+        if (container) {
+            container.innerHTML = `<img src="${e.target.result}" class="image-preview-large" alt="Preview">`;
+        }
+    };
+    reader.readAsDataURL(file);
+    
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+        showNotification('Please select a valid image file.', 'error');
+        return;
+    }
+    
+    // Direct upload
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('type', type);
+    formData.append('index', index);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/admin/upload-homepage-image', true);
+    xhr.withCredentials = true;
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                const data = JSON.parse(xhr.responseText);
+                if (data.success) {
+                    const filename = data.filename;
+                    showNotification('✅ Upload successful!', 'success');
+                    
+                    // Update data based on type
+                    if (type === 'about_image') {
+                        if (!aboutImages[index]) {
+                            aboutImages[index] = { image: '', alt: '', caption: '', description: '' };
+                        }
+                        aboutImages[index].image = filename;
+                        setTimeout(() => {
+                            saveAboutSection(true);
+                        }, 500);
+                    } else if (type === 'hero_slide') {
+                        if (!heroSlides[index]) {
+                            heroSlides[index] = {};
+                        }
+                        heroSlides[index].image = filename;
+                        setTimeout(() => saveHeroSection(true), 500);
+                    } else if (type === 'cta_image') {
+                        if (!ctaImages[index]) {
+                            ctaImages[index] = { image: '', alt: '' };
+                        }
+                        ctaImages[index].image = filename;
+                        setTimeout(() => saveCtaSection(true), 500);
+                    } else if (type === 'course_card') {
+                        if (!courseCards[index]) {
+                            courseCards[index] = {};
+                        }
+                        courseCards[index].image = filename;
+                        setTimeout(() => saveCoursesSection(true), 500);
+                    } else if (type === 'mini_slider') {
+                        if (!miniSliderImages[index]) {
+                            miniSliderImages[index] = { image: '', alt: '' };
+                        }
+                        miniSliderImages[index].image = filename;
+                        setTimeout(() => saveCoursesSection(true), 500);
+                    }
+                    
+                    // Update preview
+                    const container = fileInput.closest('.image-upload-container').querySelector('.image-preview-container');
+                    if (container) {
+                        container.innerHTML = '<img src="https://skill-finesse-videos.b-cdn.net/static/images/' + filename + '" class="image-preview-large" alt="Preview">';
+                    }
+                    
+                    // Update button
+                    const button = fileInput.closest('.image-upload-container').querySelector('button');
+                    if (button) {
+                        button.innerHTML = '<i class="fas fa-upload"></i> Change Image';
+                    }
+                } else {
+                    showNotification('❌ Upload failed: ' + data.message, 'error');
+                }
+            } catch (e) {
+                showNotification('❌ Upload failed: Invalid response', 'error');
+            }
+        } else {
+            showNotification('❌ Upload failed: Server error', 'error');
+        }
+    };
+    
+    xhr.onerror = function() {
+        showNotification('❌ Upload failed: Network error', 'error');
+    };
+    
+    xhr.send(formData);
+}
+
+// Replace all upload functions with simple ones
+// About Section Image Upload - Fixed and Updated
+function uploadAboutImage(index, fileInput) {
+    console.log('✅ Clean uploadAboutImage function called');
+    simpleUpload(fileInput, 'about_image', index);
+}
+
+function uploadHeroSlideImage(index, fileInput) {
+    simpleUpload(fileInput, 'hero_slide', index);
+}
+
+function uploadCtaImage(index, fileInput) {
+    simpleUpload(fileInput, 'cta_image', index);
+}
+
+function uploadCourseCardImage(index, fileInput) {
+    simpleUpload(fileInput, 'course_card', index);
+}
+
+function uploadMiniSliderImage(index, fileInput) {
+    simpleUpload(fileInput, 'mini_slider', index);
+}
+
+// Save functions for new sections
+function saveFeaturesSection() {
+    const featuresData = {
+        features_title: document.getElementById('featuresTitle').value,
+        features_subtitle: document.getElementById('featuresSubtitle').value,
+        features_items: JSON.stringify(featuresItems)
+    };
+    
+    saveSectionData('features', featuresData);
+}
+
+function saveVideosSection() {
+    const videosData = {
+        videos_title: document.getElementById('videosTitle').value,
+        videos_subtitle: document.getElementById('videosSubtitle').value,
+        videos_youtube_link: document.getElementById('videosYoutubeLink').value,
+        videos_items: JSON.stringify(videosItems)
+    };
+    
+    saveSectionData('videos', videosData);
+}
+
+function saveAboutSection(isAutoSave = false) {
+    const aboutData = {
+        about_title: document.getElementById('aboutTitle').value,
+        about_content: document.getElementById('aboutContent').value,
+        about_images: JSON.stringify(aboutImages),
+        about_points: JSON.stringify(aboutPoints)
+    };
+    
+    saveSectionData('about', aboutData, isAutoSave);
+}
+
+function saveCtaSection(isAutoSave = false) {
+    const ctaData = {
+        cta_title: document.getElementById('ctaTitle').value,
+        cta_content: document.getElementById('ctaContent').value,
+        cta_button_text: document.getElementById('ctaButtonText').value,
+        cta_button_url: document.getElementById('ctaButtonUrl').value,
+        cta_images: JSON.stringify(ctaImages),
+        cta_points: JSON.stringify(ctaPoints)
+    };
+    
+    saveSectionData('cta', ctaData, isAutoSave);
+}
+
+// Existing save functions
+function saveHeroSection(isAutoSave = false) {
+    const heroData = {
+        hero_title: document.getElementById('heroTitle').value,
+        hero_subtitle: document.getElementById('heroSubtitle').value,
+        hero_description: document.getElementById('heroDescription').value,
+        hero_button_text: document.getElementById('heroButtonText').value,
+        hero_button_url: document.getElementById('heroButtonUrl').value,
+        hero_video_button_text: document.getElementById('heroVideoButtonText').value,
+        hero_stats: JSON.stringify(heroStats),
+        hero_slider_images: JSON.stringify(heroSlides)
+    };
+    
+    saveSectionData('hero', heroData, isAutoSave);
+}
+
+function saveCoursesSection(isAutoSave = false) {
+    const coursesData = {
+        courses_title: document.getElementById('coursesTitle').value,
+        courses_subtitle: document.getElementById('coursesSubtitle').value,
+        courses_description: document.getElementById('coursesDescription').value,
+        courses_grid_title: document.getElementById('coursesGridTitle').value,
+        courses_grid_badge: document.getElementById('coursesGridBadge').value,
+        courses_mini_slider_title: document.getElementById('coursesMiniSliderTitle').value,
+        courses_mini_slider_subtitle: document.getElementById('coursesMiniSliderSubtitle').value,
+        courses_cards: JSON.stringify(courseCards),
+        courses_mini_slider_images: JSON.stringify(miniSliderImages)
+    };
+    
+    saveSectionData('courses_showcase', coursesData, isAutoSave);
+}
+
+function saveAllSections() {
+    saveFeaturesSection();
+    setTimeout(() => saveVideosSection(), 500);
+    setTimeout(() => saveAboutSection(), 1000);
+    setTimeout(() => saveCtaSection(), 1500);
+    setTimeout(() => saveHeroSection(), 2000);
+    setTimeout(() => saveCoursesSection(), 2500);
+}
+
+function saveSectionData(section, data, isAutoSave = false) {
+    const formData = new FormData();
+    formData.append('section', section);
+    
+    for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+    }
+    
+    fetch('/admin/save-homepage-content', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const sectionName = section.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            if (isAutoSave) {
+                showNotification(`✨ ${sectionName} section auto-saved! Image now visible on homepage.`, 'success');
+            } else {
+                showNotification(`${sectionName} section saved successfully!`, 'success');
+            }
+        } else {
+            showNotification(`Error saving section: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving section:', error);
+        showNotification('Error saving section. Please try again.', 'error');
+    });
+}
+
+// Preview and reset functions
+function previewHomepage() {
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    document.getElementById('previewFrame').src = '/';
+    modal.show();
+}
+
+function previewSection(section) {
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    document.getElementById('previewFrame').src = `/#${section}`;
+    modal.show();
+}
+
+function resetToDefaults() {
+    if (confirm('Are you sure you want to reset all sections to default values? This action cannot be undone.')) {
+        fetch('/admin/reset-homepage-content', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('All homepage sections reset to defaults successfully!', 'success');
+                loadDefaultContent();
+            } else {
+                showNotification(`Error resetting content: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error resetting content:', error);
+            showNotification('Error resetting content. Please try again.', 'error');
+        });
+    }
+}
+
+function resetSection(section) {
+    if (confirm(`Are you sure you want to reset the ${section.replace('_', ' ')} section to default values?`)) {
+        // Load default content for the specific section
+        fetch('/admin/get-default-homepage-content', {
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    switch (section) {
+                        case 'features':
+                            populateFeaturesForm(data.features);
+                            break;
+                        case 'videos':
+                            populateVideosForm(data.videos);
+                            break;
+                        case 'about':
+                            populateAboutForm(data.about);
+                            break;
+                        case 'cta':
+                            populateCtaForm(data.cta);
+                            break;
+                        case 'hero':
+                            populateHeroForm(data.hero);
+                            break;
+                        case 'courses_showcase':
+                            populateCoursesForm(data.courses);
+                            break;
+                    }
+                    showNotification(`${section.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} section reset to defaults.`, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading defaults:', error);
+                showNotification('Error loading default content.', 'error');
+            });
+    }
+}
+
+// Utility functions
+function showNotification(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function showFileInfo(fileInput, maxSizeBytes, imageType) {
+    try {
+        const file = fileInput.files[0];
+        if (!file) return;
+        
+        const fileSize = formatFileSize(file.size);
+        const maxSizeFormatted = formatFileSize(maxSizeBytes);
+        const isValidSize = file.size <= maxSizeBytes;
+        
+        // Remove any existing file info first
+        const existingInfo = document.querySelectorAll('.file-info');
+        existingInfo.forEach(info => {
+            if (info.parentElement && (info.parentElement.contains(fileInput) || fileInput.parentElement?.contains(info))) {
+                info.remove();
+            }
+        });
+        
+        // Create new file info element
+        const fileInfoDiv = document.createElement('div');
+        fileInfoDiv.className = `file-info small mt-1 ${isValidSize ? 'text-success' : 'text-danger'}`;
+        fileInfoDiv.innerHTML = `
+            <i class="fas fa-file-image"></i> 
+            ${file.name} (${fileSize}) - 
+            ${isValidSize ? '<i class="fas fa-check-circle"></i> Valid size' : `<i class="fas fa-exclamation-triangle"></i> Exceeds ${maxSizeFormatted} limit`}
+        `;
+        
+        // Try multiple container strategies
+        let container = null;
+        
+        // Strategy 1: Look for .image-upload-container
+        if (fileInput.closest) {
+            container = fileInput.closest('.image-upload-container');
+        }
+        
+        // Strategy 2: Use parent element
+        if (!container && fileInput.parentElement) {
+            container = fileInput.parentElement;
+        }
+        
+        // Strategy 3: Look for parent with preview container
+        if (!container) {
+            let parent = fileInput.parentNode;
+            while (parent && parent !== document) {
+                if (parent.querySelector && parent.querySelector('.image-preview-container')) {
+                    container = parent;
+                    break;
+                }
+                parent = parent.parentNode;
+            }
+        }
+        
+        // Strategy 4: Just insert after the input as fallback
+        if (!container) {
+            fileInput.parentNode.insertBefore(fileInfoDiv, fileInput.nextSibling);
+            return;
+        }
+        
+        container.appendChild(fileInfoDiv);
+        
+    } catch (error) {
+        console.error('Error in showFileInfo:', error);
+        // Show notification as fallback
+        showNotification(`File selected: ${fileInput.files[0]?.name || 'Unknown'} (${formatFileSize(fileInput.files[0]?.size || 0)})`, 'info');
+    }
+}
+
+// Initialize when the section is shown
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded - setting up homepage editor');
+    
+    // Check session state for debugging
+    fetch('/admin/debug-session', {
+        credentials: 'include'
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('🔍 Session Debug:', data);
+            if (!data.user_id || !data.is_admin) {
+                console.error('❌ Session issue detected:', data);
+                showNotification('Session expired. Please refresh and login again.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Debug session check failed:', error);
+        });
+    
+    // Check if homepage editor section exists (regardless of visibility)
+    const homepageSection = document.getElementById('homepage-editor-section');
+    if (homepageSection) {
+        console.log('Homepage editor section found, initializing...');
+        setTimeout(initHomepageEditor, 200);
+    }
+    
+    // Also set up click handler for navigation
+    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    navLinks.forEach(link => {
+        if (link.getAttribute('data-section') === 'homepage-editor') {
+            link.addEventListener('click', function() {
+                console.log('Homepage editor nav link clicked');
+                setTimeout(initHomepageEditor, 100);
+            });
+        }
+    });
+    
+    // Alternative: Watch for section visibility changes
+    if (homepageSection) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const target = mutation.target;
+                    if (target.id === 'homepage-editor-section' && target.style.display !== 'none') {
+                        console.log('Homepage editor section became visible, initializing...');
+                        setTimeout(initHomepageEditor, 100);
+                    }
+                }
+            });
+        });
+        observer.observe(homepageSection, { attributes: true, attributeFilter: ['style'] });
+    }
+    
+    // Fallback: force initialization after 3 seconds if containers are empty
+    setTimeout(function() {
+        const aboutContainer = document.getElementById('aboutImagesContainer');
+        const ctaContainer = document.getElementById('ctaImagesContainer');
+        
+        if (aboutContainer && ctaContainer) {
+            const aboutEmpty = aboutContainer.innerHTML.trim() === '' || aboutContainer.innerHTML.includes('dynamically loaded here');
+            const ctaEmpty = ctaContainer.innerHTML.trim() === '' || ctaContainer.innerHTML.includes('dynamically loaded here');
+            
+            if (aboutEmpty || ctaEmpty) {
+                console.log('Containers still empty after 3 seconds, forcing initialization...');
+                initHomepageEditor();
+            }
+        }
+    }, 3000);
+});
+</script>

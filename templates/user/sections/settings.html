@@ -1,0 +1,251 @@
+<!-- User Settings Section -->
+<div id="settings-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>Account Settings</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Settings</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <div class="row">
+        <!-- Notification Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bell me-2"></i>Notification Settings</h3>
+                </div>
+                <div class="card-body">
+                    <form id="notificationForm">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                <label class="form-check-label" for="emailNotifications">
+                                    <strong>Email Notifications</strong><br>
+                                    <small class="text-muted">Receive course updates and announcements via email</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="smsNotifications">
+                                <label class="form-check-label" for="smsNotifications">
+                                    <strong>SMS Notifications</strong><br>
+                                    <small class="text-muted">Receive important updates via SMS</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="pushNotifications" checked>
+                                <label class="form-check-label" for="pushNotifications">
+                                    <strong>Push Notifications</strong><br>
+                                    <small class="text-muted">Receive notifications in your browser</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="marketingEmails">
+                                <label class="form-check-label" for="marketingEmails">
+                                    <strong>Marketing Emails</strong><br>
+                                    <small class="text-muted">Receive promotional offers and course recommendations</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Notification Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Privacy Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-shield me-2"></i>Privacy Settings</h3>
+                </div>
+                <div class="card-body">
+                    <form id="privacyForm">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="profileVisibility" checked>
+                                <label class="form-check-label" for="profileVisibility">
+                                    <strong>Public Profile</strong><br>
+                                    <small class="text-muted">Make your profile visible to other users</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="showProgress">
+                                <label class="form-check-label" for="showProgress">
+                                    <strong>Show Course Progress</strong><br>
+                                    <small class="text-muted">Display your course completion progress publicly</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="showCertificates" checked>
+                                <label class="form-check-label" for="showCertificates">
+                                    <strong>Show Certificates</strong><br>
+                                    <small class="text-muted">Display your earned certificates on your profile</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="dataAnalytics">
+                                <label class="form-check-label" for="dataAnalytics">
+                                    <strong>Learning Analytics</strong><br>
+                                    <small class="text-muted">Allow us to analyze your learning patterns to improve your experience</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Privacy Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Management -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-cog me-2"></i>Account Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted">Account Status</h6>
+                        <span class="badge bg-success">Active</span>
+                        <p class="text-muted small mt-2">Your account is active and in good standing.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted">Data Export</h6>
+                        <p class="text-muted small">Download a copy of your personal data and learning progress.</p>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download me-1"></i>Export Data
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted">Account Deactivation</h6>
+                        <p class="text-muted small">Temporarily deactivate your account. You can reactivate it anytime.</p>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-pause me-1"></i>Deactivate Account
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted text-danger">Danger Zone</h6>
+                        <p class="text-muted small">Permanently delete your account and all associated data.</p>
+                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <i class="fas fa-trash me-1"></i>Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Language & Region -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-globe me-2"></i>Language & Region</h3>
+                </div>
+                <div class="card-body">
+                    <form id="languageForm">
+                        <div class="mb-3">
+                            <label class="form-label">Language</label>
+                            <select class="form-control" name="language">
+                                <option value="en" selected>English</option>
+                                <option value="bn">বাংলা (Bengali)</option>
+                                <option value="hi">हिन्दी (Hindi)</option>
+                                <option value="ur">اردو (Urdu)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Time Zone</label>
+                            <select class="form-control" name="timezone">
+                                <option value="Asia/Dhaka" selected>Bangladesh Standard Time (GMT+6)</option>
+                                <option value="Asia/Kolkata">India Standard Time (GMT+5:30)</option>
+                                <option value="Asia/Karachi">Pakistan Standard Time (GMT+5)</option>
+                                <option value="UTC">Coordinated Universal Time (UTC)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Date Format</label>
+                            <select class="form-control" name="date_format">
+                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Language Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteAccountModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Delete Account
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This action cannot be undone!
+                </div>
+                
+                <p>Deleting your account will permanently remove:</p>
+                <ul>
+                    <li>Your profile and personal information</li>
+                    <li>All course progress and certificates</li>
+                    <li>Learning history and achievements</li>
+                    <li>All associated data</li>
+                </ul>
+                
+                <div class="mb-3">
+                    <label class="form-label">Type "DELETE" to confirm:</label>
+                    <input type="text" class="form-control" id="deleteConfirmation" placeholder="Type DELETE here">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" disabled>
+                    <i class="fas fa-trash me-2"></i>Delete My Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

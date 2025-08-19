@@ -1,0 +1,86 @@
+/* Progress Bar Visual Completion Fixes */
+
+/* Ensure progress bar container has proper width */
+.progress-bar-modern {
+    position: relative;
+    height: 8px;
+    background: rgba(0, 166, 81, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100% \!important;
+}
+
+/* Progress fill with guaranteed 100% completion */
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #00a651 0%, #008c44 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    position: relative;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Completion state styling */
+.progress-fill.progress-complete,
+.progress-complete {
+    width: 100% \!important;
+    min-width: 100% \!important;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) \!important;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+/* Progress shimmer effect for completion */
+.progress-fill.progress-complete::after,
+.progress-complete::after {
+    content: ;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: completion-shine 1s ease-in-out;
+}
+
+@keyframes completion-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Upload progress info styling */
+.upload-progress-info .progress-main {
+    font-weight: 600;
+    color: #00a651;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.upload-progress-info .progress-details {
+    font-size: 0.85rem;
+    color: #6c757d;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Success state styling */
+.upload-progress-info .progress-main:contains("successfully") {
+    color: #28a745 \!important;
+    font-weight: 700;
+}
+
+/* Ensure progress container is visible */
+.upload-progress-container {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+/* Force full width on completion */
+[style*="width: 100%"] {
+    width: 100% \!important;
+}

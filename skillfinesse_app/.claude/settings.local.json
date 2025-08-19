@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sshpass -p 'SkillFinesse@12' rsync -avz --progress -e \"ssh -o StrictHostKeyChecking=no\" root@31.220.49.176:/var/www/skillfinesse/ \"./skillfinesse_backup_$(date +%Y%m%d_%H%M%S)/\")",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Bash(tail:*)",
+      "Bash(curl:*)",
+      "Bash(open http://localhost:5001/test-progress)",
+      "Bash(rm:*)",
+      "Bash(ffmpeg:*)",
+      "Bash(open:*)",
+      "Bash(firebase login:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(firebase auth:get-user-info:*)",
+      "Bash(firebase:*)",
+      "Bash(pip install:*)",
+      "Bash(./venv/bin/pip install firebase-admin)",
+      "Bash(timeout:*)",
+      "Bash(node:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "Bash(chmod:*)",
+      "Bash(tar:*)"
+    ],
+    "deny": []
+  }
+}

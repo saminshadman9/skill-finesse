@@ -1,0 +1,1007 @@
+<!-- Site Settings Editor Section -->
+<div id="site-settings-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>Site Settings Editor</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" data-section="dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active">Site Settings Editor</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Manage Website Settings</h4>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" onclick="previewSiteSettings()">
+                        <i class="fas fa-eye"></i> Preview Changes
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetSiteSettingsToDefaults()">
+                        <i class="fas fa-undo"></i> Reset All to Defaults
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Upload Guidelines -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-lightbulb"></i> Site Settings Guidelines</h5>
+                <p class="mb-2">For best results, please follow these guidelines when updating site settings:</p>
+                <ul class="mb-0 small">
+                    <li><strong>Logo:</strong> Use PNG format with transparent background, 200x60px or similar aspect ratio recommended</li>
+                    <li><strong>Footer Text:</strong> Keep concise and professional, 2-3 sentences maximum</li>
+                    <li><strong>Social Links:</strong> Use complete URLs (https://...) for all social media platforms</li>
+                    <li><strong>File Size:</strong> Keep logo under 500KB for optimal loading times</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Website Logo Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-image"></i> Website Logo</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewLogo()">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetLogo()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveLogo()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="logoForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-primary"></i> Logo Guidelines</h6>
+                                <ul>
+                                    <li><strong>Format:</strong> PNG with transparent background preferred</li>
+                                    <li><strong>Dimensions:</strong> 200x60px or similar aspect ratio (3:1 to 4:1)</li>
+                                    <li><strong>File Size:</strong> Maximum 500KB</li>
+                                    <li><strong>Usage:</strong> Will appear in header navigation and footer</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Current Logo</label>
+                            <div class="current-logo-container">
+                                <img id="currentLogoPreview" src="" alt="Current Logo" class="current-logo-img">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Upload New Logo</label>
+                            <div class="logo-upload-container">
+                                <input type="file" class="form-control image-upload" accept="image/*" onchange="uploadLogo(this)" style="display: none;" id="logoUpload">
+                                <div class="image-preview-container" onclick="document.getElementById('logoUpload').click()">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i><br>
+                                        Click to upload new logo
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="document.getElementById('logoUpload').click()">
+                                    <i class="fas fa-upload"></i> Choose Logo File
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="logoAltText" class="form-label">Logo Alt Text</label>
+                            <input type="text" class="form-control" id="logoAltText" placeholder="Your Website Logo" value="">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Settings Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-align-left"></i> Footer Settings</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewFooter()">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetFooter()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveFooter()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="footerForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="footerDescription" class="form-label">Footer Description</label>
+                            <textarea class="form-control" id="footerDescription" rows="4" 
+                                placeholder="Brief description about your organization that appears in the footer..."></textarea>
+                            <div class="form-text">Keep it concise and professional. This text appears in the footer of every page.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="footer-preview-container">
+                            <h6><i class="fas fa-eye text-info"></i> Preview</h6>
+                            <div class="footer-preview" id="footerDescriptionPreview">
+                                Your footer description will appear here...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Social Media Links Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-share-alt"></i> Social Media Links</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewSocialLinks()">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetSocialLinks()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveSocialLinks()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="socialLinksForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="social-links-container">
+                            <h6 class="mb-3"><i class="fas fa-link"></i> Social Media URLs</h6>
+                            
+                            <div class="social-link-item mb-3">
+                                <label class="form-label">
+                                    <i class="fab fa-facebook-f text-primary"></i> Facebook
+                                </label>
+                                <input type="url" class="form-control" id="facebookUrl" 
+                                    placeholder="https://www.facebook.com/yourpage" 
+                                    onchange="updateSocialPreview()">
+                            </div>
+                            
+                            <div class="social-link-item mb-3">
+                                <label class="form-label">
+                                    <i class="fab fa-twitter text-info"></i> Twitter
+                                </label>
+                                <input type="url" class="form-control" id="twitterUrl" 
+                                    placeholder="https://www.twitter.com/youraccount" 
+                                    onchange="updateSocialPreview()">
+                            </div>
+                            
+                            <div class="social-link-item mb-3">
+                                <label class="form-label">
+                                    <i class="fab fa-instagram text-danger"></i> Instagram
+                                </label>
+                                <input type="url" class="form-control" id="instagramUrl" 
+                                    placeholder="https://www.instagram.com/youraccount" 
+                                    onchange="updateSocialPreview()">
+                            </div>
+                            
+                            <div class="social-link-item mb-3">
+                                <label class="form-label">
+                                    <i class="fab fa-linkedin-in text-primary"></i> LinkedIn
+                                </label>
+                                <input type="url" class="form-control" id="linkedinUrl" 
+                                    placeholder="https://www.linkedin.com/company/yourcompany" 
+                                    onchange="updateSocialPreview()">
+                            </div>
+                            
+                            <div class="social-link-item mb-3">
+                                <label class="form-label">
+                                    <i class="fab fa-youtube text-danger"></i> YouTube
+                                </label>
+                                <input type="url" class="form-control" id="youtubeUrl" 
+                                    placeholder="https://www.youtube.com/channel/yourchannel" 
+                                    onchange="updateSocialPreview()">
+                            </div>
+                            
+                            <div class="social-link-item mb-3">
+                                <label class="form-label">
+                                    <i class="fab fa-github text-dark"></i> GitHub
+                                </label>
+                                <input type="url" class="form-control" id="githubUrl" 
+                                    placeholder="https://www.github.com/youraccount" 
+                                    onchange="updateSocialPreview()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="social-preview-container">
+                            <h6><i class="fas fa-eye text-info"></i> Social Links Preview</h6>
+                            <div class="social-preview" id="socialLinksPreview">
+                                <div class="social-links d-flex gap-2 flex-wrap">
+                                    <!-- Social links preview will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Information Section -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewContact()">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetContact()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveContact()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="contactForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="contactAddress" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Address
+                            </label>
+                            <textarea class="form-control" id="contactAddress" rows="3" 
+                                placeholder="Your business address..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contactPhone" class="form-label">
+                                <i class="fas fa-phone-alt"></i> Phone Number
+                            </label>
+                            <input type="tel" class="form-control" id="contactPhone" 
+                                placeholder="+1234567890">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contactEmail" class="form-label">
+                                <i class="fas fa-envelope"></i> Email Address
+                            </label>
+                            <input type="email" class="form-control" id="contactEmail" 
+                                placeholder="contact@yourwebsite.com">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="contact-preview-container">
+                            <h6><i class="fas fa-eye text-info"></i> Contact Preview</h6>
+                            <div class="contact-preview" id="contactInfoPreview">
+                                <div class="contact-item mb-2">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <span id="previewAddress">Your address will appear here...</span>
+                                </div>
+                                <div class="contact-item mb-2">
+                                    <i class="fas fa-phone-alt me-2"></i>
+                                    <span id="previewPhone">Your phone will appear here...</span>
+                                </div>
+                                <div class="contact-item mb-2">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    <span id="previewEmail">Your email will appear here...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Save All Button -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="saveAllSiteSettings()">
+                <i class="fas fa-save"></i> Save All Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="siteSettingsPreviewModal" tabindex="-1" aria-labelledby="siteSettingsPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="siteSettingsPreviewModalLabel">Site Settings Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="siteSettingsPreviewFrame" src="" width="100%" height="600" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/" target="_blank" class="btn btn-primary">Open in New Tab</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Site Settings Editor Specific Styles */
+.current-logo-container {
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.current-logo-img {
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.logo-upload-container {
+    position: relative;
+}
+
+.footer-preview-container,
+.social-preview-container,
+.contact-preview-container {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.footer-preview {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.social-preview .social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background-color: rgba(0, 166, 81, 0.1);
+    color: var(--primary-color);
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.social-preview .social-links a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.social-link-item {
+    position: relative;
+}
+
+.social-link-item label {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.contact-preview .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.contact-preview .contact-item i {
+    margin-top: 2px;
+    color: var(--primary-color);
+}
+
+/* Real-time preview updates */
+.preview-updating {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+/* Upload overlay styles */
+.logo-upload-container .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 166, 81, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+.logo-upload-container.uploading .upload-overlay {
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .social-preview .social-links {
+        justify-content: flex-start;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 5px;
+    }
+}
+</style>
+
+<script>
+// Site Settings Editor JavaScript
+let currentLogo = '';
+let footerSettings = {
+    description: '',
+    social_links: {
+        facebook: '',
+        twitter: '',
+        instagram: '',
+        linkedin: '',
+        youtube: '',
+        github: ''
+    },
+    contact: {
+        address: '',
+        phone: '',
+        email: ''
+    }
+};
+
+// Initialize site settings editor
+function initSiteSettingsEditor() {
+    loadSiteSettings();
+    setupRealTimePreviews();
+}
+
+// Load existing site settings
+function loadSiteSettings() {
+    fetch('/admin/get-site-settings')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                populateSiteSettingsForm(data.settings);
+            } else {
+                console.error('Failed to load site settings:', data.message);
+                // Load defaults if no settings exist
+                loadDefaultSiteSettings();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading site settings:', error);
+            loadDefaultSiteSettings();
+        });
+}
+
+// Load default site settings
+function loadDefaultSiteSettings() {
+    fetch('/admin/get-default-site-settings')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                populateSiteSettingsForm(data.settings);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading default site settings:', error);
+        });
+}
+
+// Populate form with settings data
+function populateSiteSettingsForm(settings) {
+    if (!settings) return;
+    
+    // Logo settings
+    if (settings.logo) {
+        currentLogo = settings.logo;
+        updateLogoPreview();
+    }
+    
+    if (settings.logo_alt) {
+        document.getElementById('logoAltText').value = settings.logo_alt;
+    }
+    
+    // Footer settings
+    if (settings.footer_description) {
+        document.getElementById('footerDescription').value = settings.footer_description;
+        footerSettings.description = settings.footer_description;
+        updateFooterPreview();
+    }
+    
+    // Social links
+    if (settings.social_links) {
+        const socialLinks = typeof settings.social_links === 'string' 
+            ? JSON.parse(settings.social_links) 
+            : settings.social_links;
+            
+        footerSettings.social_links = socialLinks;
+        
+        Object.keys(socialLinks).forEach(platform => {
+            const input = document.getElementById(platform + 'Url');
+            if (input && socialLinks[platform]) {
+                input.value = socialLinks[platform];
+            }
+        });
+        
+        updateSocialPreview();
+    }
+    
+    // Contact information
+    if (settings.contact_info) {
+        const contactInfo = typeof settings.contact_info === 'string' 
+            ? JSON.parse(settings.contact_info) 
+            : settings.contact_info;
+            
+        footerSettings.contact = contactInfo;
+        
+        if (contactInfo.address) {
+            document.getElementById('contactAddress').value = contactInfo.address;
+        }
+        if (contactInfo.phone) {
+            document.getElementById('contactPhone').value = contactInfo.phone;
+        }
+        if (contactInfo.email) {
+            document.getElementById('contactEmail').value = contactInfo.email;
+        }
+        
+        updateContactPreview();
+    }
+}
+
+// Setup real-time previews
+function setupRealTimePreviews() {
+    // Footer description preview
+    document.getElementById('footerDescription').addEventListener('input', function() {
+        footerSettings.description = this.value;
+        updateFooterPreview();
+    });
+    
+    // Contact information previews
+    document.getElementById('contactAddress').addEventListener('input', function() {
+        footerSettings.contact.address = this.value;
+        updateContactPreview();
+    });
+    
+    document.getElementById('contactPhone').addEventListener('input', function() {
+        footerSettings.contact.phone = this.value;
+        updateContactPreview();
+    });
+    
+    document.getElementById('contactEmail').addEventListener('input', function() {
+        footerSettings.contact.email = this.value;
+        updateContactPreview();
+    });
+}
+
+// Update logo preview
+function updateLogoPreview() {
+    const preview = document.getElementById('currentLogoPreview');
+    if (currentLogo) {
+        preview.src = `/static/images/${currentLogo}`;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+// Update footer description preview
+function updateFooterPreview() {
+    const preview = document.getElementById('footerDescriptionPreview');
+    const description = footerSettings.description || 'Your footer description will appear here...';
+    preview.textContent = description;
+}
+
+// Update social links preview
+function updateSocialPreview() {
+    const preview = document.getElementById('socialLinksPreview').querySelector('.social-links');
+    preview.innerHTML = '';
+    
+    const socialPlatforms = [
+        { key: 'facebook', icon: 'fab fa-facebook-f', color: '#1877f2' },
+        { key: 'twitter', icon: 'fab fa-twitter', color: '#1da1f2' },
+        { key: 'instagram', icon: 'fab fa-instagram', color: '#e4405f' },
+        { key: 'linkedin', icon: 'fab fa-linkedin-in', color: '#0077b5' },
+        { key: 'youtube', icon: 'fab fa-youtube', color: '#ff0000' },
+        { key: 'github', icon: 'fab fa-github', color: '#333' }
+    ];
+    
+    socialPlatforms.forEach(platform => {
+        const url = document.getElementById(platform.key + 'Url').value;
+        if (url) {
+            footerSettings.social_links[platform.key] = url;
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.innerHTML = `<i class="${platform.icon}"></i>`;
+            link.title = platform.key.charAt(0).toUpperCase() + platform.key.slice(1);
+            preview.appendChild(link);
+        }
+    });
+    
+    if (preview.children.length === 0) {
+        preview.innerHTML = '<span class="text-muted">No social links configured</span>';
+    }
+}
+
+// Update contact preview
+function updateContactPreview() {
+    document.getElementById('previewAddress').textContent = 
+        footerSettings.contact.address || 'Your address will appear here...';
+    document.getElementById('previewPhone').textContent = 
+        footerSettings.contact.phone || 'Your phone will appear here...';
+    document.getElementById('previewEmail').textContent = 
+        footerSettings.contact.email || 'Your email will appear here...';
+}
+
+// Logo upload function
+function uploadLogo(fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    
+    const maxSize = 500 * 1024; // 500KB
+    showFileInfo(fileInput, maxSize, 'Logo');
+    
+    if (!file.type.startsWith('image/')) {
+        showNotification('Please select a valid image file.', 'error');
+        return;
+    }
+    
+    if (file.size > maxSize) {
+        showNotification('Logo size must be less than 500KB.', 'error');
+        fileInput.value = '';
+        return;
+    }
+    
+    const container = fileInput.closest('.logo-upload-container');
+    const previewContainer = container.querySelector('.image-preview-container');
+    
+    // Show upload overlay
+    if (!container.querySelector('.upload-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.className = 'upload-overlay';
+        overlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        container.appendChild(overlay);
+    }
+    
+    container.classList.add('uploading');
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('type', 'logo');
+    
+    fetch('/admin/upload-site-image', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        container.classList.remove('uploading');
+        
+        if (data.success) {
+            currentLogo = data.filename;
+            updateLogoPreview();
+            
+            // Update preview container
+            previewContainer.innerHTML = `<img src="/static/images/${data.filename}" class="image-preview-large" alt="Logo Preview">`;
+            
+            showNotification('Logo uploaded successfully!', 'success');
+        } else {
+            showNotification(`Upload failed: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        container.classList.remove('uploading');
+        console.error('Upload error:', error);
+        showNotification('Upload failed. Please try again.', 'error');
+    });
+}
+
+// Save functions
+function saveLogo() {
+    const logoData = {
+        logo: currentLogo,
+        logo_alt: document.getElementById('logoAltText').value || 'Website Logo'
+    };
+    
+    saveSiteSettingsData('logo', logoData);
+}
+
+function saveFooter() {
+    const footerData = {
+        footer_description: document.getElementById('footerDescription').value
+    };
+    
+    saveSiteSettingsData('footer', footerData);
+}
+
+function saveSocialLinks() {
+    const socialData = {
+        social_links: JSON.stringify(footerSettings.social_links)
+    };
+    
+    saveSiteSettingsData('social', socialData);
+}
+
+function saveContact() {
+    const contactData = {
+        contact_info: JSON.stringify({
+            address: document.getElementById('contactAddress').value,
+            phone: document.getElementById('contactPhone').value,
+            email: document.getElementById('contactEmail').value
+        })
+    };
+    
+    saveSiteSettingsData('contact', contactData);
+}
+
+function saveAllSiteSettings() {
+    saveLogo();
+    setTimeout(() => saveFooter(), 500);
+    setTimeout(() => saveSocialLinks(), 1000);
+    setTimeout(() => saveContact(), 1500);
+}
+
+function saveSiteSettingsData(section, data) {
+    const formData = new FormData();
+    formData.append('section', section);
+    
+    for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+    }
+    
+    fetch('/admin/save-site-settings', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
+            showNotification(`${sectionName} settings saved successfully!`, 'success');
+        } else {
+            showNotification(`Error saving ${section} settings: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving settings:', error);
+        showNotification('Error saving settings. Please try again.', 'error');
+    });
+}
+
+// Preview and reset functions
+function previewSiteSettings() {
+    const modal = new bootstrap.Modal(document.getElementById('siteSettingsPreviewModal'));
+    document.getElementById('siteSettingsPreviewFrame').src = '/';
+    modal.show();
+}
+
+function previewLogo() {
+    if (currentLogo) {
+        window.open(`/static/images/${currentLogo}`, '_blank');
+    } else {
+        showNotification('No logo uploaded yet.', 'info');
+    }
+}
+
+function previewFooter() {
+    const modal = new bootstrap.Modal(document.getElementById('siteSettingsPreviewModal'));
+    document.getElementById('siteSettingsPreviewFrame').src = '/#footer';
+    modal.show();
+}
+
+function previewSocialLinks() {
+    const modal = new bootstrap.Modal(document.getElementById('siteSettingsPreviewModal'));
+    document.getElementById('siteSettingsPreviewFrame').src = '/#footer';
+    modal.show();
+}
+
+function previewContact() {
+    const modal = new bootstrap.Modal(document.getElementById('siteSettingsPreviewModal'));
+    document.getElementById('siteSettingsPreviewFrame').src = '/#footer';
+    modal.show();
+}
+
+function resetSiteSettingsToDefaults() {
+    if (confirm('Are you sure you want to reset all site settings to default values? This action cannot be undone.')) {
+        fetch('/admin/reset-site-settings', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('All site settings reset to defaults successfully!', 'success');
+                loadDefaultSiteSettings();
+            } else {
+                showNotification(`Error resetting settings: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error resetting settings:', error);
+            showNotification('Error resetting settings. Please try again.', 'error');
+        });
+    }
+}
+
+function resetLogo() {
+    if (confirm('Reset logo to default?')) {
+        fetch('/admin/get-default-site-settings')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.settings.logo) {
+                    currentLogo = data.settings.logo;
+                    document.getElementById('logoAltText').value = data.settings.logo_alt || 'Website Logo';
+                    updateLogoPreview();
+                    showNotification('Logo reset to default.', 'success');
+                }
+            });
+    }
+}
+
+function resetFooter() {
+    if (confirm('Reset footer description to default?')) {
+        fetch('/admin/get-default-site-settings')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.settings.footer_description) {
+                    document.getElementById('footerDescription').value = data.settings.footer_description;
+                    footerSettings.description = data.settings.footer_description;
+                    updateFooterPreview();
+                    showNotification('Footer description reset to default.', 'success');
+                }
+            });
+    }
+}
+
+function resetSocialLinks() {
+    if (confirm('Reset social links to default?')) {
+        fetch('/admin/get-default-site-settings')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.settings.social_links) {
+                    const defaultSocial = typeof data.settings.social_links === 'string' 
+                        ? JSON.parse(data.settings.social_links) 
+                        : data.settings.social_links;
+                    
+                    Object.keys(defaultSocial).forEach(platform => {
+                        const input = document.getElementById(platform + 'Url');
+                        if (input) {
+                            input.value = defaultSocial[platform] || '';
+                        }
+                    });
+                    
+                    footerSettings.social_links = defaultSocial;
+                    updateSocialPreview();
+                    showNotification('Social links reset to default.', 'success');
+                }
+            });
+    }
+}
+
+function resetContact() {
+    if (confirm('Reset contact information to default?')) {
+        fetch('/admin/get-default-site-settings')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.settings.contact_info) {
+                    const defaultContact = typeof data.settings.contact_info === 'string' 
+                        ? JSON.parse(data.settings.contact_info) 
+                        : data.settings.contact_info;
+                    
+                    document.getElementById('contactAddress').value = defaultContact.address || '';
+                    document.getElementById('contactPhone').value = defaultContact.phone || '';
+                    document.getElementById('contactEmail').value = defaultContact.email || '';
+                    
+                    footerSettings.contact = defaultContact;
+                    updateContactPreview();
+                    showNotification('Contact information reset to default.', 'success');
+                }
+            });
+    }
+}
+
+// Utility functions (reuse from other editors)
+function showNotification(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+function showFileInfo(fileInput, maxSizeBytes, imageType) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    
+    const fileSize = formatFileSize(file.size);
+    const maxSizeFormatted = formatFileSize(maxSizeBytes);
+    const isValidSize = file.size <= maxSizeBytes;
+    
+    const infoElement = fileInput.closest('.logo-upload-container').querySelector('.file-info');
+    if (infoElement) {
+        infoElement.remove();
+    }
+    
+    const fileInfoDiv = document.createElement('div');
+    fileInfoDiv.className = `file-info small mt-1 ${isValidSize ? 'text-success' : 'text-danger'}`;
+    fileInfoDiv.innerHTML = `
+        <i class="fas fa-file-image"></i> 
+        ${file.name} (${fileSize}) - 
+        ${isValidSize ? '<i class="fas fa-check-circle"></i> Valid size' : `<i class="fas fa-exclamation-triangle"></i> Exceeds ${maxSizeFormatted} limit`}
+    `;
+    
+    fileInput.closest('.logo-upload-container').appendChild(fileInfoDiv);
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Initialize when the section is shown
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    navLinks.forEach(link => {
+        if (link.getAttribute('data-section') === 'site-settings') {
+            link.addEventListener('click', function() {
+                setTimeout(initSiteSettingsEditor, 100);
+            });
+        }
+    });
+});
+</script>

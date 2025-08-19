@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Courses Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Test Course Display</h1>
+        
+        <button class="btn btn-primary mb-3" onclick="testLoad()">Test Load Courses</button>
+        
+        <div id="status" class="alert alert-info">Ready to test...</div>
+        
+        <div id="courses" class="border p-3" style="min-height: 200px; background: #f0f0f0;">
+            Courses will appear here...
+        </div>
+    </div>
+    
+    <script>
+    function testLoad() {
+        const status = document.getElementById('status');
+        const coursesDiv = document.getElementById('courses');
+        
+        status.className = 'alert alert-warning';
+        status.textContent = 'Loading...';
+        
+        fetch('/admin/courses/list')
+        .then(response => {
+            status.textContent = `API Status: ${response.status}`;
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.courses) {
+                status.className = 'alert alert-success';
+                status.textContent = `Loaded ${data.courses.length} courses!`;
+                
+                let html = '<h3>Courses:</h3>';
+                data.courses.forEach((course, i) => {
+                    html += `<div class="mb-2 p-2 bg-white border">
+                        ${i+1}. ${course.title} - ৳${course.price}
+                    </div>`;
+                });
+                
+                coursesDiv.innerHTML = html;
+            } else {
+                status.className = 'alert alert-danger';
+                status.textContent = 'No courses found!';
+            }
+        })
+        .catch(error => {
+            status.className = 'alert alert-danger';
+            status.textContent = `Error: ${error.message}`;
+        });
+    }
+    </script>
+</body>
+</html>

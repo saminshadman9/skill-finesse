@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Required - {{ course.title }} - Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+    }
+
+    /* Login Required Hero Section */
+    .login-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #008c44 100%);
+        color: white;
+        padding: 100px 0 80px;
+        text-align: center;
+    }
+
+    .login-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .login-hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    /* Content Section */
+    .login-content {
+        padding: 80px 0;
+        background-color: #f8f9fc;
+    }
+
+    .login-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .course-preview {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .course-image {
+        width: 200px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin: 0 auto 20px;
+        display: block;
+    }
+
+    .course-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+
+    .course-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 20px 0;
+    }
+
+    .original-price {
+        font-size: 1.4rem;
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 10px;
+    }
+
+    .course-category {
+        display: inline-block;
+        padding: 6px 18px;
+        background: linear-gradient(45deg, rgba(0, 166, 81, 0.1), rgba(0, 166, 81, 0.05));
+        color: var(--primary-color);
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0, 166, 81, 0.2);
+    }
+
+    .login-required {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        text-align: center;
+    }
+
+    .login-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    .login-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+
+    .login-description {
+        color: #666;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .login-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-login {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-login:hover {
+        background: #008c44;
+        transform: translateY(-2px);
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(0, 166, 81, 0.3);
+    }
+
+    .btn-browse {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        padding: 13px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-browse:hover {
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+    }
+
+    .features-list {
+        background: #f8f9fc;
+        border-radius: 10px;
+        padding: 25px;
+        margin-top: 30px;
+        text-align: left;
+    }
+
+    .features-list h4 {
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        color: #666;
+    }
+
+    .feature-item i {
+        color: var(--primary-color);
+        width: 20px;
+    }
+
+    .security-note {
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 1px solid #bbdefb;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .login-hero h1 {
+            font-size: 2rem;
+        }
+
+        .course-preview,
+        .login-required {
+            padding: 25px;
+        }
+
+        .login-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-login,
+        .btn-browse {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+
+        .login-content {
+            padding: 40px 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<!-- Login Required Hero Section -->
+<section class="login-hero">
+    <div class="container">
+        <h1>Login Required</h1>
+        <p>Please log in to purchase this course and start your learning journey!</p>
+    </div>
+</section>
+
+<!-- Login Content -->
+<section class="login-content">
+    <div class="container">
+        <div class="login-container">
+            <!-- Course Preview -->
+            <div class="course-preview">
+                <img src="{% if course.image %}{% if '_' in course.image and course.image.split('_')[-1].split('.')[0].isdigit() %}https://skill-finesse-videos.b-cdn.net/courses/{{ course.image }}{% else %}{{ url_for('static', filename='images/' + course.image) }}{% endif %}{% else %}{% if 'Python' in course.title or 'Data Science' in course.title or 'Machine Learning' in course.title %}{{ url_for('static', filename='images/premium_course_1.png') }}{% elif 'Web Development' in course.title or 'Full Stack' in course.title or 'React' in course.title or 'JavaScript' in course.title %}{{ url_for('static', filename='images/premium_course_2.png') }}{% elif 'Mobile' in course.title or 'Flutter' in course.title or 'App Development' in course.title %}{{ url_for('static', filename='images/premium_course_3.png') }}{% elif 'UI/UX' in course.title or 'Design' in course.title %}{{ url_for('static', filename='images/premium_course_4.png') }}{% elif 'Marketing' in course.title or 'Digital Marketing' in course.title %}{{ url_for('static', filename='images/premium_course_5.png') }}{% elif 'Blockchain' in course.title or 'DevOps' in course.title %}{{ url_for('static', filename='images/free_course_cover_1.png') }}{% else %}{{ url_for('static', filename='images/premium_course_1.png') }}{% endif %}{% endif %}" 
+                     alt="{{ course.title }}" class="course-image"
+                     onerror="this.src='{{ url_for('static', filename='images/premium_course_1.png') }}'; this.onerror=null;">
+                
+                <span class="course-category">{{ course.category or 'Development' }}</span>
+                <h2 class="course-title">{{ course.title }}</h2>
+                <p class="text-muted">{{ course.description[:150] }}{% if course.description|length > 150 %}...{% endif %}</p>
+                
+                <div class="course-price">
+                    {% if course.coupon and course.coupon_discount %}
+                        <span class="original-price">৳{{ course.price|round|int }}</span>
+                        ৳{{ (course.price * (100 - course.coupon_discount) / 100)|round|int }}
+                        <div style="font-size: 1rem; margin-top: 10px;">
+                            <span class="badge bg-success">{{ course.coupon_discount }}% OFF with code: {{ course.coupon }}</span>
+                        </div>
+                    {% else %}
+                        ৳{{ course.price|round|int }}
+                    {% endif %}
+                </div>
+
+                <div class="features-list">
+                    <h4>What You'll Get:</h4>
+                    <div class="feature-item">
+                        <i class="fas fa-video"></i>
+                        <span>Comprehensive video content</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Downloadable resources</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-infinity"></i>
+                        <span>Lifetime access</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-certificate"></i>
+                        <span>Certificate of completion</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Community support</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Required Section -->
+            <div class="login-required">
+                <i class="fas fa-lock login-icon"></i>
+                <h2 class="login-title">Account Required</h2>
+                <p class="login-description">
+                    To purchase and access this course, you'll need to create an account or log in. 
+                    This helps us provide you with personalized learning experience, track your progress, 
+                    and give you access to our community features.
+                </p>
+
+                <div class="login-buttons">
+                    <a href="{{ url_for('join') }}" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login / Sign Up
+                    </a>
+                    <a href="{{ url_for('course_details', course_id=course.id) }}" class="btn-browse">
+                        <i class="fas fa-info-circle"></i>
+                        Course Details
+                    </a>
+                </div>
+
+                <div class="security-note">
+                    <i class="fas fa-shield-alt"></i>
+                    Your data is secure and protected. We use industry-standard security measures.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any interactive functionality here
+    console.log('Login required page loaded');
+});
+</script>
+{% endblock %}

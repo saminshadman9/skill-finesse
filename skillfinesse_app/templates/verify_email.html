@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - Skill Finesse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .verification-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .verification-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .verification-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .verification-header i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        .verification-body {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .email-display {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-1px);
+        }
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box i {
+            color: #1976d2;
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="verification-card">
+            <div class="verification-header">
+                <i class="fas fa-envelope"></i>
+                <h2 class="mb-0">
+                    {% if mode == 'signup' %}
+                        Email Verification Sent
+                    {% else %}
+                        Password Reset Sent
+                    {% endif %}
+                </h2>
+            </div>
+            
+            <div class="verification-body">
+                {% if mode == 'signup' %}
+                    <h5 class="mb-3">Welcome to Skill Finesse!</h5>
+                    <p class="text-muted">
+                        We've sent a verification email to complete your registration.
+                    </p>
+                {% else %}
+                    <h5 class="mb-3">Password Reset Request</h5>
+                    <p class="text-muted">
+                        We've sent a password reset link to your email address.
+                    </p>
+                {% endif %}
+                
+                <div class="email-display">
+                    <i class="fas fa-envelope text-primary"></i>
+                    {{ masked_email }}
+                </div>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>What to do next:</strong>
+                    <ul class="list-unstyled mt-2 mb-0 text-start">
+                        <li><i class="fas fa-check text-success"></i> Check your email inbox</li>
+                        <li><i class="fas fa-check text-success"></i> Look for an email from Skill Finesse</li>
+                        <li><i class="fas fa-check text-success"></i> Click the verification/reset link</li>
+                        {% if mode == 'signup' %}
+                            <li><i class="fas fa-check text-success"></i> Complete your registration</li>
+                        {% else %}
+                            <li><i class="fas fa-check text-success"></i> Create your new password</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{{ url_for('join') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Login
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="small text-muted">
+                        Didn't receive the email? Check your spam folder or 
+                        <a href="{{ url_for('join') }}" class="text-primary">try again</a>.
+                    </p>
+                    {% if mode == 'signup' %}
+                        <p class="small text-muted">
+                            The verification link will expire in 24 hours for security.
+                        </p>
+                    {% else %}
+                        <p class="small text-muted">
+                            The reset link will expire in 1 hour for security.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!-- Courses Section -->
+<section class="courses-section" id="courses">
+    <div class="container">
+        <div class="section-title text-center">
+            <h2>Our Featured Courses</h2>
+            <p class="lead">Explore our most popular courses and start your learning journey today</p>
+        </div>
+        <div class="row">
+            {% if courses %}
+                {% for course in courses[:6] %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{% if course.image %}{% if '_' in course.image and course.image.split('_')[-1].split('.')[0].isdigit() %}https://skill-finesse-videos.b-cdn.net/courses/{{ course.image }}{% else %}{{ url_for('static', filename='images/' + course.image) }}{% endif %}{% else %}{{ url_for('static', filename='images/premium_course_1.png') }}{% endif %}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">{{ course.category if course.category else 'Development' }}</span>
+                            <h4 class="course-title">{{ course.title }}</h4>
+                            <p>{{ course.description[:100] }}{% if course.description|length > 100 %}...{% endif %}</p>
+                            <div class="course-info">
+                                <div class="course-price">${{ "%.2f"|format(course.price) }}</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{{ url_for('static', filename='images/premium_course_1.png') }}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">Web Development</span>
+                            <h4 class="course-title">Full Stack Web Development Bootcamp</h4>
+                            <p>Learn to build complete web applications from front-end to back-end using modern technologies.</p>
+                            <div class="course-info">
+                                <div class="course-price">$99.99</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{{ url_for('static', filename='images/premium_course_2.png') }}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">Data Science</span>
+                            <h4 class="course-title">Data Science & Machine Learning</h4>
+                            <p>Master data analysis, visualization, and machine learning algorithms with Python.</p>
+                            <div class="course-info">
+                                <div class="course-price">$129.99</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{{ url_for('static', filename='images/premium_course_3.png') }}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">Mobile Development</span>
+                            <h4 class="course-title">Flutter & Dart: Build iOS and Android Apps</h4>
+                            <p>Create beautiful, natively compiled applications for mobile from a single codebase.</p>
+                            <div class="course-info">
+                                <div class="course-price">$89.99</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{{ url_for('static', filename='images/premium_course_4.png') }}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">UI/UX Design</span>
+                            <h4 class="course-title">UI/UX Design Masterclass</h4>
+                            <p>Learn to design beautiful user interfaces and create engaging user experiences.</p>
+                            <div class="course-info">
+                                <div class="course-price">$79.99</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{{ url_for('static', filename='images/premium_course_5.png') }}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">DevOps</span>
+                            <h4 class="course-title">DevOps Engineering & Cloud Computing</h4>
+                            <p>Master DevOps practices and cloud technologies to streamline software development.</p>
+                            <div class="course-info">
+                                <div class="course-price">$149.99</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="course-card">
+                        <div class="course-image" style="background-image: url('{{ url_for('static', filename='images/free_course_cover_1.png') }}')"></div>
+                        <div class="course-body">
+                            <span class="course-category">Marketing</span>
+                            <h4 class="course-title">Digital Marketing Fundamentals</h4>
+                            <p>Learn effective digital marketing strategies to grow your business online.</p>
+                            <div class="course-info">
+                                <div class="course-price">$69.99</div>
+                                <div class="course-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('courses') }}" class="btn btn-view-all">View All Courses</a>
+        </div>
+    </div>
+</section>

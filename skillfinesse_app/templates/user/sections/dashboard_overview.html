@@ -1,0 +1,120 @@
+<!-- User Dashboard Overview Section -->
+<div id="dashboard-section" class="content-section">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Dashboard Overview</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row stats-row">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">12</h3>
+                        <p class="stat-label">Enrolled Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon info">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">45h</h3>
+                        <p class="stat-label">Learning Hours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">8</h3>
+                        <p class="stat-label">Certificates Earned</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">85%</h3>
+                        <p class="stat-label">Course Completion</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity Section -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history me-2"></i>Recent Activity</h3>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon course">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Enrolled in Web Development Course</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon certificate">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Earned Certificate in Python Basics</div>
+                                <div class="activity-time">1 day ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon profile">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Profile Updated</div>
+                                <div class="activity-time">3 days ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon course">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Started JavaScript Fundamentals Course</div>
+                                <div class="activity-time">1 week ago</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

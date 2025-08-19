@@ -1,0 +1,146 @@
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-top py-5">
+            <div class="row gx-5">
+                <div class="col-lg-4 col-md-6 mb-5 mb-lg-0">
+                    <div class="footer-logo mb-4">
+                        <img src="{{ url_for('static', filename='images/' + site_settings.logo) }}" alt="{{ site_settings.logo_alt }}" class="img-fluid">
+                    </div>
+                    <p class="footer-about mb-4">
+                        {{ site_settings.footer_description }}
+                    </p>
+                    <div class="social-links d-flex gap-3">
+                        {% if site_settings.social_links.facebook %}
+                        <a href="{{ site_settings.social_links.facebook }}" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_links.twitter %}
+                        <a href="{{ site_settings.social_links.twitter }}" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_links.instagram %}
+                        <a href="{{ site_settings.social_links.instagram }}" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_links.linkedin %}
+                        <a href="{{ site_settings.social_links.linkedin }}" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_links.youtube %}
+                        <a href="{{ site_settings.social_links.youtube }}" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                        {% endif %}
+                        {% if site_settings.social_links.github %}
+                        <a href="{{ site_settings.social_links.github }}" class="social-link" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-2 offset-lg-1 col-md-6 mb-5 mb-lg-0">
+                    <h4 class="footer-title mb-4">Quick Links</h4>
+                    <ul class="footer-links ps-0">
+                        <li class="mb-3"><a href="{{ url_for('index') }}">Home</a></li>
+                        <li class="mb-3"><a href="#about">About Us</a></li>
+                        <li class="mb-3"><a href="#courses">Courses</a></li>
+                        <li class="mb-3"><a href="#videos">Videos</a></li>
+                        <li class="mb-3"><a href="{{ url_for('blog') }}">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-5 mb-lg-0">
+                    <h4 class="footer-title mb-4">Our Courses</h4>
+                    <ul class="footer-links ps-0">
+                        <li class="mb-3"><a href="#">Web Development</a></li>
+                        <li class="mb-3"><a href="#">Data Science</a></li>
+                        <li class="mb-3"><a href="#">Mobile Development</a></li>
+                        <li class="mb-3"><a href="#">UI/UX Design</a></li>
+                        <li class="mb-3"><a href="#">Digital Marketing</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="footer-title mb-4">Contact Us</h4>
+                    <ul class="footer-contact ps-0">
+                        {% if site_settings.contact_info.address %}
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-map-marker-alt me-3 mt-1"></i>
+                            <span>{{ site_settings.contact_info.address }}</span>
+                        </li>
+                        {% endif %}
+                        {% if site_settings.contact_info.phone %}
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fas fa-phone-alt me-3"></i>
+                            <a href="tel:{{ site_settings.contact_info.phone }}" class="footer-phone">{{ site_settings.contact_info.phone }}</a>
+                        </li>
+                        {% endif %}
+                        {% if site_settings.contact_info.email %}
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fas fa-envelope me-3"></i>
+                            <a href="mailto:{{ site_settings.contact_info.email }}" class="footer-email">{{ site_settings.contact_info.email }}</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Methods Section -->
+        <div class="payment-section py-4 border-top">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10 col-12">
+                    <div class="text-center">
+                        <h6 class="payment-title mb-4">
+                            <i class="fas fa-credit-card me-2"></i>
+                            We Accept All Major Payment Methods
+                        </h6>
+                        
+                        <div class="payment-image-wrapper">
+                            <img src="{{ url_for('static', filename='images/payment_channels.png') }}" 
+                                 alt="Accepted Payment Methods - Visa, Mastercard, bKash, Nagad, Rocket, Internet Banking" 
+                                 class="payment-channels-img">
+                        </div>
+                        
+                        <div class="security-badges mt-3">
+                            <span class="security-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <small>SSL Secured</small>
+                            </span>
+                            <span class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <small>PCI Compliant</small>
+                            </span>
+                            <span class="security-badge">
+                                <i class="fas fa-check-circle"></i>
+                                <small>100% Safe</small>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom py-4 border-top">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; {{ now.year }} Skill Finesse. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <a href="{{ url_for('privacy_policy') }}" class="text-decoration-none me-3">Privacy Policy</a>
+                    <a href="{{ url_for('terms_of_service') }}" class="text-decoration-none me-3">Terms of Service</a>
+                    <a href="{{ url_for('refund_policy') }}" class="text-decoration-none me-3">Refund Policy</a>
+                    <a href="{{ url_for('cookie_policy') }}" class="text-decoration-none">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Video Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title visually-hidden" id="videoModalLabel">Video Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <iframe src="" id="video" class="embed-responsive-item" allowfullscreen allow="autoplay"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

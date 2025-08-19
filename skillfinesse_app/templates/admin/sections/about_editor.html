@@ -1,0 +1,1383 @@
+<!-- About Page Editor Section -->
+<div id="about-editor-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>About Page Editor</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" data-section="dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item active">About Page Editor</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Edit About Page Sections</h4>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" onclick="previewAboutPage()">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetAboutToDefaults()">
+                        <i class="fas fa-undo"></i> Reset All to Defaults
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Upload Guidelines -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-lightbulb"></i> About Page Image Upload Guidelines</h5>
+                <p class="mb-2">For best results, please follow these guidelines when uploading images for the about page:</p>
+                <ul class="mb-0 small">
+                    <li><strong>Team Images:</strong> Use professional headshots, 300x300px or 1:1 ratio recommended (max 800KB)</li>
+                    <li><strong>About Images:</strong> Use high-quality images that represent your organization (no size limit)</li>
+                    <li><strong>File Size:</strong> Team images should be under 800KB, main about images can be any size</li>
+                    <li><strong>Formats:</strong> JPG, PNG, WEBP are preferred for best compatibility</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main About Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-info-circle"></i> Main About Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewAboutSection('main')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetAboutSection('main_about')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveMainAboutSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="mainAboutSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="mainAboutTitle" class="form-label">Main Title</label>
+                            <input type="text" class="form-control" id="mainAboutTitle" placeholder="Empowering Careers Through Quality Education">
+                        </div>
+                        <div class="mb-3">
+                            <label for="mainAboutSubtitle" class="form-label">Subtitle</label>
+                            <input type="text" class="form-control" id="mainAboutSubtitle" placeholder="Since 2020">
+                        </div>
+                        <div class="mb-3">
+                            <label for="mainAboutContent" class="form-label">Content (HTML allowed)</label>
+                            <textarea class="form-control rich-editor" id="mainAboutContent" rows="5" placeholder="Skill Finesse is a premier online learning platform..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-primary"></i> About Images Guidelines</h6>
+                                <ul>
+                                    <li><strong>Dimensions:</strong> 500x400px or 5:4 ratio recommended</li>
+                                    <li><strong>File Size:</strong> No size limit (any size allowed)</li>
+                                    <li><strong>Formats:</strong> JPG, PNG, WEBP</li>
+                                    <li><strong>Content:</strong> Professional, welcoming images</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- About Images -->
+                        <div class="mb-3">
+                            <label class="form-label">About Images</label>
+                            <div id="mainAboutImagesContainer">
+                                <!-- About images will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addMainAboutImage()">
+                                <i class="fas fa-plus"></i> Add Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Cards -->
+                <div class="mb-3">
+                    <label class="form-label">Feature Cards</label>
+                    <div id="mainAboutFeaturesContainer">
+                        <!-- Feature cards will be dynamically loaded here -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addMainAboutFeature()">
+                        <i class="fas fa-plus"></i> Add Feature
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mission Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-bullseye"></i> Mission Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewAboutSection('mission')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetAboutSection('mission')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveMissionSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="missionSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="missionTitle" class="form-label">Section Title</label>
+                            <input type="text" class="form-control" id="missionTitle" placeholder="Our Mission & Vision">
+                        </div>
+                        <div class="mb-3">
+                            <label for="missionContent" class="form-label">Mission Content (HTML allowed)</label>
+                            <textarea class="form-control rich-editor" id="missionContent" rows="4" placeholder="To democratize education..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mission Points</label>
+                            <div id="missionPointsContainer">
+                                <!-- Mission points will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addMissionPoint()">
+                                <i class="fas fa-plus"></i> Add Point
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="missionVisionTitle" class="form-label">Vision Title</label>
+                            <input type="text" class="form-control" id="missionVisionTitle" placeholder="Our Vision">
+                        </div>
+                        <div class="mb-3">
+                            <label for="missionVisionContent" class="form-label">Vision Content (HTML allowed)</label>
+                            <textarea class="form-control rich-editor" id="missionVisionContent" rows="4" placeholder="To become the leading platform..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Vision Points</label>
+                            <div id="visionPointsContainer">
+                                <!-- Vision points will be dynamically loaded here -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addVisionPoint()">
+                                <i class="fas fa-plus"></i> Add Point
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Section Editor -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-users"></i> Team Section</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="previewAboutSection('team')">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="resetAboutSection('team')">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="saveTeamSection()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="teamSectionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="teamTitle" class="form-label">Section Title</label>
+                            <input type="text" class="form-control" id="teamTitle" placeholder="Meet Our Team">
+                        </div>
+                        <div class="mb-3">
+                            <label for="teamSubtitle" class="form-label">Section Subtitle</label>
+                            <input type="text" class="form-control" id="teamSubtitle" placeholder="Dedicated professionals committed to your success">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="upload-instructions mb-3">
+                            <div class="instruction-card">
+                                <h6><i class="fas fa-info-circle text-success"></i> Team Image Guidelines</h6>
+                                <ul>
+                                    <li><strong>Dimensions:</strong> 300x300px or 1:1 ratio recommended</li>
+                                    <li><strong>File Size:</strong> Maximum 800KB per image</li>
+                                    <li><strong>Formats:</strong> JPG, PNG, WEBP</li>
+                                    <li><strong>Content:</strong> Professional headshots work best</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Members -->
+                <div class="mb-3">
+                    <label class="form-label">Team Members</label>
+                    <div id="teamMembersContainer">
+                        <!-- Team members will be dynamically loaded here -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addTeamMember()">
+                        <i class="fas fa-plus"></i> Add Team Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Save All Button -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="saveAllAboutSections()">
+                <i class="fas fa-save"></i> Save All Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="aboutPreviewModal" tabindex="-1" aria-labelledby="aboutPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aboutPreviewModalLabel">About Page Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="aboutPreviewFrame" src="" width="100%" height="600" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/about" target="_blank" class="btn btn-primary">Open in New Tab</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* About Editor Specific Styles */
+.about-feature-item,
+.about-image-item,
+.mission-point-item,
+.vision-point-item,
+.team-member-item {
+    background-color: #f8f9fc;
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.about-feature-item .remove-btn,
+.about-image-item .remove-btn,
+.mission-point-item .remove-btn,
+.vision-point-item .remove-btn,
+.team-member-item .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about-feature-item .remove-btn:hover,
+.about-image-item .remove-btn:hover,
+.mission-point-item .remove-btn:hover,
+.vision-point-item .remove-btn:hover,
+.team-member-item .remove-btn:hover {
+    background-color: #c82333;
+}
+
+.social-links-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    margin-top: 10px;
+}
+
+.social-links-container h6 {
+    margin-bottom: 15px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.social-link-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.social-link-item label {
+    width: 80px;
+    margin-bottom: 0;
+    margin-right: 10px;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.social-link-item input {
+    flex: 1;
+}
+
+.social-link-item i {
+    margin-right: 5px;
+    width: 16px;
+    text-align: center;
+}
+
+/* Point item styles */
+.point-item-input {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.point-item-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.point-item-remove:hover {
+    background-color: #c82333;
+}
+
+/* Image Upload Styles */
+.image-upload-container {
+    position: relative;
+    width: 100%;
+}
+
+.image-preview-container {
+    position: relative;
+    width: 100%;
+    min-height: 120px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.image-preview-container:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.image-preview-container.uploading {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.image-preview-large {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.upload-placeholder {
+    text-align: center;
+    color: #6c757d;
+    font-size: 14px;
+    padding: 20px;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 123, 255, 0.9);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.upload-overlay i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+</style>
+
+<script>
+// About Page Editor JavaScript
+let mainAboutImages = [];
+let mainAboutFeatures = [];
+let missionPoints = [];
+let visionPoints = [];
+let teamMembers = [];
+
+// Initialize about page editor
+function initAboutEditor() {
+    loadAboutContent();
+}
+
+// Load existing about page content
+function loadAboutContent() {
+    console.log('Loading about content...');
+    fetch('/admin/get-about-content')
+        .then(response => response.json())
+        .then(data => {
+            console.log('About content response:', data);
+            if (data.success) {
+                populateMainAboutForm(data.main_about);
+                populateMissionForm(data.mission);
+                populateTeamForm(data.team);
+            } else {
+                console.error('Failed to load about content:', data.message);
+                // Load defaults if no content exists
+                loadDefaultAboutContent();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading about content:', error);
+            loadDefaultAboutContent();
+        });
+}
+
+// Load default about content
+function loadDefaultAboutContent() {
+    fetch('/admin/get-default-about-content')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                populateMainAboutForm(data.main_about);
+                populateMissionForm(data.mission);
+                populateTeamForm(data.team);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading default about content:', error);
+        });
+}
+
+// Populate form functions for each section
+function populateMainAboutForm(mainAboutData) {
+    if (!mainAboutData) return;
+    
+    document.getElementById('mainAboutTitle').value = mainAboutData.main_about_title || '';
+    document.getElementById('mainAboutSubtitle').value = mainAboutData.main_about_subtitle || '';
+    document.getElementById('mainAboutContent').value = mainAboutData.main_about_content || '';
+    
+    // Parse and load images
+    try {
+        mainAboutImages = JSON.parse(mainAboutData.main_about_images || '[]');
+        renderMainAboutImages();
+    } catch (e) {
+        mainAboutImages = [];
+        renderMainAboutImages();
+    }
+    
+    // Parse and load features
+    try {
+        mainAboutFeatures = JSON.parse(mainAboutData.main_about_features || '[]');
+        renderMainAboutFeatures();
+    } catch (e) {
+        mainAboutFeatures = [];
+        renderMainAboutFeatures();
+    }
+}
+
+function populateMissionForm(missionData) {
+    if (!missionData) return;
+    
+    document.getElementById('missionTitle').value = missionData.mission_title || '';
+    document.getElementById('missionContent').value = missionData.mission_content || '';
+    document.getElementById('missionVisionTitle').value = missionData.mission_vision_title || '';
+    document.getElementById('missionVisionContent').value = missionData.mission_vision_content || '';
+    
+    // Parse and load mission points
+    try {
+        missionPoints = JSON.parse(missionData.mission_points || '[]');
+        renderMissionPoints();
+    } catch (e) {
+        missionPoints = [];
+        renderMissionPoints();
+    }
+    
+    // Parse and load vision points
+    try {
+        visionPoints = JSON.parse(missionData.vision_points || '[]');
+        renderVisionPoints();
+    } catch (e) {
+        visionPoints = [];
+        renderVisionPoints();
+    }
+}
+
+function populateTeamForm(teamData) {
+    if (!teamData) {
+        console.warn('No team data provided to populateTeamForm');
+        return;
+    }
+    
+    console.log('Loading team data:', teamData);
+    
+    document.getElementById('teamTitle').value = teamData.team_title || '';
+    document.getElementById('teamSubtitle').value = teamData.team_subtitle || '';
+    
+    // Parse and load team members
+    try {
+        teamMembers = JSON.parse(teamData.team_members || '[]');
+        console.log('Parsed team members:', teamMembers.length, 'members');
+        renderTeamMembers();
+    } catch (e) {
+        console.error('Error parsing team members JSON:', e);
+        teamMembers = [];
+        renderTeamMembers();
+    }
+}
+
+// Render functions for each section
+function renderMainAboutImages() {
+    const container = document.getElementById('mainAboutImagesContainer');
+    container.innerHTML = '';
+    
+    mainAboutImages.forEach((image, index) => {
+        const imageItem = document.createElement('div');
+        imageItem.className = 'about-image-item sortable-item';
+        imageItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeMainAboutImage(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" style="display: none;" id="mainAboutImageUpload${index}" data-index="${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('mainAboutImageUpload${index}').click()">
+                            ${image.image ? `<img src="/static/images/${image.image}" class="image-preview-large" alt="Preview">` : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('mainAboutImageUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${image.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Alt Text</label>
+                    <input type="text" class="form-control" value="${image.alt || ''}" onchange="updateMainAboutImage(${index}, 'alt', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Caption</label>
+                    <input type="text" class="form-control" value="${image.caption || ''}" onchange="updateMainAboutImage(${index}, 'caption', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateMainAboutImage(${index}, 'description', this.value)">${image.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(imageItem);
+    });
+}
+
+function renderMainAboutFeatures() {
+    const container = document.getElementById('mainAboutFeaturesContainer');
+    container.innerHTML = '';
+    
+    mainAboutFeatures.forEach((feature, index) => {
+        const featureItem = document.createElement('div');
+        featureItem.className = 'about-feature-item sortable-item';
+        featureItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeMainAboutFeature(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Icon (FontAwesome)</label>
+                    <input type="text" class="form-control" value="${feature.icon || ''}" onchange="updateMainAboutFeature(${index}, 'icon', this.value)" placeholder="fas fa-book">
+                    <div class="form-text">Use FontAwesome class names</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" value="${feature.title || ''}" onchange="updateMainAboutFeature(${index}, 'title', this.value)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="2" onchange="updateMainAboutFeature(${index}, 'description', this.value)">${feature.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(featureItem);
+    });
+}
+
+function renderMissionPoints() {
+    const container = document.getElementById('missionPointsContainer');
+    container.innerHTML = '';
+    
+    missionPoints.forEach((point, index) => {
+        const pointItem = document.createElement('div');
+        pointItem.className = 'mission-point-item sortable-item';
+        pointItem.innerHTML = `
+            <button type="button" class="point-item-remove" onclick="removeMissionPoint(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <input type="text" class="form-control point-item-input" value="${point}" onchange="updateMissionPoint(${index}, this.value)" placeholder="Mission point">
+        `;
+        container.appendChild(pointItem);
+    });
+}
+
+function renderVisionPoints() {
+    const container = document.getElementById('visionPointsContainer');
+    container.innerHTML = '';
+    
+    visionPoints.forEach((point, index) => {
+        const pointItem = document.createElement('div');
+        pointItem.className = 'vision-point-item sortable-item';
+        pointItem.innerHTML = `
+            <button type="button" class="point-item-remove" onclick="removeVisionPoint(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <input type="text" class="form-control point-item-input" value="${point}" onchange="updateVisionPoint(${index}, this.value)" placeholder="Vision point">
+        `;
+        container.appendChild(pointItem);
+    });
+}
+
+function renderTeamMembers() {
+    const container = document.getElementById('teamMembersContainer');
+    container.innerHTML = '';
+    
+    teamMembers.forEach((member, index) => {
+        const memberItem = document.createElement('div');
+        memberItem.className = 'team-member-item sortable-item';
+        memberItem.innerHTML = `
+            <button type="button" class="remove-btn" onclick="removeTeamMember(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" class="form-control image-upload" accept="image/*" style="display: none;" id="teamMemberImageUpload${index}" data-index="${index}">
+                        <div class="image-preview-container" onclick="document.getElementById('teamMemberImageUpload${index}').click()">
+                            ${member.image ? `<img src="/static/images/${member.image}" class="image-preview-large" alt="Preview">` : '<div class="upload-placeholder"><i class="fas fa-cloud-upload-alt"></i><br>Click to upload image</div>'}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" onclick="document.getElementById('teamMemberImageUpload${index}').click()">
+                            <i class="fas fa-upload"></i> ${member.image ? 'Change Image' : 'Upload Image'}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" value="${member.name || ''}" onchange="updateTeamMember(${index}, 'name', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Position</label>
+                    <input type="text" class="form-control" value="${member.position || ''}" onchange="updateTeamMember(${index}, 'position', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <div class="social-links-container">
+                        <h6><i class="fas fa-share-alt"></i> Social Links</h6>
+                        <div class="social-link-item">
+                            <label><i class="fab fa-linkedin-in"></i> LinkedIn:</label>
+                            <input type="url" class="form-control" value="${member.social_links?.linkedin || ''}" onchange="updateTeamMemberSocial(${index}, 'linkedin', this.value)" placeholder="https://linkedin.com/in/username">
+                        </div>
+                        <div class="social-link-item">
+                            <label><i class="fab fa-twitter"></i> Twitter:</label>
+                            <input type="url" class="form-control" value="${member.social_links?.twitter || ''}" onchange="updateTeamMemberSocial(${index}, 'twitter', this.value)" placeholder="https://twitter.com/username">
+                        </div>
+                        <div class="social-link-item">
+                            <label><i class="fab fa-facebook-f"></i> Facebook:</label>
+                            <input type="url" class="form-control" value="${member.social_links?.facebook || ''}" onchange="updateTeamMemberSocial(${index}, 'facebook', this.value)" placeholder="https://facebook.com/username">
+                        </div>
+                        <div class="social-link-item">
+                            <label><i class="fab fa-github"></i> GitHub:</label>
+                            <input type="url" class="form-control" value="${member.social_links?.github || ''}" onchange="updateTeamMemberSocial(${index}, 'github', this.value)" placeholder="https://github.com/username">
+                        </div>
+                        <div class="social-link-item">
+                            <label><i class="fab fa-youtube"></i> YouTube:</label>
+                            <input type="url" class="form-control" value="${member.social_links?.youtube || ''}" onchange="updateTeamMemberSocial(${index}, 'youtube', this.value)" placeholder="https://youtube.com/channel/channelid">
+                        </div>
+                        <div class="social-link-item">
+                            <label><i class="fab fa-instagram"></i> Instagram:</label>
+                            <input type="url" class="form-control" value="${member.social_links?.instagram || ''}" onchange="updateTeamMemberSocial(${index}, 'instagram', this.value)" placeholder="https://instagram.com/username">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(memberItem);
+    });
+}
+
+// Add functions
+function addMainAboutImage() {
+    mainAboutImages.push({ image: '', alt: '', caption: '', description: '' });
+    renderMainAboutImages();
+}
+
+function addMainAboutFeature() {
+    mainAboutFeatures.push({ icon: '', title: '', description: '' });
+    renderMainAboutFeatures();
+}
+
+function addMissionPoint() {
+    missionPoints.push('');
+    renderMissionPoints();
+}
+
+function addVisionPoint() {
+    visionPoints.push('');
+    renderVisionPoints();
+}
+
+function addTeamMember() {
+    teamMembers.push({ 
+        image: '', 
+        name: '', 
+        position: '', 
+        social_links: {
+            linkedin: '',
+            twitter: '',
+            facebook: '',
+            github: '',
+            youtube: '',
+            instagram: ''
+        }
+    });
+    renderTeamMembers();
+}
+
+// Remove functions
+function removeMainAboutImage(index) {
+    mainAboutImages.splice(index, 1);
+    renderMainAboutImages();
+}
+
+function removeMainAboutFeature(index) {
+    mainAboutFeatures.splice(index, 1);
+    renderMainAboutFeatures();
+}
+
+function removeMissionPoint(index) {
+    missionPoints.splice(index, 1);
+    renderMissionPoints();
+}
+
+function removeVisionPoint(index) {
+    visionPoints.splice(index, 1);
+    renderVisionPoints();
+}
+
+function removeTeamMember(index) {
+    teamMembers.splice(index, 1);
+    renderTeamMembers();
+}
+
+// Update functions
+function updateMainAboutImage(index, field, value) {
+    if (mainAboutImages[index]) {
+        mainAboutImages[index][field] = value;
+        if (field === 'image') {
+            renderMainAboutImages();
+        }
+    }
+}
+
+function updateMainAboutFeature(index, field, value) {
+    if (mainAboutFeatures[index]) {
+        mainAboutFeatures[index][field] = value;
+    }
+}
+
+function updateMissionPoint(index, value) {
+    if (missionPoints[index] !== undefined) {
+        missionPoints[index] = value;
+    }
+}
+
+function updateVisionPoint(index, value) {
+    if (visionPoints[index] !== undefined) {
+        visionPoints[index] = value;
+    }
+}
+
+function updateTeamMember(index, field, value) {
+    if (teamMembers[index]) {
+        teamMembers[index][field] = value;
+        if (field === 'image') {
+            renderTeamMembers();
+        }
+    }
+}
+
+function updateTeamMemberSocial(index, platform, value) {
+    if (teamMembers[index]) {
+        if (!teamMembers[index].social_links) {
+            teamMembers[index].social_links = {};
+        }
+        teamMembers[index].social_links[platform] = value;
+    }
+}
+
+// Image upload functions
+function uploadMainAboutImage(index, fileInput) {
+    console.log('uploadMainAboutImage called with index:', index);
+    
+    const file = fileInput.files[0];
+    if (!file) {
+        console.log('No file selected');
+        return;
+    }
+    
+    console.log('File selected:', file.name, 'size:', file.size, 'type:', file.type);
+    
+    // Show immediate feedback and preview
+    showNotification(`File selected: ${file.name}`, 'info');
+    
+    // Show immediate preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const uploadContainer = fileInput.closest('.image-upload-container');
+        if (uploadContainer) {
+            const container = uploadContainer.querySelector('.image-preview-container');
+            if (container) {
+                container.innerHTML = `<img src="${e.target.result}" class="image-preview-large" alt="Preview">`;
+            }
+        }
+    };
+    reader.readAsDataURL(file);
+    
+    // Skip showFileInfo for now to avoid DOM errors
+    console.log('File selected:', file.name, 'size:', file.size, 'type:', file.type);
+    
+    if (!file.type.startsWith('image/')) {
+        showNotification('Please select a valid image file.', 'error');
+        return;
+    }
+    
+    const uploadContainer = fileInput.closest('.image-upload-container');
+    if (uploadContainer) {
+        const container = uploadContainer.querySelector('.image-preview-container');
+        if (container) {
+            container.classList.add('uploading');
+            container.innerHTML = '<div class="upload-overlay"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>';
+        }
+    }
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('type', 'main_about_image');
+    formData.append('index', index);
+    
+    // Show uploading message
+    showNotification('Uploading about image...', 'info');
+    
+    uploadAboutPageImage(formData, (filename) => {
+        mainAboutImages[index].image = filename;
+        renderMainAboutImages();
+        showNotification(`About image uploaded successfully! (${formatFileSize(file.size)})`, 'success');
+    }, () => {
+        renderMainAboutImages();
+    });
+}
+
+function uploadTeamMemberImage(index, fileInput) {
+    console.log('uploadTeamMemberImage called with index:', index, 'fileInput:', fileInput);
+    console.log('File input files:', fileInput.files);
+    console.log('File input ID:', fileInput.id);
+    console.log('File input parent:', fileInput.parentElement);
+    console.log('File input closest .image-upload-container:', fileInput.closest('.image-upload-container'));
+    
+    const file = fileInput.files[0];
+    if (!file) {
+        console.log('No file selected');
+        showNotification('No file selected', 'error');
+        return;
+    }
+    
+    console.log('File selected:', file.name, 'size:', file.size, 'type:', file.type);
+    
+    // Show immediate feedback
+    showNotification(`File selected: ${file.name}`, 'info');
+    
+    // Show immediate preview - try alternative method to find container
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Try multiple ways to find the preview container
+        let container = null;
+        
+        // Method 1: Use closest
+        const uploadContainer = fileInput.closest('.image-upload-container');
+        if (uploadContainer) {
+            container = uploadContainer.querySelector('.image-preview-container');
+        }
+        
+        // Method 2: Find by traversing DOM
+        if (!container) {
+            let parent = fileInput.parentElement;
+            while (parent && !parent.querySelector('.image-preview-container')) {
+                parent = parent.parentElement;
+                if (parent === document.body) break;
+            }
+            if (parent) {
+                container = parent.querySelector('.image-preview-container');
+            }
+        }
+        
+        if (container) {
+            container.innerHTML = `<img src="${e.target.result}" class="image-preview-large" alt="Preview">`;
+            console.log('Preview updated successfully');
+        } else {
+            console.warn('Could not find preview container for team member image');
+        }
+    };
+    reader.readAsDataURL(file);
+    
+    const maxSize = 800 * 1024; // 800KB
+    // Skip showFileInfo for now to avoid DOM errors
+    console.log('File size check:', file.size, 'max:', maxSize, 'valid:', file.size <= maxSize);
+    
+    if (!file.type.startsWith('image/')) {
+        console.log('Invalid file type:', file.type);
+        showNotification('Please select a valid image file.', 'error');
+        return;
+    }
+    
+    if (file.size > maxSize) {
+        console.log('File too large:', file.size, 'max:', maxSize);
+        showNotification('Image size must be less than 800KB for team member images.', 'error');
+        fileInput.value = '';
+        return;
+    }
+    
+    // Find upload container using multiple methods
+    let uploadContainer = fileInput.closest('.image-upload-container');
+    if (!uploadContainer) {
+        let parent = fileInput.parentElement;
+        while (parent && !parent.classList.contains('image-upload-container')) {
+            parent = parent.parentElement;
+            if (parent === document.body) break;
+        }
+        uploadContainer = parent;
+    }
+    
+    console.log('Upload container found:', uploadContainer);
+    
+    if (uploadContainer) {
+        const container = uploadContainer.querySelector('.image-preview-container');
+        console.log('Preview container found:', container);
+        
+        if (container) {
+            container.classList.add('uploading');
+            container.innerHTML = '<div class="upload-overlay"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>';
+        } else {
+            console.error('Could not find image preview container');
+        }
+    } else {
+        console.error('Could not find image upload container');
+    }
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('type', 'team_member_image');
+    formData.append('index', index);
+    
+    console.log('Calling uploadAboutPageImage with formData');
+    
+    // Show uploading message
+    showNotification('Uploading team member image...', 'info');
+    
+    uploadAboutPageImage(formData, (filename) => {
+        console.log('Upload success, filename:', filename);
+        teamMembers[index].image = filename;
+        
+        // Immediately update the preview container with the new image
+        const uploadContainer = fileInput.closest('.image-upload-container') || 
+                               fileInput.parentElement.closest('.image-upload-container');
+        if (uploadContainer) {
+            const container = uploadContainer.querySelector('.image-preview-container');
+            if (container) {
+                container.classList.remove('uploading');
+                container.innerHTML = `<img src="/static/images/${filename}" class="image-preview-large" alt="Preview">`;
+            }
+        }
+        
+        renderTeamMembers();
+        
+        // Automatically save team data after successful upload
+        setTimeout(() => {
+            saveTeamSection();
+        }, 100);
+        
+        showNotification(`Team member image uploaded successfully! (${formatFileSize(file.size)})`, 'success');
+    }, () => {
+        console.log('Upload error callback');
+        renderTeamMembers();
+    });
+}
+
+// Generic image upload function for about page
+function uploadAboutPageImage(formData, onSuccess, onError) {
+    console.log('uploadAboutPageImage called');
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+    
+    // Create XMLHttpRequest for better session handling
+    const xhr = new XMLHttpRequest();
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            console.log('Response status:', xhr.status);
+            console.log('Response text:', xhr.responseText);
+            
+            if (xhr.status === 200) {
+                try {
+                    const data = JSON.parse(xhr.responseText);
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        console.log('Upload successful, calling onSuccess with:', data.filename);
+                        onSuccess(data.filename);
+                    } else {
+                        console.log('Upload failed:', data.message);
+                        showNotification(`Upload failed: ${data.message}`, 'error');
+                        if (onError) onError();
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    showNotification('Upload failed: Invalid response', 'error');
+                    if (onError) onError();
+                }
+            } else if (xhr.status === 403) {
+                console.error('Access denied - check admin login');
+                showNotification('Access denied. Please refresh the page and try again.', 'error');
+                if (onError) onError();
+            } else {
+                console.error('Upload failed with status:', xhr.status);
+                showNotification(`Upload failed: Server error (${xhr.status})`, 'error');
+                if (onError) onError();
+            }
+        }
+    };
+    
+    xhr.open('POST', '/admin/upload-about-image', true);
+    xhr.withCredentials = true;
+    xhr.send(formData);
+}
+
+// Save functions
+function saveMainAboutSection() {
+    const mainAboutData = {
+        main_about_title: document.getElementById('mainAboutTitle').value,
+        main_about_subtitle: document.getElementById('mainAboutSubtitle').value,
+        main_about_content: document.getElementById('mainAboutContent').value,
+        main_about_images: JSON.stringify(mainAboutImages),
+        main_about_features: JSON.stringify(mainAboutFeatures)
+    };
+    
+    saveAboutSectionData('main_about', mainAboutData);
+}
+
+function saveMissionSection() {
+    const missionData = {
+        mission_title: document.getElementById('missionTitle').value,
+        mission_content: document.getElementById('missionContent').value,
+        mission_vision_title: document.getElementById('missionVisionTitle').value,
+        mission_vision_content: document.getElementById('missionVisionContent').value,
+        mission_points: JSON.stringify(missionPoints),
+        vision_points: JSON.stringify(visionPoints)
+    };
+    
+    saveAboutSectionData('mission', missionData);
+}
+
+function saveTeamSection() {
+    const teamData = {
+        team_title: document.getElementById('teamTitle').value,
+        team_subtitle: document.getElementById('teamSubtitle').value,
+        team_members: JSON.stringify(teamMembers)
+    };
+    
+    saveAboutSectionData('team', teamData);
+}
+
+function saveAllAboutSections() {
+    saveMainAboutSection();
+    setTimeout(() => saveMissionSection(), 500);
+    setTimeout(() => saveTeamSection(), 1000);
+}
+
+function saveAboutSectionData(section, data) {
+    const formData = new FormData();
+    formData.append('section', section);
+    
+    for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+    }
+    
+    fetch('/admin/save-about-content', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const sectionName = section.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            showNotification(`${sectionName} section saved successfully!`, 'success');
+        } else {
+            showNotification(`Error saving section: ${data.message}`, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving section:', error);
+        showNotification('Error saving section. Please try again.', 'error');
+    });
+}
+
+// Preview and reset functions
+function previewAboutPage() {
+    const modal = new bootstrap.Modal(document.getElementById('aboutPreviewModal'));
+    document.getElementById('aboutPreviewFrame').src = '/about';
+    modal.show();
+}
+
+function previewAboutSection(section) {
+    const modal = new bootstrap.Modal(document.getElementById('aboutPreviewModal'));
+    document.getElementById('aboutPreviewFrame').src = `/about#${section}`;
+    modal.show();
+}
+
+function resetAboutToDefaults() {
+    if (confirm('Are you sure you want to reset all about page sections to default values? This action cannot be undone.')) {
+        fetch('/admin/reset-about-content', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('All about page sections reset to defaults successfully!', 'success');
+                loadDefaultAboutContent();
+            } else {
+                showNotification(`Error resetting content: ${data.message}`, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error resetting content:', error);
+            showNotification('Error resetting content. Please try again.', 'error');
+        });
+    }
+}
+
+function resetAboutSection(section) {
+    if (confirm(`Are you sure you want to reset the ${section.replace('_', ' ')} section to default values?`)) {
+        // Load default content for the specific section
+        fetch('/admin/get-default-about-content')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    switch (section) {
+                        case 'main_about':
+                            populateMainAboutForm(data.main_about);
+                            break;
+                        case 'mission':
+                            populateMissionForm(data.mission);
+                            break;
+                        case 'team':
+                            populateTeamForm(data.team);
+                            break;
+                    }
+                    showNotification(`${section.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} section reset to defaults.`, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading defaults:', error);
+                showNotification('Error loading default content.', 'error');
+            });
+    }
+}
+
+// Utility functions (reuse from homepage editor)
+function showNotification(message, type) {
+    const toast = document.createElement('div');
+    let alertClass = 'alert-danger';
+    
+    switch(type) {
+        case 'success':
+            alertClass = 'alert-success';
+            break;
+        case 'info':
+            alertClass = 'alert-info';
+            break;
+        case 'warning':
+            alertClass = 'alert-warning';
+            break;
+        default:
+            alertClass = 'alert-danger';
+    }
+    
+    toast.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function showFileInfo(fileInput, maxSizeBytes, imageType) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    
+    const fileSize = formatFileSize(file.size);
+    const maxSizeFormatted = formatFileSize(maxSizeBytes);
+    const isValidSize = file.size <= maxSizeBytes;
+    
+    const uploadContainer = fileInput.closest('.image-upload-container');
+    if (!uploadContainer) {
+        console.warn('Could not find image-upload-container for file info');
+        return;
+    }
+    
+    const infoElement = uploadContainer.querySelector('.file-info');
+    if (infoElement) {
+        infoElement.remove();
+    }
+    
+    const fileInfoDiv = document.createElement('div');
+    fileInfoDiv.className = `file-info small mt-1 ${isValidSize ? 'text-success' : 'text-danger'}`;
+    fileInfoDiv.innerHTML = `
+        <i class="fas fa-file-image"></i> 
+        ${file.name} (${fileSize}) - 
+        ${isValidSize ? '<i class="fas fa-check-circle"></i> Valid size' : `<i class="fas fa-exclamation-triangle"></i> Exceeds ${maxSizeFormatted} limit`}
+    `;
+    
+    uploadContainer.appendChild(fileInfoDiv);
+}
+
+// Test function to check if file input works
+function testFileInput(index) {
+    console.log('Testing file input for index:', index);
+    const fileInput = document.getElementById(`teamMemberImageUpload${index}`);
+    console.log('File input element:', fileInput);
+    if (fileInput) {
+        console.log('File input exists, files:', fileInput.files);
+        fileInput.addEventListener('change', function(e) {
+            console.log('File input change event triggered:', e.target.files);
+            uploadTeamMemberImage(index, e.target);
+        });
+    }
+}
+
+// Make functions globally accessible
+window.uploadTeamMemberImage = uploadTeamMemberImage;
+window.uploadMainAboutImage = uploadMainAboutImage;
+window.updateTeamMember = updateTeamMember;
+window.updateTeamMemberSocial = updateTeamMemberSocial;
+window.removeTeamMember = removeTeamMember;
+window.testFileInput = testFileInput;
+
+// Initialize when the section is shown
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('About editor: DOMContentLoaded');
+    
+    // Event delegation for file input changes
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('input[type="file"][id^="teamMemberImageUpload"]')) {
+            console.log('File input change detected:', e.target.id);
+            const index = e.target.getAttribute('data-index');
+            if (index !== null) {
+                console.log('Calling uploadTeamMemberImage with index:', index);
+                uploadTeamMemberImage(parseInt(index), e.target);
+            }
+        }
+        
+        if (e.target && e.target.matches('input[type="file"][id^="mainAboutImageUpload"]')) {
+            console.log('Main about image input change detected:', e.target.id);
+            const index = e.target.getAttribute('data-index');
+            if (index !== null) {
+                console.log('Calling uploadMainAboutImage with index:', index);
+                uploadMainAboutImage(parseInt(index), e.target);
+            }
+        }
+    });
+    
+    // Initialize about editor on page load
+    initAboutEditor();
+    
+    // Backup initialization after a short delay
+    setTimeout(() => {
+        if (!teamMembers || teamMembers.length === 0) {
+            console.log('Backup initialization: reloading team data');
+            initAboutEditor();
+        }
+    }, 500);
+    
+    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    navLinks.forEach(link => {
+        if (link.getAttribute('data-section') === 'about-editor') {
+            link.addEventListener('click', function() {
+                setTimeout(initAboutEditor, 100);
+            });
+        }
+    });
+});
+
+// Also try to initialize when window loads (as fallback)
+window.addEventListener('load', function() {
+    console.log('About editor: Window loaded');
+    if (!teamMembers || teamMembers.length === 0) {
+        console.log('Window load: initializing team data');
+        initAboutEditor();
+    }
+});
+</script>

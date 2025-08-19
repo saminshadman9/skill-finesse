@@ -1,0 +1,55 @@
+<!-- Alert Banner -->
+<div id="websiteAlert" class="website-alert" style="display: none;">
+    <div class="alert-text-container">
+        <div class="alert-text" id="websiteAlertText">
+            <!-- Alert message will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='images/' + site_settings.logo) }}" alt="{{ site_settings.logo_alt }}">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'index' else '' }}" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'about' else '' }}" href="{{ url_for('about') }}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'blog' else '' }}" href="{{ url_for('blog') }}">Blogs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'courses' else '' }}" href="{{ url_for('courses') }}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'ebooks' else '' }}" href="{{ url_for('ebooks') }}">eBooks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'contact' else '' }}" href="{{ url_for('contact') }}">Contact</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    {% if session.get('user_id') %}
+                        {% if request.endpoint in ['user_dashboard', 'ebook_read', 'course_watch'] %}
+                            <a href="{{ url_for('logout') }}" class="btn btn-join">Logout</a>
+                        {% elif session.get('is_admin') %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-join">Dashboard</a>
+                        {% else %}
+                            <a href="{{ url_for('user_dashboard') }}" class="btn btn-join">Dashboard</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('join') }}" class="btn btn-join">Join</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

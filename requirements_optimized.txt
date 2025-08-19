@@ -1,0 +1,38 @@
+# Web Framework
+Flask==2.2.3
+Flask-SQLAlchemy==3.0.3
+Werkzeug==2.2.3
+
+# WSGI Server
+gunicorn==23.0.0
+
+# Database
+psycopg2-binary==2.9.10
+SQLAlchemy==2.0.40
+
+# Authentication & Security
+firebase-admin==7.0.0
+PyJWT==2.10.1
+
+# HTTP Requests & APIs
+requests==2.31.0
+aiohttp==3.11.18
+aiohttp-retry==2.9.1
+
+# File Processing
+pillow==11.3.0
+pdf2image==1.17.0
+
+# Configuration
+python-dotenv==1.1.1
+
+# Template Engine (Flask dependency)
+Jinja2==3.1.6
+
+# Async Support
+httpx==0.28.1
+
+# Utilities
+click==8.1.8
+certifi==2025.4.26
+urllib3==2.4.0

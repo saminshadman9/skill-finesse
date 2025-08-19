@@ -1,0 +1,741 @@
+{% extends 'base.html' %}
+
+{% block title %}Purchase {{ course.title }} - Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+    }
+
+    /* Purchase Hero Section */
+    .purchase-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #008c44 100%);
+        color: white;
+        padding: 100px 0 80px;
+        text-align: center;
+    }
+
+    .purchase-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .purchase-hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    /* Purchase Content */
+    .purchase-content {
+        padding: 80px 0;
+        background-color: #f8f9fc;
+    }
+
+    .purchase-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .course-summary {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .course-header {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .course-image {
+        width: 120px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    .course-info h3 {
+        color: var(--secondary-color);
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+    }
+
+    .course-meta {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .course-price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-top: 10px;
+    }
+
+    .original-price {
+        font-size: 1.2rem;
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 10px;
+    }
+
+    /* Coupon Section */
+    .coupon-section {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .coupon-form {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .coupon-input {
+        flex: 1;
+        padding: 12px 15px;
+        border: 2px solid #e1e5eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .coupon-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .coupon-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .coupon-btn:hover {
+        background: #008c44;
+    }
+
+    .coupon-success {
+        background: #d4edda;
+        color: #155724;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #c3e6cb;
+    }
+
+    .coupon-error {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* Payment Section */
+    .payment-section {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .payment-form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e1e5eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(0, 166, 81, 0.1);
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+    /* Order Summary */
+    .order-summary {
+        background: #f8f9fc;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 8px 0;
+    }
+
+    .summary-row.total {
+        border-top: 2px solid #e1e5eb;
+        margin-top: 15px;
+        padding-top: 15px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--secondary-color);
+    }
+
+    .discount-row {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    /* Payment Gateway Info */
+    .payment-gateway-info {
+        margin-bottom: 30px;
+    }
+
+    .gateway-info-card {
+        background: linear-gradient(135deg, #f8f9fc 0%, #e3f2fd 100%);
+        border: 2px solid #e3f2fd;
+        border-radius: 15px;
+        padding: 25px;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .gateway-icon {
+        background: var(--primary-color);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .gateway-details h4 {
+        color: var(--secondary-color);
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .gateway-details p {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .payment-methods-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Purchase Button */
+    .purchase-btn {
+        width: 100%;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 18px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    .purchase-btn:hover {
+        background: #008c44;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 166, 81, 0.3);
+    }
+
+    .purchase-btn:disabled {
+        background: #ccc !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+        opacity: 0.6 !important;
+    }
+
+    .purchase-btn:disabled:hover {
+        background: #ccc !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Terms and Conditions Checkbox */
+    .form-check {
+        background: #f8f9fc;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #e1e5eb;
+        margin-bottom: 20px;
+    }
+
+    .form-check-label {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--secondary-color);
+        margin-left: 8px;
+        cursor: pointer;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-label a {
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .form-check-label a:hover {
+        color: #008c44 !important;
+        text-decoration: underline !important;
+    }
+
+    /* Security Notice */
+    .security-notice {
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 1px solid #bbdefb;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .security-notice i {
+        margin-right: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .purchase-hero h1 {
+            font-size: 2rem;
+        }
+
+        .course-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            align-self: center;
+        }
+
+        .coupon-form {
+            flex-direction: column;
+        }
+
+        .form-row {
+            flex-direction: column;
+        }
+
+        .purchase-content {
+            padding: 40px 0;
+        }
+
+        .course-summary,
+        .coupon-section,
+        .payment-section {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<!-- Purchase Hero Section -->
+<section class="purchase-hero">
+    <div class="container">
+        <h1>Complete Your Purchase</h1>
+        <p>You're one step away from accessing this amazing course!</p>
+    </div>
+</section>
+
+<!-- Purchase Content -->
+<section class="purchase-content">
+    <div class="container">
+        <div class="purchase-container">
+            <!-- Course Summary -->
+            <div class="course-summary">
+                <h2 class="section-title">Course Summary</h2>
+                <div class="course-header">
+                    <img src="{% if course.image %}{% if '_' in course.image and course.image.split('_')[-1].split('.')[0].isdigit() %}https://skill-finesse-videos.b-cdn.net/courses/{{ course.image }}{% else %}{{ url_for('static', filename='images/' + course.image) }}{% endif %}{% else %}{% if 'Python' in course.title or 'Data Science' in course.title or 'Machine Learning' in course.title %}{{ url_for('static', filename='images/premium_course_1.png') }}{% elif 'Web Development' in course.title or 'Full Stack' in course.title or 'React' in course.title or 'JavaScript' in course.title %}{{ url_for('static', filename='images/premium_course_2.png') }}{% elif 'Mobile' in course.title or 'Flutter' in course.title or 'App Development' in course.title %}{{ url_for('static', filename='images/premium_course_3.png') }}{% elif 'UI/UX' in course.title or 'Design' in course.title %}{{ url_for('static', filename='images/premium_course_4.png') }}{% elif 'Marketing' in course.title or 'Digital Marketing' in course.title %}{{ url_for('static', filename='images/premium_course_5.png') }}{% elif 'Blockchain' in course.title or 'DevOps' in course.title %}{{ url_for('static', filename='images/free_course_cover_1.png') }}{% else %}{{ url_for('static', filename='images/premium_course_1.png') }}{% endif %}{% endif %}" 
+                         alt="{{ course.title }}" class="course-image" 
+                         onerror="this.src='{{ url_for('static', filename='images/premium_course_1.png') }}'; this.onerror=null;">
+                    <div class="course-info">
+                        <h3>{{ course.title }}</h3>
+                        <div class="course-meta">
+                            <i class="fas fa-tag"></i> {{ course.category or 'Programming' }}
+                        </div>
+                        <div class="course-meta">
+                            <i class="fas fa-users"></i> {{ course.enrollments|length }} students enrolled
+                        </div>
+                        <div class="course-meta">
+                            <i class="fas fa-user"></i> {{ course.admin.first_name }} {{ course.admin.last_name }}
+                        </div>
+                        <div class="course-price" id="displayPrice">
+                            {% if course.has_public_discount %}
+                                <span class="original-price">৳{{ course.price|round|int }}</span>
+                                ৳{{ course.current_price|round|int }}
+                            {% else %}
+                                ৳{{ course.price|round|int }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Always show coupon section for private coupons -->
+            <!-- Coupon Section -->
+            <div class="coupon-section">
+                <h2 class="section-title">Apply Coupon Code</h2>
+                <p>Have a coupon code? Enter it below to get a discount on your purchase.</p>
+                <form class="coupon-form" id="couponForm">
+                    <input type="text" class="coupon-input" id="couponCode" placeholder="Enter coupon code" maxlength="50">
+                    <button type="submit" class="coupon-btn">Apply</button>
+                </form>
+                <div id="couponMessage" style="display: none;"></div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <h2 class="section-title">Payment Information</h2>
+                <form class="payment-form" id="purchaseForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                    </div>
+
+                    <!-- Payment Gateway Information -->
+                    <div class="payment-gateway-info">
+                        <div class="gateway-info-card">
+                            <div class="gateway-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="gateway-details">
+                                <h4>Secure Payment Gateway</h4>
+                                <p>Your payment is secured by SSLCommerz, the leading payment gateway in Bangladesh. We support all major credit cards, debit cards, mobile banking, and net banking.</p>
+                                
+                                <div class="payment-methods">
+                                    <img src="{{ url_for('static', filename='images/payment_channels.png') }}" alt="Supported Payment Methods" class="payment-methods-img">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary">
+                        <h4 style="margin-bottom: 15px; color: var(--secondary-color);">Order Summary</h4>
+                        <div class="summary-row">
+                            <span>Course Price:</span>
+                            <span id="originalPrice">৳{{ course.price|round|int }}</span>
+                        </div>
+                        {% if course.has_public_discount %}
+                        <div class="summary-row discount-row">
+                            <span>Public Discount ({{ course.discount_percent }}%):</span>
+                            <span>-৳{{ (course.price - course.current_price)|round|int }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="summary-row discount-row" id="couponDiscountRow" style="display: none;">
+                            <span>Coupon Discount:</span>
+                            <span id="couponDiscountAmount">-৳0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="totalPrice">৳{{ course.current_price|round|int }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions Agreement -->
+                    <div class="form-group" style="margin-top: 25px;">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" name="agree_terms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the 
+                                <a href="{{ url_for('terms_of_service') }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">Terms of Service</a>, 
+                                <a href="{{ url_for('privacy_policy') }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">Privacy Policy</a>, 
+                                and 
+                                <a href="{{ url_for('refund_policy') }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">Refund Policy</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="purchase-btn" id="purchaseButton">
+                        <i class="fas fa-credit-card me-2"></i>Pay Securely via SSLCommerz
+                    </button>
+
+                    <div class="security-notice">
+                        <i class="fas fa-shield-alt"></i>
+                        Your payment information is secure and encrypted. We use industry-standard security measures to protect your data.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const coursePrice = parseFloat('{{ course.price }}');
+    const courseCurrentPrice = parseFloat('{{ course.current_price }}');
+    const courseId = {{ course.id }};
+    let appliedCoupon = null;
+    let couponDiscountAmount = 0;
+
+    // SSLCommerz Payment Gateway Integration
+    // No card input formatting needed as we'll redirect to SSLCommerz
+
+    // Terms and Conditions checkbox handling
+    const agreeTermsCheckbox = document.getElementById('agreeTerms');
+    const purchaseButton = document.getElementById('purchaseButton');
+    
+    // Enable purchase button by default (SSLCommerz will handle the payment)
+    purchaseButton.disabled = false;
+    purchaseButton.style.opacity = '1';
+    purchaseButton.style.cursor = 'pointer';
+    
+    agreeTermsCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            purchaseButton.disabled = false;
+            purchaseButton.style.opacity = '1';
+            purchaseButton.style.cursor = 'pointer';
+        } else {
+            purchaseButton.disabled = true;
+            purchaseButton.style.opacity = '0.6';
+            purchaseButton.style.cursor = 'not-allowed';
+        }
+    });
+
+    // Coupon form handling
+    const couponForm = document.getElementById('couponForm');
+    if (couponForm) {
+        couponForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const couponCode = document.getElementById('couponCode').value.trim();
+            const messageDiv = document.getElementById('couponMessage');
+            const submitBtn = e.target.querySelector('button');
+            const originalBtnText = submitBtn.textContent;
+            
+            if (!couponCode) {
+                showCouponMessage('Please enter a coupon code', 'error');
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/validate-coupon', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        item_type: 'course',
+                        item_id: courseId,
+                        coupon_code: couponCode
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Apply the coupon
+                    appliedCoupon = result.coupon;
+                    couponDiscountAmount = appliedCoupon.discount_amount;
+                    updatePriceDisplay();
+                    
+                    showCouponMessage(`Coupon applied! You saved ${appliedCoupon.discount_percent}% (৳${Math.round(couponDiscountAmount)})`, 'success');
+                    
+                    // Disable coupon input and button
+                    document.getElementById('couponCode').disabled = true;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Applied';
+                } else {
+                    showCouponMessage(result.message, 'error');
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Coupon validation error:', error);
+                showCouponMessage('Error validating coupon. Please try again.', 'error');
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // SSLCommerz Payment form handling
+    const purchaseForm = document.getElementById('purchaseForm');
+    purchaseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Check if terms are agreed
+        const agreeTerms = document.getElementById('agreeTerms');
+        if (!agreeTerms.checked) {
+            alert('Please agree to the Terms of Service, Privacy Policy, and Refund Policy to continue with your purchase.');
+            return;
+        }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Initializing Payment...';
+        submitBtn.disabled = true;
+        
+        // Calculate final payment details
+        const finalPrice = calculateFinalPrice();
+        
+        // Prepare payment data for SSLCommerz
+        const paymentData = {
+            purchase_type: 'course',
+            item_id: courseId,
+            amount: coursePrice,
+            discount_amount: couponDiscountAmount,
+            coupon_code: appliedCoupon ? appliedCoupon.code : null,
+            coupon_discount_percent: appliedCoupon ? appliedCoupon.discount_percent : 0
+        };
+        
+        // Create SSLCommerz payment session
+        fetch('/payment/create-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(paymentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect to SSLCommerz payment gateway
+                window.location.href = data.gateway_url;
+            } else {
+                alert('Failed to initialize payment: ' + (data.error || 'Unknown error'));
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Payment initialization error:', error);
+            alert('Failed to initialize payment. Please try again.');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+
+    function updatePriceDisplay() {
+        const finalPrice = calculateFinalPrice();
+        
+        document.getElementById('totalPrice').textContent = '৳' + Math.round(finalPrice);
+        
+        if (appliedCoupon) {
+            document.getElementById('couponDiscountRow').style.display = 'flex';
+            document.getElementById('couponDiscountAmount').textContent = '-৳' + Math.round(couponDiscountAmount);
+            
+            // Update the display price in course summary
+            const displayPrice = document.getElementById('displayPrice');
+            {% if course.has_public_discount %}
+                displayPrice.innerHTML = `
+                    <span class="original-price">৳${Math.round(coursePrice)}</span>
+                    ৳${Math.round(finalPrice)}
+                `;
+            {% else %}
+                displayPrice.innerHTML = `
+                    <span class="original-price">৳${Math.round(coursePrice)}</span>
+                    ৳${Math.round(finalPrice)}
+                `;
+            {% endif %}
+        }
+    }
+
+    function calculateFinalPrice() {
+        return courseCurrentPrice - couponDiscountAmount;
+    }
+
+    function showCouponMessage(message, type) {
+        const messageDiv = document.getElementById('couponMessage');
+        messageDiv.className = type === 'success' ? 'coupon-success' : 'coupon-error';
+        messageDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        messageDiv.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1092 @@
+<div id="blogs-section" class="content-section" style="display: none;">
+    <div class="page-header">
+        <h1>Blog Management</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Blogs</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>Manage Blog Posts</h3>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBlogModal">
+                        <i class="fas fa-plus me-1"></i> Add New Blog Post
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="blogSearch" placeholder="Search blogs...">
+                        </div>
+                        <div class="d-flex gap-2">
+                            <select class="form-select" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="UI/UX Design">UI/UX Design</option>
+                                <option value="Career Growth">Career Growth</option>
+                                <option value="Programming">Programming</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Mobile Development">Mobile Development</option>
+                                <option value="Learning">Learning</option>
+                            </select>
+                            <button class="btn btn-outline-secondary" id="refreshBlogTable">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Date Published</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blogTableBody">
+                                {% if blogs %}
+                                    {% for blog in blogs %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="blog-thumbnail me-2" style="width: 50px; height: 50px; overflow: hidden; border-radius: 5px;">
+                                                        <img src="{{ 'https://skill-finesse-videos.b-cdn.net/static/images/' + blog.image if blog.image else 'https://skill-finesse-videos.b-cdn.net/static/images/blog' + ((loop.index % 3) + 1)|string + '.png' }}" alt="{{ blog.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">{{ blog.title }}</div>
+                                                        <small class="text-muted">{{ blog.read_time if blog.read_time else '5 min read' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-light text-dark">{{ blog.category }}</span></td>
+                                            <td>{{ blog.date.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                <span class="status-badge active">Published</span>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn-action btn-edit" onclick="previewBlog({{ blog.id }})" title="Preview">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn-action btn-edit" onclick="editBlog({{ blog.id }})" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn-action btn-delete" onclick="deleteBlog({{ blog.id }})" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No blog posts found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Blog Modal -->
+<div class="modal fade" id="addBlogModal" tabindex="-1" aria-labelledby="addBlogModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBlogModalLabel">Add New Blog Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addBlogForm" action="{{ url_for('admin_add_blog') }}" method="POST" enctype="multipart/form-data" onsubmit="return submitAddBlogForm(this)">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="blogTitle" class="form-label">Blog Title</label>
+                                <input type="text" class="form-control" id="blogTitle" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="blogSummary" class="form-label">Summary (Short description)</label>
+                                <textarea class="form-control" id="blogSummary" name="summary" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="blogContent" class="form-label">Content</label>
+                                <textarea class="form-control rich-editor" id="blogContent" name="content" rows="15" required></textarea>
+                                <small class="form-text text-muted">Use the editor toolbar to format your content</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="blogCategory" class="form-label">Category</label>
+                                <select class="form-select" id="blogCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="UI/UX Design">UI/UX Design</option>
+                                    <option value="Career Growth">Career Growth</option>
+                                    <option value="Programming">Programming</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Mobile Development">Mobile Development</option>
+                                    <option value="Learning">Learning</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="blogTags" class="form-label">Tags (comma separated)</label>
+                                <input type="text" class="form-control" id="blogTags" name="tags" placeholder="e.g. web, development, programming">
+                            </div>
+                            <div class="mb-3">
+                                <label for="readTime" class="form-label">Read Time</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="readTime" name="read_time_minutes" placeholder="5" min="1" required>
+                                    <span class="input-group-text">min read</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="blogImage" class="form-label">Featured Image</label>
+                                <input type="file" class="form-control" id="blogImage" name="image" accept="image/*">
+                                <div class="mt-2">
+                                    <img id="imagePreview" src="https://skill-finesse-videos.b-cdn.net/static/images/blog_default.jpg" alt="Preview" class="img-fluid" style="max-height: 200px; border-radius: 8px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <div>
+                                <button type="button" class="btn btn-success me-2" onclick="previewPost()">
+                                    <i class="fas fa-eye me-1"></i> Preview
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i> Publish Blog Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Blog Modal -->
+<div class="modal fade" id="editBlogModal" tabindex="-1" aria-labelledby="editBlogModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBlogModalLabel">Edit Blog Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBlogForm" action="{{ url_for('admin_edit_blog', blog_id=0) }}" method="POST" enctype="multipart/form-data" onsubmit="return submitEditBlogForm(this)">
+                    <input type="hidden" id="editBlogId" name="blog_id" value="">
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="editBlogTitle" class="form-label">Blog Title</label>
+                                <input type="text" class="form-control" id="editBlogTitle" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBlogSummary" class="form-label">Summary (Short description)</label>
+                                <textarea class="form-control" id="editBlogSummary" name="summary" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBlogContent" class="form-label">Content</label>
+                                <textarea class="form-control rich-editor" id="editBlogContent" name="content" rows="15" required></textarea>
+                                <small class="form-text text-muted">Use the editor toolbar to format your content</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="editBlogCategory" class="form-label">Category</label>
+                                <select class="form-select" id="editBlogCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="UI/UX Design">UI/UX Design</option>
+                                    <option value="Career Growth">Career Growth</option>
+                                    <option value="Programming">Programming</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Mobile Development">Mobile Development</option>
+                                    <option value="Learning">Learning</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBlogTags" class="form-label">Tags (comma separated)</label>
+                                <input type="text" class="form-control" id="editBlogTags" name="tags" placeholder="e.g. web, development, programming">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editReadTime" class="form-label">Read Time</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="editReadTime" name="read_time_minutes" placeholder="5" min="1" required>
+                                    <span class="input-group-text">min read</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBlogImage" class="form-label">Featured Image</label>
+                                <input type="file" class="form-control" id="editBlogImage" name="image" accept="image/*">
+                                <div class="mt-2">
+                                    <img id="editImagePreview" src="https://skill-finesse-videos.b-cdn.net/static/images/blog_default.jpg" alt="Preview" class="img-fluid" style="max-height: 200px; border-radius: 8px;">
+                                </div>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="keepExistingImage" name="keep_image" checked>
+                                    <label class="form-check-label" for="keepExistingImage">
+                                        Keep existing image if no new image is uploaded
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <div>
+                                <button type="button" class="btn btn-success me-2" onclick="previewEditedPost()">
+                                    <i class="fas fa-eye me-1"></i> Preview
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Update Blog Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Blog Modal -->
+<div class="modal fade" id="previewBlogModal" tabindex="-1" aria-labelledby="previewBlogModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewBlogModalLabel">Blog Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container preview-container">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div id="previewImage" class="preview-image"></div>
+                        </div>
+                        <div class="col-12">
+                            <span id="previewCategory" class="badge bg-primary mb-2"></span>
+                            <h1 id="previewTitle" class="preview-title"></h1>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="far fa-calendar-alt text-muted me-1"></i>
+                                    <span id="previewDate" class="text-muted"></span>
+                                </div>
+                                <div class="me-3">
+                                    <i class="far fa-clock text-muted me-1"></i>
+                                    <span id="previewReadTime" class="text-muted"></span>
+                                </div>
+                                <div>
+                                    <i class="far fa-user text-muted me-1"></i>
+                                    <span id="previewAuthor" class="text-muted">Admin</span>
+                                </div>
+                            </div>
+                            <p id="previewSummary" class="lead preview-summary"></p>
+                            <div id="previewContent" class="preview-content"></div>
+                            <div class="mt-4">
+                                <strong>Tags:</strong>
+                                <div id="previewTags" class="d-flex flex-wrap gap-1 mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="viewOnSiteBtn" href="#" target="_blank" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt me-1"></i> View on Site
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Blog Confirmation Modal -->
+<div class="modal fade" id="deleteBlogModal" tabindex="-1" aria-labelledby="deleteBlogModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteBlogModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the blog post: <strong id="deleteBlogTitle"></strong>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteBlogForm" action="{{ url_for('admin_delete_blog', blog_id=0) }}" method="POST" onsubmit="return submitDeleteBlogForm(this)">
+                    <input type="hidden" id="deleteBlogId" name="blog_id" value="">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .preview-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .preview-image {
+        width: 100%;
+        height: 350px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 10px;
+    }
+    
+    .preview-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .preview-summary {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        color: #666;
+    }
+    
+    .preview-content {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #333;
+    }
+    
+    .preview-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem 0;
+        border-radius: 5px;
+    }
+    
+    .preview-content h2, 
+    .preview-content h3, 
+    .preview-content h4 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .preview-content p {
+        margin-bottom: 1rem;
+    }
+    
+    .preview-content blockquote {
+        border-left: 4px solid #00a651;
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        font-style: italic;
+        color: #666;
+    }
+    
+    .preview-content ul, 
+    .preview-content ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+    
+    .preview-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .blog-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background-color: #f0f0f0;
+        color: #555;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Custom Editor Styles */
+    .custom-editor-container {
+        margin-bottom: 1rem;
+        border-radius: 0.25rem;
+        overflow: hidden;
+    }
+    
+    .editor-toolbar {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-bottom: none;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .editor-content {
+        min-height: 300px;
+        padding: 15px;
+        border: 1px solid #ced4da;
+        border-top: none;
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+        overflow-y: auto;
+        background-color: white;
+        color: #333;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .editor-content:focus {
+        outline: none;
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .editor-content p {
+        margin-bottom: 1rem;
+    }
+    
+    .editor-content h1, 
+    .editor-content h2, 
+    .editor-content h3, 
+    .editor-content h4 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .editor-content h1 {
+        font-size: 2rem;
+    }
+    
+    .editor-content h2 {
+        font-size: 1.75rem;
+    }
+    
+    .editor-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .editor-content h4 {
+        font-size: 1.25rem;
+    }
+    
+    .editor-content ul, 
+    .editor-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+    
+    .editor-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .editor-content a {
+        color: #007bff;
+        text-decoration: underline;
+    }
+    
+    .editor-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem 0;
+        border-radius: 4px;
+    }
+    
+    .editor-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        font-family: monospace;
+        overflow-x: auto;
+    }
+    
+    .editor-content blockquote {
+        border-left: 4px solid #00a651;
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        font-style: italic;
+        color: #666;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Function to show a specific section in the dashboard
+    function showSection(sectionId) {
+        // Hide all sections first
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Show the specified section
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+        }
+        
+        // Update active class in sidebar if it exists
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-section') === sectionId) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
+    // Make the showSection function available globally
+    window.showSection = showSection;
+    
+    // Check URL parameters for section to show
+    const urlParams = new URLSearchParams(window.location.search);
+    const section = urlParams.get('section');
+    if (section) {
+        showSection(section + '-section');
+    }
+
+        // Image Preview for Add Blog Form
+        const blogImage = document.getElementById('blogImage');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        if (blogImage && imagePreview) {
+            blogImage.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Image Preview for Edit Blog Form
+        const editBlogImage = document.getElementById('editBlogImage');
+        const editImagePreview = document.getElementById('editImagePreview');
+        
+        if (editBlogImage && editImagePreview) {
+            editBlogImage.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        editImagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Blog Search Functionality
+        const blogSearch = document.getElementById('blogSearch');
+        if (blogSearch) {
+            blogSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#blogTableBody tr');
+                
+                rows.forEach(row => {
+                    const title = row.querySelector('.fw-bold')?.textContent.toLowerCase() || '';
+                    const category = row.querySelector('.badge')?.textContent.toLowerCase() || '';
+                    
+                    if (title.includes(searchTerm) || category.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Category Filter
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                const category = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#blogTableBody tr');
+                
+                if (!category) {
+                    // Show all rows if no category is selected
+                    rows.forEach(row => {
+                        row.style.display = '';
+                    });
+                    return;
+                }
+                
+                rows.forEach(row => {
+                    const rowCategory = row.querySelector('.badge')?.textContent.toLowerCase() || '';
+                    
+                    if (rowCategory === category) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Refresh Blog Table
+        const refreshBlogTable = document.getElementById('refreshBlogTable');
+        if (refreshBlogTable) {
+            refreshBlogTable.addEventListener('click', function() {
+                window.location.reload();
+            });
+        }
+        
+        // Initialize rich text editors if TinyMCE is available
+        if (typeof tinymce !== 'undefined') {
+            tinymce.init({
+                selector: '.rich-editor',
+                height: 400,
+                menubar: false,
+                plugins: [
+                    'advlist autolink lists link image charmap print preview anchor',
+                    'searchreplace visualblocks code fullscreen',
+                    'insertdatetime media table paste code help wordcount'
+                ],
+                toolbar: 'undo redo | formatselect | ' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            });
+        }
+    });
+    
+    // Preview Blog
+    function previewBlog(blogId) {
+        // Fetch blog details via AJAX
+        fetch(`/admin/get-blog/${blogId}`)
+            .then(response => response.json())
+            .then(blog => {
+                if (blog.success) {
+                    const data = blog.blog;
+                    
+                    // Populate preview modal
+                    document.getElementById('previewTitle').textContent = data.title;
+                    document.getElementById('previewCategory').textContent = data.category;
+                    document.getElementById('previewDate').textContent = data.date;
+                    document.getElementById('previewReadTime').textContent = data.read_time;
+                    document.getElementById('previewSummary').textContent = data.summary;
+                    document.getElementById('previewContent').innerHTML = data.content;
+                    
+                    // Set image
+                    const previewImage = document.getElementById('previewImage');
+                    if (data.image) {
+                        previewImage.style.backgroundImage = `url('${data.image_url}')`;
+                    } else {
+                        // Use a default image if none is provided
+                        previewImage.style.backgroundImage = `url('https://skill-finesse-videos.b-cdn.net/static/images/blog_default.jpg')`;
+                    }
+                    
+                    // Set tags
+                    const previewTags = document.getElementById('previewTags');
+                    previewTags.innerHTML = '';
+                    if (data.tags) {
+                        const tags = data.tags.split(',');
+                        tags.forEach(tag => {
+                            const tagSpan = document.createElement('span');
+                            tagSpan.className = 'blog-tag';
+                            tagSpan.textContent = tag.trim();
+                            previewTags.appendChild(tagSpan);
+                        });
+                    }
+                    
+                    // Set view on site button link
+                    document.getElementById('viewOnSiteBtn').href = `/blog/${data.id}`;
+                    document.getElementById('viewOnSiteBtn').style.display = 'block';
+                    
+                    // Show the modal
+                    const previewModal = new bootstrap.Modal(document.getElementById('previewBlogModal'));
+                    previewModal.show();
+                } else {
+                    alert('Failed to load blog preview');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load blog preview');
+            });
+    }
+    
+    // Edit Blog
+    function editBlog(blogId) {
+        // Fetch blog details via AJAX
+        fetch(`/admin/get-blog/${blogId}`)
+            .then(response => response.json())
+            .then(blog => {
+                if (blog.success) {
+                    const data = blog.blog;
+                    
+                    // Update form action URL
+                    document.getElementById('editBlogForm').action = `/admin/blog/edit/${blogId}`;
+                    
+                    // Populate form fields
+                    document.getElementById('editBlogId').value = data.id;
+                    document.getElementById('editBlogTitle').value = data.title;
+                    document.getElementById('editBlogSummary').value = data.summary;
+                    
+                    // Set content in our custom editor
+                    const editBlogContentTextarea = document.getElementById('editBlogContent');
+                    editBlogContentTextarea.value = data.content;
+                    
+                    // Find the custom editor content area for this textarea
+                    const editorContainer = editBlogContentTextarea.nextSibling;
+                    if (editorContainer && editorContainer.classList.contains('custom-editor-container')) {
+                        const contentArea = editorContainer.querySelector('.editor-content');
+                        if (contentArea) {
+                            contentArea.innerHTML = data.content;
+                        }
+                    } else {
+                        // If the editor hasn't been initialized yet, wait for the modal to show and then reinitialize
+                        const modal = document.getElementById('editBlogModal');
+                        modal.addEventListener('shown.bs.modal', function() {
+                            // Re-initialize the custom editor for this textarea
+                            initCustomRichEditors();
+                            
+                            // Set the content after initialization
+                            const editorContainer = editBlogContentTextarea.nextSibling;
+                            if (editorContainer && editorContainer.classList.contains('custom-editor-container')) {
+                                const contentArea = editorContainer.querySelector('.editor-content');
+                                if (contentArea) {
+                                    contentArea.innerHTML = data.content;
+                                }
+                            }
+                        }, { once: true });
+                    }
+                    
+                    document.getElementById('editBlogCategory').value = data.category;
+                    document.getElementById('editBlogTags').value = data.tags;
+                    
+                    // Extract minutes from read time format (e.g., "5 min read")
+                    const readTimeMatch = data.read_time ? data.read_time.match(/(\d+)/) : null;
+                    document.getElementById('editReadTime').value = readTimeMatch ? readTimeMatch[1] : '5';
+                    
+                    // Set image preview
+                    if (data.image_url) {
+                        document.getElementById('editImagePreview').src = data.image_url;
+                    } else {
+                        document.getElementById('editImagePreview').src = 'https://skill-finesse-videos.b-cdn.net/static/images/blog_default.jpg';
+                    }
+                    
+                    // Show the modal
+                    const editModal = new bootstrap.Modal(document.getElementById('editBlogModal'));
+                    editModal.show();
+                } else {
+                    alert('Failed to load blog data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load blog data');
+            });
+    }
+    
+    // Delete Blog
+    function deleteBlog(blogId) {
+        // Fetch blog details via AJAX to get the title
+        fetch(`/admin/get-blog/${blogId}`)
+            .then(response => response.json())
+            .then(blog => {
+                if (blog.success) {
+                    // Update form action URL
+                    document.getElementById('deleteBlogForm').action = `/admin/blog/delete/${blogId}`;
+                    
+                    // Set blog ID and title in the modal
+                    document.getElementById('deleteBlogId').value = blogId;
+                    document.getElementById('deleteBlogTitle').textContent = blog.blog.title;
+                    
+                    // Show the modal
+                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteBlogModal'));
+                    deleteModal.show();
+                } else {
+                    alert('Failed to load blog data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load blog data');
+            });
+    }
+    
+    // Preview Post (from Add form)
+    function previewPost() {
+        // Get form data
+        const title = document.getElementById('blogTitle').value;
+        const category = document.getElementById('blogCategory').value;
+        const summary = document.getElementById('blogSummary').value;
+        const readTime = document.getElementById('readTime').value + ' min read';
+        
+        // Get content from the custom editor
+        const blogContentTextarea = document.getElementById('blogContent');
+        let content = blogContentTextarea.value;
+        
+        // If the custom editor is initialized, get content from there
+        const editorContainer = blogContentTextarea.nextSibling;
+        if (editorContainer && editorContainer.classList.contains('custom-editor-container')) {
+            const contentArea = editorContainer.querySelector('.editor-content');
+            if (contentArea) {
+                content = contentArea.innerHTML;
+            }
+        }
+        
+        const tags = document.getElementById('blogTags').value;
+        
+        // Check if required fields are filled
+        if (!title || !category || !summary || !content) {
+            alert('Please fill all required fields before preview');
+            return;
+        }
+        
+        // Populate preview modal
+        document.getElementById('previewTitle').textContent = title;
+        document.getElementById('previewCategory').textContent = category;
+        document.getElementById('previewDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('previewReadTime').textContent = readTime;
+        document.getElementById('previewSummary').textContent = summary;
+        document.getElementById('previewContent').innerHTML = content;
+        
+        // Set image preview
+        const imageInput = document.getElementById('blogImage');
+        const previewImage = document.getElementById('previewImage');
+        
+        if (imageInput.files && imageInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.style.backgroundImage = `url('${e.target.result}')`;
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+        } else {
+            previewImage.style.backgroundImage = `url('https://skill-finesse-videos.b-cdn.net/static/images/blog_default.jpg')`;
+        }
+        
+        // Set tags
+        const previewTags = document.getElementById('previewTags');
+        previewTags.innerHTML = '';
+        if (tags) {
+            const tagArray = tags.split(',');
+            tagArray.forEach(tag => {
+                const tagSpan = document.createElement('span');
+                tagSpan.className = 'blog-tag';
+                tagSpan.textContent = tag.trim();
+                previewTags.appendChild(tagSpan);
+            });
+        }
+        
+        // Disable view on site button since this is a new post
+        document.getElementById('viewOnSiteBtn').style.display = 'none';
+        
+        // Show the modal
+        const previewModal = new bootstrap.Modal(document.getElementById('previewBlogModal'));
+        previewModal.show();
+    }
+    
+    // Form submission handlers to keep the current page after form submission
+    function submitAddBlogForm(form) {
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addBlogModal'));
+                modal.hide();
+                
+                // Show success message
+                alert('Blog post created successfully!');
+                
+                // Make sure we're showing the blogs section
+                showSection('blogs-section');
+                
+                // Refresh the table to show the new blog
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + '?section=blogs';
+                }, 500);
+            } else {
+                alert(data.message || 'Failed to create blog post');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the blog post');
+        });
+        
+        return false; // Prevent traditional form submission
+    }
+    
+    function submitEditBlogForm(form) {
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editBlogModal'));
+                modal.hide();
+                
+                // Show success message
+                alert('Blog post updated successfully!');
+                
+                // Make sure we're showing the blogs section
+                showSection('blogs-section');
+                
+                // Refresh the table to show the updated blog
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + '?section=blogs';
+                }, 500);
+            } else {
+                alert(data.message || 'Failed to update blog post');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the blog post');
+        });
+        
+        return false; // Prevent traditional form submission
+    }
+    
+    function submitDeleteBlogForm(form) {
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteBlogModal'));
+                modal.hide();
+                
+                // Show success message
+                alert('Blog post deleted successfully!');
+                
+                // Make sure we're showing the blogs section
+                showSection('blogs-section');
+                
+                // Refresh the table to show the updated blog list
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + '?section=blogs';
+                }, 500);
+            } else {
+                alert(data.message || 'Failed to delete blog post');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the blog post');
+        });
+        
+        return false; // Prevent traditional form submission
+    }
+    
+    // Preview Edited Post
+    function previewEditedPost() {
+        // Get form data
+        const title = document.getElementById('editBlogTitle').value;
+        const category = document.getElementById('editBlogCategory').value;
+        const summary = document.getElementById('editBlogSummary').value;
+        const readTime = document.getElementById('editReadTime').value + ' min read';
+        
+        // Get content from the custom editor
+        const editBlogContentTextarea = document.getElementById('editBlogContent');
+        let content = editBlogContentTextarea.value;
+        
+        // If the custom editor is initialized, get content from there
+        const editorContainer = editBlogContentTextarea.nextSibling;
+        if (editorContainer && editorContainer.classList.contains('custom-editor-container')) {
+            const contentArea = editorContainer.querySelector('.editor-content');
+            if (contentArea) {
+                content = contentArea.innerHTML;
+            }
+        }
+        
+        const tags = document.getElementById('editBlogTags').value;
+        const blogId = document.getElementById('editBlogId').value;
+        
+        // Check if required fields are filled
+        if (!title || !category || !summary || !content) {
+            alert('Please fill all required fields before preview');
+            return;
+        }
+        
+        // Populate preview modal
+        document.getElementById('previewTitle').textContent = title;
+        document.getElementById('previewCategory').textContent = category;
+        document.getElementById('previewDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('previewReadTime').textContent = readTime;
+        document.getElementById('previewSummary').textContent = summary;
+        document.getElementById('previewContent').innerHTML = content;
+        
+        // Set image preview
+        const imageInput = document.getElementById('editBlogImage');
+        const previewImage = document.getElementById('previewImage');
+        
+        if (imageInput.files && imageInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.style.backgroundImage = `url('${e.target.result}')`;
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+        } else {
+            // Use existing image preview
+            const currentImageSrc = document.getElementById('editImagePreview').src;
+            previewImage.style.backgroundImage = `url('${currentImageSrc}')`;
+        }
+        
+        // Set tags
+        const previewTags = document.getElementById('previewTags');
+        previewTags.innerHTML = '';
+        if (tags) {
+            const tagArray = tags.split(',');
+            tagArray.forEach(tag => {
+                const tagSpan = document.createElement('span');
+                tagSpan.className = 'blog-tag';
+                tagSpan.textContent = tag.trim();
+                previewTags.appendChild(tagSpan);
+            });
+        }
+        
+        // Show view on site button and set correct URL
+        document.getElementById('viewOnSiteBtn').style.display = 'block';
+        document.getElementById('viewOnSiteBtn').href = `/blog/${blogId}`;
+        
+        // Show the modal
+        const previewModal = new bootstrap.Modal(document.getElementById('previewBlogModal'));
+        previewModal.show();
+    }
+</script>

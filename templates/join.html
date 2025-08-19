@@ -1,0 +1,950 @@
+{% extends 'base.html' %}
+
+{% block title %}Join Skill Finesse{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/global-header-footer.css') }}" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #00a651;
+        --secondary-color: #333333;
+    }
+    
+    /* Header Styles (matching index.html exactly) */
+    .navbar {
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 15px 0;
+    }
+
+    .navbar-brand img {
+        max-height: 50px;
+        transition: transform 0.3s ease;
+    }
+    
+    .navbar-brand img:hover {
+        transform: scale(1.05);
+    }
+
+    .nav-link {
+        color: var(--secondary-color);
+        font-weight: 600;
+        margin: 0 10px;
+        position: relative;
+        transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: var(--primary-color);
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: var(--primary-color);
+        transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+    }
+
+    .nav-link.active {
+        color: var(--primary-color);
+    }
+
+    .nav-link.active::after {
+        width: 100%;
+    }
+    
+    
+    /* Join Section Styles */
+    .join-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
+        min-height: calc(100vh - 76px);
+        display: flex;
+        align-items: center;
+    }
+    
+    .join-container {
+        max-width: 480px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    
+    .join-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .join-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -50%;
+        width: 200%;
+        height: 6px;
+        background: linear-gradient(90deg, var(--primary-color), #00d668, var(--primary-color));
+        animation: slideGradient 3s ease-in-out infinite;
+    }
+    
+    @keyframes slideGradient {
+        0% { transform: translateX(-50%); }
+        50% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    
+    .join-logo {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .join-logo img {
+        max-width: 150px;
+        height: auto;
+    }
+    
+    .join-tabs {
+        display: flex;
+        background: #f8f9fc;
+        border-radius: 50px;
+        padding: 4px;
+        margin-bottom: 30px;
+    }
+    
+    .tab-button {
+        flex: 1;
+        padding: 10px 20px;
+        border: none;
+        background: transparent;
+        color: #666;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .tab-button.active {
+        background: white;
+        color: var(--primary-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .form-subtitle {
+        color: #666;
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+    }
+    
+    .form-group {
+        margin-bottom: 18px;
+        position: relative;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e1e1e1;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: #f8f9fc;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(0, 166, 81, 0.1);
+    }
+    
+    .form-label {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        color: #999;
+        padding: 0 5px;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        font-size: 0.9rem;
+    }
+    
+    .form-control:focus + .form-label,
+    .form-control:not(:placeholder-shown) + .form-label {
+        top: 0;
+        font-size: 0.8rem;
+        background: white;
+        color: var(--primary-color);
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .form-row .form-group {
+        flex: 1;
+    }
+    
+    .phone-group {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .country-code {
+        flex: 0 0 100px;
+    }
+    
+    .phone-number {
+        flex: 1;
+    }
+    
+    .gender-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 12px;
+    }
+    
+    .gender-option {
+        flex: 1;
+    }
+    
+    .gender-option input[type="radio"] {
+        display: none;
+    }
+    
+    .gender-option label {
+        display: block;
+        padding: 8px 12px;
+        text-align: center;
+        border: 2px solid #e1e1e1;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+    }
+    
+    .gender-option input[type="radio"]:checked + label {
+        border-color: var(--primary-color);
+        background: rgba(0, 166, 81, 0.05);
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    
+    .password-wrapper {
+        position: relative;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s ease;
+    }
+    
+    .password-toggle:hover {
+        color: var(--primary-color);
+    }
+    
+    .password-strength {
+        height: 3px;
+        border-radius: 2px;
+        margin-top: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    .terms-check {
+        margin-bottom: 20px;
+    }
+    
+    .form-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .form-check-input {
+        margin-top: 3px;
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary-color);
+    }
+    
+    .form-check-label {
+        font-size: 0.85rem;
+        color: #666;
+        line-height: 1.4;
+    }
+    
+    .form-check-label a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .form-check-label a:hover {
+        text-decoration: underline;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-submit:hover {
+        background: #008c44;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 166, 81, 0.3);
+    }
+    
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+    
+    .form-footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .form-footer p {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    
+    .form-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .login-methods {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .login-method {
+        flex: 1;
+    }
+    
+    .login-method input[type="radio"] {
+        display: none;
+    }
+    
+    .login-method label {
+        display: block;
+        padding: 10px;
+        text-align: center;
+        border: 2px solid #e1e1e1;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+    }
+    
+    .login-method input[type="radio"]:checked + label {
+        border-color: var(--primary-color);
+        background: rgba(0, 166, 81, 0.05);
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    
+    .success-message,
+    .error-message {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 0.9rem;
+        animation: slideDown 0.4s ease;
+    }
+    
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    /* Loading state */
+    .btn-submit.loading {
+        color: transparent;
+    }
+    
+    .btn-submit.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 576px) {
+        .join-section {
+            padding: 60px 0;
+        }
+        
+        .join-card {
+            padding: 30px 20px;
+        }
+        
+        .join-logo img {
+            max-width: 120px;
+        }
+        
+        .join-tabs {
+            gap: 2px;
+        }
+        
+        .tab-button {
+            font-size: 0.85rem;
+            padding: 8px 15px;
+            min-width: auto;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .form-row .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .phone-group {
+            flex-direction: column;
+        }
+        
+        .country-code {
+            flex: none;
+            width: 100%;
+        }
+        
+        .gender-group {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<section class="join-section">
+    <div class="container">
+        <div class="join-container">
+            <div class="join-card" data-aos="zoom-in" data-aos-duration="800">
+                <div class="join-logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Skill Finesse">
+                </div>
+                
+                <div class="join-tabs">
+                    <button class="tab-button" data-tab="signup">Sign Up</button>
+                    <button class="tab-button active" data-tab="signin">Login</button>
+                </div>
+                
+                <!-- Sign Up Tab -->
+                <div id="signup" class="tab-content">
+                    <h2 class="form-title">Create Account</h2>
+                    <p class="form-subtitle">Start your learning journey</p>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="{{ 'success-message' if category == 'success' else 'error-message' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('join_signup') }}" id="signupForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder=" " required>
+                                <label class="form-label" for="first_name">First Name</label>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder=" " required>
+                                <label class="form-label" for="last_name">Last Name</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="email" class="form-control" id="email" name="email" placeholder=" " required>
+                            <label class="form-label" for="email">Email Address</label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="phone-group">
+                                <select class="form-control country-code" id="country_code" name="country_code" required>
+                                    <option value="+1">+1 (USA)</option>
+                                    <option value="+44">+44 (UK)</option>
+                                    <option value="+91">+91 (IN)</option>
+                                    <option value="+880" selected>+880 (BD)</option>
+                                    <option value="+61">+61 (AUS)</option>
+                                    <option value="+86">+86 (CN)</option>
+                                    <option value="+81">+81 (JP)</option>
+                                </select>
+                                <input type="tel" class="form-control phone-number" id="phone_number" name="phone_number" placeholder="Number without code" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select class="form-control" id="country" name="country" required>
+                                    <option value="">Country</option>
+                                    <option value="United States">United States</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="India">India</option>
+                                    <option value="Bangladesh" selected>Bangladesh</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="date" class="form-control" id="birthday" name="birthday" placeholder=" " required>
+                                <label class="form-label" for="birthday">Birthday</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="position: static; font-size: 0.9rem; color: #666; margin-bottom: 8px; display: block;">Gender</label>
+                            <div class="gender-group">
+                                <div class="gender-option">
+                                    <input type="radio" id="male" name="gender" value="male" required>
+                                    <label for="male">Male</label>
+                                </div>
+                                <div class="gender-option">
+                                    <input type="radio" id="female" name="gender" value="female">
+                                    <label for="female">Female</label>
+                                </div>
+                                <div class="gender-option">
+                                    <input type="radio" id="other" name="gender" value="other">
+                                    <label for="other">Other</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group password-wrapper">
+                            <input type="password" class="form-control" id="password" name="password" placeholder=" " minlength="8" required>
+                            <label class="form-label" for="password">Password</label>
+                            <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                            <div class="password-strength" id="passwordStrength"></div>
+                        </div>
+                        
+                        <div class="form-group password-wrapper">
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder=" " minlength="8" required>
+                            <label class="form-label" for="confirm_password">Confirm Password</label>
+                            <i class="fas fa-eye password-toggle" id="confirmPasswordToggle"></i>
+                        </div>
+                        
+                        <div class="terms-check form-check">
+                            <input type="checkbox" class="form-check-input" id="terms_agree" name="terms_agree" required>
+                            <label class="form-check-label" for="terms_agree">
+                                I agree to the <a href="{{ url_for('terms_of_service') }}" target="_blank">Terms of Service</a>, 
+                                <a href="{{ url_for('privacy_policy') }}" target="_blank">Privacy Policy</a>, 
+                                <a href="{{ url_for('refund_policy') }}" target="_blank">Refund Policy</a>, and 
+                                <a href="{{ url_for('cookie_policy') }}" target="_blank">Cookie Policy</a>
+                            </label>
+                        </div>
+                        
+                        <!-- Cloudflare Turnstile Widget for Signup -->
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAABciU0Xqq_eHDCaL" data-theme="light" style="display: flex; justify-content: center; margin: 15px 0;"></div>
+                        
+                        <button type="submit" class="btn-submit">Create Account</button>
+                    </form>
+                    
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="#" onclick="switchTab('signin')">Login</a></p>
+                    </div>
+                </div>
+                
+                <!-- Login Tab -->
+                <div id="signin" class="tab-content active">
+                    <h2 class="form-title">Welcome Back</h2>
+                    <p class="form-subtitle">Login to your account</p>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="{{ 'success-message' if category == 'success' else 'error-message' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('join_signin') }}" id="loginForm">
+                        <div class="login-methods">
+                            <div class="login-method">
+                                <input type="radio" id="login_email" name="login_method" value="email" checked>
+                                <label for="login_email">Email</label>
+                            </div>
+                            <div class="login-method">
+                                <input type="radio" id="login_phone" name="login_method" value="phone">
+                                <label for="login_phone">Phone</label>
+                            </div>
+                        </div>
+                        
+                        <div id="email_login" class="form-group">
+                            <input type="email" class="form-control" id="login_email_input" name="email" placeholder=" ">
+                            <label class="form-label" for="login_email_input">Email Address</label>
+                        </div>
+                        
+                        <div id="phone_login" class="form-group" style="display: none;">
+                            <div class="phone-group">
+                                <select class="form-control country-code" id="login_country_code" name="country_code">
+                                    <option value="+1">+1 (USA)</option>
+                                    <option value="+44">+44 (UK)</option>
+                                    <option value="+91">+91 (IN)</option>
+                                    <option value="+880" selected>+880 (BD)</option>
+                                    <option value="+61">+61 (AUS)</option>
+                                    <option value="+86">+86 (CN)</option>
+                                    <option value="+81">+81 (JP)</option>
+                                </select>
+                                <input type="tel" class="form-control phone-number" id="login_phone_input" name="phone_number" placeholder="Number without code">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group password-wrapper">
+                            <input type="password" class="form-control" id="login_password" name="password" placeholder=" " required>
+                            <label class="form-label" for="login_password">Password</label>
+                            <i class="fas fa-eye password-toggle" id="loginPasswordToggle"></i>
+                        </div>
+                        
+                        <!-- Cloudflare Turnstile Widget for Login -->
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAABciU0Xqq_eHDCaL" data-theme="light" style="display: flex; justify-content: center; margin: 15px 0;"></div>
+                        
+                        <button type="submit" class="btn-submit">Login</button>
+                    </form>
+                    
+                    <div class="form-footer">
+                        <p>New to Skill Finesse? <a href="#" onclick="switchTab('signup')">Sign Up</a></p>
+                        <p><a href="#" onclick="switchTab('forgot')">Forgot Password?</a></p>
+                    </div>
+                </div>
+                
+                <!-- Forgot Password Tab -->
+                <div id="forgot" class="tab-content">
+                    <h2 class="form-title">Reset Password</h2>
+                    <p class="form-subtitle">Choose how to reset your password</p>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="{{ 'success-message' if category == 'success' else 'error-message' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('forgot_password') }}" id="forgotForm">
+                        <div class="login-methods">
+                            <div class="login-method">
+                                <input type="radio" id="reset_email" name="reset_method" value="email" checked>
+                                <label for="reset_email">Email</label>
+                            </div>
+                            <div class="login-method">
+                                <input type="radio" id="reset_phone" name="reset_method" value="phone">
+                                <label for="reset_phone">Phone</label>
+                            </div>
+                        </div>
+                        
+                        <div id="email_reset" class="form-group">
+                            <input type="email" class="form-control" id="reset_email_input" name="email" placeholder=" ">
+                            <label class="form-label" for="reset_email_input">Email Address</label>
+                            <small class="form-text text-muted">Reset link will be sent to this email address</small>
+                        </div>
+                        
+                        <div id="phone_reset" class="form-group" style="display: none;">
+                            <div class="phone-group">
+                                <select class="form-control country-code" id="reset_country_code" name="country_code">
+                                    <option value="+1">+1 (USA)</option>
+                                    <option value="+44">+44 (UK)</option>
+                                    <option value="+91">+91 (IN)</option>
+                                    <option value="+880" selected>+880 (BD)</option>
+                                    <option value="+61">+61 (AUS)</option>
+                                    <option value="+86">+86 (CN)</option>
+                                    <option value="+81">+81 (JP)</option>
+                                </select>
+                                <input type="tel" class="form-control phone-number" id="reset_phone_input" name="phone_number" placeholder="Number without code">
+                            </div>
+                            <small class="form-text text-muted">Reset link will be sent to your registered email address</small>
+                        </div>
+                        
+                        <!-- Cloudflare Turnstile Widget for Reset Password -->
+                        <div class="cf-turnstile" data-sitekey="0x4AAAAAABciU0Xqq_eHDCaL" data-theme="light" style="display: flex; justify-content: center; margin: 15px 0;"></div>
+                        
+                        <button type="submit" class="btn-submit">Send Reset Code</button>
+                    </form>
+                    
+                    <div class="form-footer">
+                        <p>Remember your password? <a href="#" onclick="switchTab('signin')">Login</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+
+<!-- Cloudflare Turnstile script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+    // Tab switching with smooth transition
+    function switchTab(tabName) {
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            if (tab.dataset.tab === tabName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        contents.forEach(content => {
+            if (content.id === tabName) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+    }
+    
+    // Tab button event listeners
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            switchTab(button.dataset.tab);
+        });
+    });
+    
+    // Login method switching with animation
+    const loginMethods = document.querySelectorAll('input[name="login_method"]');
+    const emailLoginDiv = document.getElementById('email_login');
+    const phoneLoginDiv = document.getElementById('phone_login');
+    
+    loginMethods.forEach(method => {
+        method.addEventListener('change', (e) => {
+            if (e.target.value === 'email') {
+                emailLoginDiv.style.display = 'block';
+                phoneLoginDiv.style.display = 'none';
+                document.getElementById('login_email_input').required = true;
+                document.getElementById('login_phone_input').required = false;
+            } else {
+                emailLoginDiv.style.display = 'none';
+                phoneLoginDiv.style.display = 'block';
+                document.getElementById('login_email_input').required = false;
+                document.getElementById('login_phone_input').required = true;
+            }
+        });
+    });
+    
+    // Reset method switching
+    const resetMethods = document.querySelectorAll('input[name="reset_method"]');
+    const emailResetDiv = document.getElementById('email_reset');
+    const phoneResetDiv = document.getElementById('phone_reset');
+    
+    resetMethods.forEach(method => {
+        method.addEventListener('change', (e) => {
+            if (e.target.value === 'email') {
+                emailResetDiv.style.display = 'block';
+                phoneResetDiv.style.display = 'none';
+                document.getElementById('reset_email_input').required = true;
+                document.getElementById('reset_phone_input').required = false;
+            } else {
+                emailResetDiv.style.display = 'none';
+                phoneResetDiv.style.display = 'block';
+                document.getElementById('reset_email_input').required = false;
+                document.getElementById('reset_phone_input').required = true;
+            }
+        });
+    });
+    
+    // Password visibility toggle
+    function togglePasswordVisibility(inputId, toggleId) {
+        const input = document.getElementById(inputId);
+        const toggle = document.getElementById(toggleId);
+        
+        toggle.addEventListener('click', () => {
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        });
+    }
+    
+    // Initialize password toggles
+    togglePasswordVisibility('password', 'passwordToggle');
+    togglePasswordVisibility('confirm_password', 'confirmPasswordToggle');
+    togglePasswordVisibility('login_password', 'loginPasswordToggle');
+    
+    // Password strength indicator
+    const password = document.getElementById('password');
+    const passwordStrength = document.getElementById('passwordStrength');
+    
+    password.addEventListener('input', () => {
+        const value = password.value;
+        let strength = 0;
+        
+        if (value.length >= 8) strength++;
+        if (value.match(/[a-z]/) && value.match(/[A-Z]/)) strength++;
+        if (value.match(/[0-9]/)) strength++;
+        if (value.match(/[^a-zA-Z0-9]/)) strength++;
+        
+        passwordStrength.className = 'password-strength';
+        if (strength === 0) {
+            passwordStrength.style.width = '0';
+        } else if (strength === 1) {
+            passwordStrength.style.width = '25%';
+            passwordStrength.style.backgroundColor = '#dc3545';
+        } else if (strength === 2) {
+            passwordStrength.style.width = '50%';
+            passwordStrength.style.backgroundColor = '#ffc107';
+        } else if (strength === 3) {
+            passwordStrength.style.width = '75%';
+            passwordStrength.style.backgroundColor = '#28a745';
+        } else {
+            passwordStrength.style.width = '100%';
+            passwordStrength.style.backgroundColor = '#00a651';
+        }
+    });
+    
+    // Password validation
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    confirmPassword.addEventListener('input', () => {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    });
+    
+    // Form submission with loading state
+    const signupForm = document.getElementById('signupForm');
+    const loginForm = document.getElementById('loginForm');
+    const forgotForm = document.getElementById('forgotForm');
+    
+    function addLoadingState(form) {
+        form.addEventListener('submit', (e) => {
+            const button = form.querySelector('.btn-submit');
+            button.classList.add('loading');
+        });
+    }
+    
+    addLoadingState(signupForm);
+    addLoadingState(loginForm);
+    if (forgotForm) addLoadingState(forgotForm);
+    
+    // Country synchronization
+    const countrySelect = document.getElementById('country');
+    const countryCodeSelect = document.getElementById('country_code');
+    
+    countrySelect.addEventListener('change', (e) => {
+        const countryToCode = {
+            'United States': '+1',
+            'United Kingdom': '+44',
+            'India': '+91',
+            'Bangladesh': '+880',
+            'Australia': '+61',
+            'Canada': '+1',
+            'China': '+86',
+            'Japan': '+81'
+        };
+        
+        const code = countryToCode[e.target.value];
+        if (code) {
+            countryCodeSelect.value = code;
+        }
+    });
+</script>
+{% endblock %}

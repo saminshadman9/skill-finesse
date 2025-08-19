@@ -1,0 +1,73 @@
+<!-- User Navigation Sidebar -->
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user_dashboard') }}">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user_dashboard') }}#courses">
+                    <i class="fas fa-play-circle"></i>
+                    My Courses
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('user_dashboard') }}#ebooks">
+                    <i class="fas fa-book"></i>
+                    My eBooks
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user_dashboard') }}#profile">
+                    <i class="fas fa-user"></i>
+                    My Profile
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar .nav-link:hover {
+    color: #00a651;
+    background-color: rgba(0, 166, 81, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #00a651;
+    background-color: rgba(0, 166, 81, 0.1);
+}
+
+.sidebar .nav-link i {
+    width: 16px;
+    text-align: center;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        top: 5rem;
+    }
+}
+</style>

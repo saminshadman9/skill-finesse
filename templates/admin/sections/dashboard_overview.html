@@ -1,0 +1,398 @@
+<!-- Dashboard Overview Section -->
+<div id="dashboard-section" class="content-section">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Admin Dashboard</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Admin Dashboard</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row stats-row">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">{{ total_users|default(1250) }}</h3>
+                        <p class="stat-label">Total Users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon info">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">{{ total_courses|default(48) }}</h3>
+                        <p class="stat-label">Active Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value">{{ new_users_today|default(23) }}</h3>
+                        <p class="stat-label">New Users Today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detailed Analytics Sections -->
+    <div class="row mt-5">
+        <!-- Course Purchase Analytics -->
+        <div class="col-lg-6 mb-4">
+            <div class="stat-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-play-circle me-2"></i>
+                        Course Purchase Analytics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Course Title</th>
+                                    <th class="text-center">Purchases</th>
+                                </tr>
+                            </thead>
+                            <tbody id="course-purchase-data">
+                                <!-- Course purchase data will be loaded here -->
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading course data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ebook Purchase Analytics -->
+        <div class="col-lg-6 mb-4">
+            <div class="stat-card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book me-2"></i>
+                        Ebook Purchase Analytics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Ebook Title</th>
+                                    <th class="text-center">Purchases</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ebook-purchase-data">
+                                <!-- Ebook purchase data will be loaded here -->
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading ebook data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Purchase History -->
+    <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <div class="stat-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        User Purchase History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th>Purchased Items</th>
+                                    <th class="text-center">Total Purchases</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-purchase-history">
+                                <!-- User purchase history will be loaded here -->
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading user purchase history...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New User Registrations -->
+    <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <div class="stat-card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Recent User Registrations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th class="text-center">Registration Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="new-user-registrations">
+                                <!-- New user registrations will be loaded here -->
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading new registrations...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Override text colors to ensure they are black */
+    .stat-card .table {
+        color: #000 !important;
+    }
+    
+    .stat-card .table th,
+    .stat-card .table td {
+        color: #000 !important;
+    }
+    
+    .stat-card .card-header h5 {
+        color: #000 !important;
+    }
+    
+    .text-muted {
+        color: #6c757d !important;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+    }
+    
+    .purchased-items .badge {
+        color: #fff !important;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load dashboard analytics data
+    loadDashboardAnalytics();
+    
+    function loadDashboardAnalytics() {
+        // Load course purchase data
+        loadCoursePurchaseData();
+        
+        // Load ebook purchase data
+        loadEbookPurchaseData();
+        
+        // Load user purchase history
+        loadUserPurchaseHistory();
+        
+        // Load new user registrations
+        loadNewUserRegistrations();
+    }
+    
+    function loadCoursePurchaseData() {
+        fetch('/admin/api/course-purchase-analytics')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('course-purchase-data');
+                if (data.success && data.courses.length > 0) {
+                    tbody.innerHTML = data.courses.map(course => `
+                        <tr>
+                            <td>${course.title}</td>
+                            <td class="text-center">
+                                <span class="badge bg-primary">${course.purchase_count}</span>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">
+                                <i class="fas fa-info-circle me-2"></i>No course purchases found
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading course purchase data:', error);
+                document.getElementById('course-purchase-data').innerHTML = `
+                    <tr>
+                        <td colspan="2" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading data
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+    
+    function loadEbookPurchaseData() {
+        fetch('/admin/api/ebook-purchase-analytics')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('ebook-purchase-data');
+                if (data.success && data.ebooks.length > 0) {
+                    tbody.innerHTML = data.ebooks.map(ebook => `
+                        <tr>
+                            <td>${ebook.title}</td>
+                            <td class="text-center">
+                                <span class="badge bg-info">${ebook.purchase_count}</span>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">
+                                <i class="fas fa-info-circle me-2"></i>No ebook purchases found
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading ebook purchase data:', error);
+                document.getElementById('ebook-purchase-data').innerHTML = `
+                    <tr>
+                        <td colspan="2" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading data
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+    
+    function loadUserPurchaseHistory() {
+        fetch('/admin/api/user-purchase-history')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('user-purchase-history');
+                if (data.success && data.users.length > 0) {
+                    tbody.innerHTML = data.users.map(user => `
+                        <tr>
+                            <td>${user.first_name} ${user.last_name}</td>
+                            <td>${user.email}</td>
+                            <td>
+                                <div class="purchased-items">
+                                    ${user.purchased_items.map(item => `
+                                        <span class="badge ${item.type === 'course' ? 'bg-primary' : 'bg-info'} me-1 mb-1">
+                                            ${item.type === 'course' ? '📚' : '📖'} ${item.title}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-success">${user.total_purchases}</span>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                <i class="fas fa-info-circle me-2"></i>No purchase history found
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading user purchase history:', error);
+                document.getElementById('user-purchase-history').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading data
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+    
+    function loadNewUserRegistrations() {
+        fetch('/admin/api/new-user-registrations')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('new-user-registrations');
+                if (data.success && data.users.length > 0) {
+                    tbody.innerHTML = data.users.map(user => `
+                        <tr>
+                            <td>${user.first_name} ${user.last_name}</td>
+                            <td>${user.email}</td>
+                            <td class="text-center">
+                                <span class="badge bg-warning">${user.registration_date}</span>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                <i class="fas fa-info-circle me-2"></i>No new registrations found
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading new user registrations:', error);
+                document.getElementById('new-user-registrations').innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center text-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Error loading data
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+});
+</script>
