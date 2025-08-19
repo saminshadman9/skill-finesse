@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Skill Finesse - Online Learning Platform
 
 Skill Finesse is a professional online learning platform that allows administrators to create and publish courses, while users can browse, purchase, and access these courses. The platform also features a messaging system that enables direct communication between users and admins.
@@ -83,3 +84,7 @@ This project is licensed under the MIT License.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+=======
+# skill-finesse
+Website
+>>>>>>> cc2a6f085a33e6ec3d6711bf275a16d81c243fa1
