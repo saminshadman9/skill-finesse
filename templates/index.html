@@ -3433,35 +3433,17 @@
         }
     });
 
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Skill-Finesse Chatbot</title>
   <style>
-    /* Floating Button */
-    #chat-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-
     /* Chatbox */
     #chat-box {
-      display: none;
       position: fixed;
-      bottom: 90px;
+      bottom: 20px;
       right: 20px;
       width: 320px;
       height: 400px;
@@ -3471,7 +3453,8 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      z-index: 1000;
+      z-index: 9999 !important;
+      font-family: Arial, sans-serif;
     }
 
     #chat-header {
@@ -3536,10 +3519,7 @@
   </style>
 </head>
 <body>
-  <!-- Floating Chat Button -->
-  <button id="chat-btn">💬</button>
-
-  <!-- Chatbox -->
+  <!-- Always-visible Chatbox -->
   <div id="chat-box">
     <div id="chat-header">Skill-Finesse Assistant</div>
     <div id="chat-window"></div>
@@ -3550,30 +3530,18 @@
   </div>
 
   <script>
-    const webhookUrl = "https://your-n8n-domain/webhook/skillfinesse-chat"; // <-- replace with your n8n production webhook
+    const webhookUrl = "https://your-n8n-domain/webhook/skillfinesse-chat"; // <-- replace with your n8n webhook URL
 
-    const chatBtn = document.getElementById("chat-btn");
-    const chatBox = document.getElementById("chat-box");
     const sendBtn = document.getElementById("send-btn");
     const input = document.getElementById("chat-input");
     const chatWindow = document.getElementById("chat-window");
 
-    // Toggle chat visibility
-    chatBtn.addEventListener("click", () => {
-      chatBox.style.display = chatBox.style.display === "none" ? "flex" : "none";
-    });
-
-    // Send message
-    sendBtn.addEventListener("click", sendMessage);
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
-
+    // Send message function
     async function sendMessage() {
       const userMessage = input.value.trim();
       if (!userMessage) return;
 
-      // Display user message
+      // Show user message
       chatWindow.innerHTML += `<div class="user-msg">${userMessage}</div>`;
       input.value = "";
       chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -3594,9 +3562,16 @@
         chatWindow.innerHTML += `<div class="bot-msg error">Error: ${err.message}</div>`;
       }
     }
+
+    // Event listeners
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
   </script>
 </body>
 </html>
+
 
 
 
