@@ -3432,68 +3432,171 @@
             });
         }
     });
-</script>
- <script src="http://localhost:5679/webhook/0ef441c0-26cc-4095-9661-c3bc3b752567/chat"
-          data-title="Skill Finesse Assistant"
-          data-color="#4CAF50"
-          data-intro="Hi 👋, I’m your course assistant. Ask me anything!">
-  </script>
-<!-- Chatbot Widget -->
-<div id="chatbot-container"
-     style="position: fixed; bottom: 20px; right: 20px; width: 320px; height: 450px; background: white; border: 1px solid #ccc; border-radius: 10px; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: Arial, sans-serif; z-index: 9999;">
-
-  <!-- Chat header -->
-  <div style="background: #4a90e2; color: white; padding: 10px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-    Skill-Finesse Assistant
-  </div>
-
-  <!-- Messages area -->
-  <div id="chat-messages"
-       style="flex: 1; padding: 10px; overflow-y: auto; font-size: 14px;">
-  </div>
-
-  <!-- Input area -->
-  <div style="display: flex; border-top: 1px solid #ccc;">
-    <input id="chat-input" type="text" placeholder="Ask me anything..."
-           style="flex: 1; border: none; padding: 10px; font-size: 14px;">
-    <button id="chat-send"
-            style="background: #4a90e2; color: white; border: none; padding: 10px 15px; cursor: pointer;">Send</button>
-  </div>
-</div>
-
-<script>
-  const webhookUrl = "http://localhost:5679/webhook/0ef441c0-26cc-4095-9661-c3bc3b752567/chat"; // replace with your n8n webhook URL
-  const chatMessages = document.getElementById("chat-messages");
-  const chatInput = document.getElementById("chat-input");
-  const chatSend = document.getElementById("chat-send");
-
-  function appendMessage(sender, text) {
-    const msg = document.createElement("div");
-    msg.style.margin = "5px 0";
-    msg.innerHTML = `<b>${sender}:</b> ${text}`;
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  chatSend.addEventListener("click", async () => {
-    const userMessage = chatInput.value.trim();
-    if (!userMessage) return;
-    appendMessage("You", userMessage);
-    chatInput.value = "";
-
-    try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage })
-      });
-      const data = await response.json();
-      appendMessage("Bot", data.reply || "Sorry, I didn’t understand that.");
-    } catch (error) {
-      appendMessage("Bot", "⚠️ Error connecting to assistant.");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill-Finesse Chatbot</title>
+  <style>
+    /* Floating Button */
+    #chat-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      z-index: 1000;
     }
-  });
-</script>
+
+    /* Chatbox */
+    #chat-box {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 320px;
+      height: 400px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    #chat-header {
+      background: #007bff;
+      color: white;
+      padding: 12px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #chat-window {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .user-msg {
+      text-align: right;
+      background: #007bff;
+      color: white;
+      margin: 5px;
+      padding: 8px 12px;
+      border-radius: 12px 12px 0 12px;
+      display: inline-block;
+    }
+
+    .bot-msg {
+      text-align: left;
+      background: #f1f1f1;
+      color: #333;
+      margin: 5px;
+      padding: 8px 12px;
+      border-radius: 12px 12px 12px 0;
+      display: inline-block;
+    }
+
+    .error {
+      background: #ffdddd;
+      color: red;
+    }
+
+    #chat-input-area {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    #send-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Chat Button -->
+  <button id="chat-btn">💬</button>
+
+  <!-- Chatbox -->
+  <div id="chat-box">
+    <div id="chat-header">Skill-Finesse Assistant</div>
+    <div id="chat-window"></div>
+    <div id="chat-input-area">
+      <input id="chat-input" type="text" placeholder="Type a message..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const webhookUrl = "https://your-n8n-domain/webhook/skillfinesse-chat"; // <-- replace with your n8n production webhook
+
+    const chatBtn = document.getElementById("chat-btn");
+    const chatBox = document.getElementById("chat-box");
+    const sendBtn = document.getElementById("send-btn");
+    const input = document.getElementById("chat-input");
+    const chatWindow = document.getElementById("chat-window");
+
+    // Toggle chat visibility
+    chatBtn.addEventListener("click", () => {
+      chatBox.style.display = chatBox.style.display === "none" ? "flex" : "none";
+    });
+
+    // Send message
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    async function sendMessage() {
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+
+      // Display user message
+      chatWindow.innerHTML += `<div class="user-msg">${userMessage}</div>`;
+      input.value = "";
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userMessage })
+        });
+
+        const data = await response.json();
+
+        // Show bot reply
+        chatWindow.innerHTML += `<div class="bot-msg">${data.reply || "No response"}</div>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      } catch (err) {
+        chatWindow.innerHTML += `<div class="bot-msg error">Error: ${err.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
+
 
 {% endblock %}
 {% endblock %}
